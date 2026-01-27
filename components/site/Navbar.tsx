@@ -18,7 +18,7 @@ const Navbar = () => {
   };
 
   return (
-    <nav className="relative z-50 w-full">
+    <nav className="fixed top-0 left-0 right-0 z-50 w-full bg-[var(--background)]/80 backdrop-blur-md border-b border-[var(--border)]">
       <div className="mx-auto max-w-7xl px-4 sm:px-6 lg:px-8">
         <div className="flex h-20 items-center justify-between lg:h-24">
           {/* Logo */}
@@ -140,7 +140,7 @@ const Navbar = () => {
 
       {/* Mobile Menu */}
       {mobileMenuOpen && (
-        <div className="absolute left-0 right-0 top-full bg-[var(--background)] px-4 py-6 shadow-lg lg:hidden">
+        <div className="absolute left-0 right-0 top-full bg-[var(--background)] px-4 py-6 shadow-lg lg:hidden border-b border-[var(--border)]">
           <div className="flex flex-col gap-4">
             <Link
               href="#features"

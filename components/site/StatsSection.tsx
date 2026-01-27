@@ -8,9 +8,9 @@ const StatsSection = () => {
       <div className="mx-auto max-w-7xl px-4 sm:px-6 lg:px-8">
         {/* Globally Regulated Badge */}
         <div className="mb-12 flex items-center justify-center gap-3 lg:mb-16 lg:gap-4">
-          <div className="flex h-12 w-12 items-center justify-center rounded-full bg-[#dbeafe] dark:bg-[#1e3a8a] lg:h-14 lg:w-14">
+          <div className="flex h-10 w-10 sm:h-12 sm:w-12 items-center justify-center rounded-full bg-[#dbeafe] dark:bg-[#1e3a8a] lg:h-14 lg:w-14">
             <svg
-              className="h-6 w-6 text-[#1e40af] dark:text-[#60a5fa] lg:h-7 lg:w-7"
+              className="h-4 w-4 sm:h-6 sm:w-6 text-[#1e40af] dark:text-[#60a5fa] lg:h-7 lg:w-7"
               fill="none"
               viewBox="0 0 24 24"
               stroke="currentColor"
@@ -23,7 +23,7 @@ const StatsSection = () => {
               />
             </svg>
           </div>
-          <span className="text-3xl font-bold tracking-tight  lg:text-4xl">
+          <span className="text-xl lg:text-3xl font-bold tracking-tight  xl:text-4xl">
             Globally Regulated
           </span>
         </div>

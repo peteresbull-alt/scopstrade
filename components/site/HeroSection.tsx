@@ -1,7 +1,133 @@
 "use client";
 
-import React from "react";
+import React, { useEffect, useState, useRef } from "react";
+import { useTheme } from "next-themes";
 import Link from "next/link";
+
+// Particles Background Component
+const ParticlesBackground = () => {
+  const canvasRef = useRef<HTMLCanvasElement | null>(null);
+  const { theme } = useTheme();
+  const [mounted, setMounted] = useState(false);
+  const animationRef = useRef<number | null>(null);
+
+  useEffect(() => {
+    setMounted(true);
+  }, []);
+
+  useEffect(() => {
+    if (!mounted) return;
+    const canvas = canvasRef.current;
+    if (!canvas) return;
+    const ctx = canvas.getContext("2d");
+    if (!ctx) return;
+
+    canvas.width = window.innerWidth;
+    canvas.height = window.innerHeight;
+
+    const particles: Particle[] = [];
+    const particleCount = 80;
+    const connectionDistance = 150;
+
+    // Blue colors for light and dark mode
+    const isDark = theme === "dark";
+    const particleColor = isDark
+      ? "rgba(96, 165, 250, 0.6)" // Blue-400 for dark mode
+      : "rgba(59, 130, 246, 0.5)"; // Blue-500 for light mode
+    const connectionColor = isDark
+      ? "rgba(96, 165, 250," // Blue-400 for dark mode
+      : "rgba(59, 130, 246,"; // Blue-500 for light mode
+
+    class Particle {
+      x: number;
+      y: number;
+      vx: number;
+      vy: number;
+      radius: number;
+
+      constructor(canvas: HTMLCanvasElement) {
+        this.x = Math.random() * canvas.width;
+        this.y = Math.random() * canvas.height;
+        this.vx = (Math.random() - 0.5) * 0.5;
+        this.vy = (Math.random() - 0.5) * 0.5;
+        this.radius = Math.random() * 2 + 1;
+      }
+
+      update(canvas: HTMLCanvasElement) {
+        this.x += this.vx;
+        this.y += this.vy;
+        if (this.x < 0 || this.x > canvas.width) this.vx *= -1;
+        if (this.y < 0 || this.y > canvas.height) this.vy *= -1;
+      }
+
+      draw(ctx: CanvasRenderingContext2D) {
+        ctx.beginPath();
+        ctx.arc(this.x, this.y, this.radius, 0, Math.PI * 2);
+        ctx.fillStyle = particleColor;
+        ctx.fill();
+      }
+    }
+
+    for (let i = 0; i < particleCount; i++) {
+      particles.push(new Particle(canvas));
+    }
+
+    const animate = () => {
+      ctx.clearRect(0, 0, canvas.width, canvas.height);
+
+      particles.forEach((particle, i) => {
+        particle.update(canvas);
+        particle.draw(ctx);
+
+        particles.slice(i + 1).forEach((otherParticle) => {
+          const dx = particle.x - otherParticle.x;
+          const dy = particle.y - otherParticle.y;
+          const distance = Math.sqrt(dx * dx + dy * dy);
+
+          if (distance < connectionDistance) {
+            ctx.beginPath();
+            ctx.moveTo(particle.x, particle.y);
+            ctx.lineTo(otherParticle.x, otherParticle.y);
+            ctx.strokeStyle = `${connectionColor}${
+              0.2 * (1 - distance / connectionDistance)
+            })`;
+            ctx.lineWidth = 0.5;
+            ctx.stroke();
+          }
+        });
+      });
+
+      animationRef.current = requestAnimationFrame(animate);
+    };
+
+    animate();
+
+    const handleResize = () => {
+      if (canvas) {
+        canvas.width = window.innerWidth;
+        canvas.height = window.innerHeight;
+      }
+    };
+
+    window.addEventListener("resize", handleResize);
+    return () => {
+      window.removeEventListener("resize", handleResize);
+      if (animationRef.current) {
+        cancelAnimationFrame(animationRef.current);
+      }
+    };
+  }, [mounted, theme]);
+
+  if (!mounted) return null;
+
+  return (
+    <canvas
+      ref={canvasRef}
+      className="absolute inset-0 w-full h-full pointer-events-none"
+      style={{ background: "transparent" }}
+    />
+  );
+};
 
 const HeroSection = () => {
   // Integration platforms - these rotate on mobile
@@ -24,7 +150,13 @@ const HeroSection = () => {
     : integrations.desktop;
 
   return (
-    <section className="dot-pattern relative min-h-[calc(100vh-80px)] overflow-hidden lg:min-h-[calc(100vh-96px)]">
+    <section className="relative min-h-[calc(100vh-80px)] overflow-hidden lg:min-h-[calc(100vh-96px)]">
+      {/* Particles Background */}
+      <ParticlesBackground />
+
+      {/* Optional: Keep dot pattern as subtle overlay or remove it */}
+      {/* <div className="dot-pattern absolute inset-0 pointer-events-none" /> */}
+
       <div className="relative z-10 mx-auto max-w-7xl px-4 pb-12 pt-8 sm:px-6 lg:px-8 lg:pb-20 lg:pt-16">
         {/* Integration Badge */}
         {/* <div className="flex justify-center">
@@ -78,15 +210,12 @@ const HeroSection = () => {
           >
             View expert traders
           </Link>
-         
         </div>
 
         {/* Network Illustration */}
         <div className="relative mx-auto mt-12 h-[280px] w-full max-w-xl lg:mt-16 lg:h-[320px]">
           <NetworkIllustration />
         </div>
-
-       
       </div>
     </section>
   );

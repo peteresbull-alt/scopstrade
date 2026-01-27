@@ -17,18 +17,20 @@ export default function Home() {
   return (
     <>
       <Navbar />
-      <HeroSection />
-      <StatsSection />
-      <HowItWorks />
-      <WhyChooseUs />
-      <TradersSection />
-      <FeaturesSection />
-      <WhatYouCanCopy />
-      <FAQSection />
-      <TeamSection />
-      <TrustSection />
-      <CTASection />
-      <Footer />
+      <main className="pt-20 lg:pt-24">
+        <HeroSection />
+        <StatsSection />
+        <HowItWorks />
+        <WhyChooseUs />
+        <TradersSection />
+        <FeaturesSection />
+        <WhatYouCanCopy />
+        <FAQSection />
+        <TeamSection />
+        <TrustSection />
+        <CTASection />
+        <Footer />
+      </main>
     </>
   );
 }
