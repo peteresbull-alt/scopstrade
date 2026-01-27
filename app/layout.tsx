@@ -17,7 +17,7 @@ const jetbrainsMono = JetBrains_Mono({
 });
 
 export const metadata: Metadata = {
-  title: "SignalSync - Copy Futures, Options & Contracts with Precision",
+  title: "ScopsTrade - Copy Futures, Options & Contracts with Precision",
   description:
     "Mirror real-time stock and options trades from top-performing traders. Precision, flexibility, and transparency straight to your fingertips.",
 };

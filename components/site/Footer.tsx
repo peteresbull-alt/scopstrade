@@ -12,7 +12,7 @@ const Footer = () => {
           <div className="lg:col-span-3">
             <div className="mb-4">
               <span className="text-2xl font-bold">
-                Signal<span className="text-[var(--primary)]">sync</span>
+                Scops<span className="text-[var(--primary)]">Trade</span>
               </span>
             </div>
             <p className="mb-4 text-sm text-[var(--foreground-muted)]">

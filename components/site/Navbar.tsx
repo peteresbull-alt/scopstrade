@@ -56,13 +56,13 @@ const Navbar = () => {
           {/* Desktop Actions */}
           <div className="hidden items-center gap-3 lg:flex">
             <Link
-              href="/signin"
+              href="#"
               className="navbar-btn rounded-full bg-[var(--primary)] px-6 py-3 text-[0.9375rem] font-semibold text-white transition-all hover:bg-[var(--primary-hover)]"
             >
               Sign In
             </Link>
             <Link
-              href="/get-started"
+              href="#"
               className="navbar-btn rounded-full bg-[var(--primary)] px-6 py-3 text-[0.9375rem] font-semibold text-white transition-all hover:bg-[var(--primary-hover)]"
             >
               Get Started
@@ -89,7 +89,7 @@ const Navbar = () => {
           {/* Mobile Actions */}
           <div className="flex items-center gap-3 lg:hidden">
             <Link
-              href="/get-started"
+              href="#"
               className="rounded-lg bg-[var(--primary)] hidden px-4 py-2.5 text-sm font-semibold text-white transition-all hover:bg-[var(--primary-hover)]"
             >
               Get Started
@@ -164,7 +164,7 @@ const Navbar = () => {
               Pricing
             </Link>
             <Link
-              href="/signin"
+              href="#"
               className="mt-2 text-base font-medium text-[var(--foreground)]"
               onClick={() => setMobileMenuOpen(false)}
             >

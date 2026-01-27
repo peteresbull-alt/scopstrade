@@ -66,7 +66,7 @@ const FeaturesSection = () => {
         {/* Section Header */}
         <div className="text-center">
           <h2 className="text-4xl font-bold tracking-tight lg:text-5xl">
-            Why choose SignalSync
+            Why choose ScopsTrade
           </h2>
           <p className="mx-auto mt-4 max-w-3xl text-base leading-relaxed text-[var(--foreground-muted)] lg:mt-6 lg:text-lg">
             We provide the most advanced copy trading platform with
