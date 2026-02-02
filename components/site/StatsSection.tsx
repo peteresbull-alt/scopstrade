@@ -51,12 +51,12 @@ const StatCard = ({
 }) => {
   const getBorderClasses = () => {
     if (position === "first") {
-      return "border border-[#e5e7eb] dark:border-[#1f3f5f] sm:border-r-0";
+      return "";
     }
     if (position === "middle") {
-      return "border-t border-b border-[#e5e7eb] dark:border-[#1f3f5f] sm:border";
+      return "";
     }
-    return "border border-[#e5e7eb] dark:border-[#1f3f5f] sm:border-l-0";
+    return "";
   };
 
   return (

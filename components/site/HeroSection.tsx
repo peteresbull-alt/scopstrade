@@ -157,10 +157,10 @@ const HeroSection = () => {
       {/* Optional: Keep dot pattern as subtle overlay or remove it */}
       {/* <div className="dot-pattern absolute inset-0 pointer-events-none" /> */}
 
-      <div className="relative z-10 mx-auto max-w-7xl px-4 pb-12 pt-8 sm:px-6 lg:px-8 lg:pb-20 lg:pt-16">
+      <div className="relative z-10 mx-auto max-w-7xl pt-10 px-4">
         {/* Integration Badge */}
-        {/* <div className="flex justify-center">
-          <div className="integration-badge inline-flex items-center gap-2 rounded-full px-5 py-2.5 text-sm font-medium text-[var(--foreground)]">
+        <div className="flex justify-center">
+          <div className="integration-badge inline-flex items-center gap-2 rounded-full px-5 py-2.5 text-[10px] md:text-sm font-medium text-[var(--foreground)]">
             <span className="text-[var(--foreground-muted)]">
               Integrates with:
             </span>
@@ -175,20 +175,20 @@ const HeroSection = () => {
               ))}
             </span>
           </div>
-        </div> */}
+        </div>
 
         {/* Main Headline */}
         <div className="mx-auto mt-8 max-w-4xl text-center lg:mt-12">
-          <h1 className="text-[2.5rem] font-bold leading-[1.1] tracking-tight text-[var(--foreground)] sm:text-5xl lg:text-[6rem] lg:leading-[1.05]">
+          <h1 className="text-[2rem] sm:text-[3rem] lg:text-[4rem] font-bold leading-[1.1] tracking-tight text-[var(--foreground)]  lg:leading-[1.05]">
             Copy Futures,
-            <br />
+           
             Options & Contracts
             <br />
             with Precision
           </h1>
 
           {/* Subheadline */}
-          <p className="mx-auto mt-6 max-w-2xl text-base leading-relaxed text-[var(--foreground-muted)] sm:text-lg lg:mt-8 lg:text-[1.125rem]">
+          <p className="text-[14px] sm:text-base md:text-lg lg:text-[1rem] mx-auto mt-6 max-w-2xl leading-relaxed text-[var(--foreground-muted)] lg:mt-8 ">
             We empower you to mirror real-time stock and options trades from
             top-performing traders. Whether you're following tickers, contracts,
             or strategic options moves, our platform brings precision,

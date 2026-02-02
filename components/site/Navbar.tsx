@@ -3,6 +3,7 @@
 import React from "react";
 import Link from "next/link";
 import { useTheme } from "next-themes";
+import Image from "next/image";
 
 const Navbar = () => {
   const { theme, setTheme } = useTheme();
@@ -23,14 +24,23 @@ const Navbar = () => {
         <div className="flex h-20 items-center justify-between lg:h-24">
           {/* Logo */}
           <Link href="/" className="flex items-center gap-0">
-            <span className="text-2xl font-bold tracking-tight text-[var(--foreground)] lg:text-[1.75rem]">
-              Scops
-            </span>
-            <span className="text-2xl font-light tracking-tight text-[var(--foreground-muted)] lg:text-[1.75rem]">
-              Trade
-            </span>
-          </Link>
+            
 
+            <Image
+              src={"/logo_dark.png"}
+              className="block dark:hidden w-50"
+              alt=""
+              width={1000}
+              height={250}
+            />
+            <Image
+              src={"/logo_light.png"}
+              className="hidden dark:block w-50"
+              alt=""
+              width={1000}
+              height={250}
+            />
+          </Link>
           {/* Desktop Navigation */}
           <div className="hidden items-center gap-8 lg:flex">
             <Link
@@ -56,13 +66,13 @@ const Navbar = () => {
           {/* Desktop Actions */}
           <div className="hidden items-center gap-3 lg:flex">
             <Link
-              href="#"
+              href="/login"
               className="navbar-btn rounded-full bg-[var(--primary)] px-6 py-3 text-[0.9375rem] font-semibold text-white transition-all hover:bg-[var(--primary-hover)]"
             >
               Sign In
             </Link>
             <Link
-              href="#"
+              href="/register"
               className="navbar-btn rounded-full bg-[var(--primary)] px-6 py-3 text-[0.9375rem] font-semibold text-white transition-all hover:bg-[var(--primary-hover)]"
             >
               Get Started
@@ -89,7 +99,7 @@ const Navbar = () => {
           {/* Mobile Actions */}
           <div className="flex items-center gap-3 lg:hidden">
             <Link
-              href="#"
+              href="/register"
               className="rounded-lg bg-[var(--primary)] hidden px-4 py-2.5 text-sm font-semibold text-white transition-all hover:bg-[var(--primary-hover)]"
             >
               Get Started
@@ -164,7 +174,7 @@ const Navbar = () => {
               Pricing
             </Link>
             <Link
-              href="#"
+              href="/login"
               className="mt-2 text-base font-medium text-[var(--foreground)]"
               onClick={() => setMobileMenuOpen(false)}
             >
