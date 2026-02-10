@@ -292,13 +292,13 @@ export default function LoginPage() {
             <div className="flex items-center justify-center gap-4">
               <Link
                 className="text-blue-500 hover:underline"
-                href={"/privacy-policy"}
+                href={"/"}
               >
                 Privacy Policy
               </Link>
               <Link
                 className="text-blue-500 hover:underline"
-                href={"/terms-service"}
+                href={"/"}
               >
                 Terms of service
               </Link>

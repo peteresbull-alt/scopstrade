@@ -197,13 +197,13 @@ const HeroSection = () => {
         {/* CTA Buttons */}
         <div className="mt-4 flex flex-col items-center gap-4 sm:flex-row sm:justify-center lg:mt-10">
           <Link
-            href="#"
+            href="/login"
             className="w-full rounded-lg bg-[var(--primary)] px-8 py-2 text-center text-[12px] sm:text-base font-semibold text-white transition-all hover:bg-[var(--primary-hover)] sm:w-auto sm:rounded-full sm:py-3.5 lg:px-10 lg:text-[0.9375rem]"
           >
             Start Copying Now
           </Link>
           <Link
-            href="#"
+            href="/login"
             className="w-full rounded-lg bg-[var(--primary)] px-8 py-2 text-center text-[12px] sm:text-base font-semibold text-white transition-all hover:bg-[var(--primary-hover)] sm:w-auto sm:rounded-full sm:py-3.5 lg:px-10 lg:text-[0.9375rem]"
           >
             View expert traders
