@@ -9,9 +9,13 @@ const Navbar = () => {
   const { theme, setTheme } = useTheme();
   const [mounted, setMounted] = React.useState(false);
   const [mobileMenuOpen, setMobileMenuOpen] = React.useState(false);
+  const [scrolled, setScrolled] = React.useState(false);
 
   React.useEffect(() => {
     setMounted(true);
+    const handleScroll = () => setScrolled(window.scrollY > 20);
+    window.addEventListener("scroll", handleScroll);
+    return () => window.removeEventListener("scroll", handleScroll);
   }, []);
 
   const toggleTheme = () => {
@@ -19,45 +23,50 @@ const Navbar = () => {
   };
 
   return (
-    <nav className="fixed top-0 left-0 right-0 z-50 w-full bg-[var(--background)]/80 backdrop-blur-md border-b border-[var(--border)]">
+    <nav
+      className={`fixed top-0 left-0 right-0 z-50 w-full transition-all duration-300 ${
+        scrolled
+          ? "bg-white/80 dark:bg-[#0f1f3a]/80 backdrop-blur-xl shadow-lg shadow-black/[0.03] dark:shadow-black/20 border-b border-gray-200/50 dark:border-white/[0.06]"
+          : "bg-transparent border-b border-transparent"
+      }`}
+    >
       <div className="mx-auto max-w-7xl px-4 sm:px-6 lg:px-8">
-        <div className="flex h-20 items-center justify-between lg:h-24">
+        <div className="flex h-16 items-center justify-between lg:h-20">
           {/* Logo */}
           <Link href="/" className="flex items-center gap-0">
-            
-
             <Image
               src={"/logo_dark.png"}
-              className="block dark:hidden w-50"
-              alt=""
+              className="block dark:hidden w-40 lg:w-44"
+              alt="ScopTrade"
               width={1000}
               height={250}
             />
             <Image
               src={"/logo_light.png"}
-              className="hidden dark:block w-50"
-              alt=""
+              className="hidden dark:block w-40 lg:w-44"
+              alt="ScopTrade"
               width={1000}
               height={250}
             />
           </Link>
+
           {/* Desktop Navigation */}
           <div className="hidden items-center gap-8 lg:flex">
             <Link
               href="#features"
-              className="text-[0.9375rem] font-medium text-[var(--foreground)] transition-opacity hover:opacity-70"
+              className="text-sm font-medium text-gray-600 dark:text-gray-300 transition-colors hover:text-[var(--primary)] dark:hover:text-[var(--primary)]"
             >
               Features
             </Link>
             <Link
               href="#how-it-works"
-              className="text-[0.9375rem] font-medium text-[var(--foreground)] transition-opacity hover:opacity-70"
+              className="text-sm font-medium text-gray-600 dark:text-gray-300 transition-colors hover:text-[var(--primary)] dark:hover:text-[var(--primary)]"
             >
               How it works
             </Link>
             <Link
               href="#pricing"
-              className="text-[0.9375rem] font-medium text-[var(--foreground)] transition-opacity hover:opacity-70"
+              className="text-sm font-medium text-gray-600 dark:text-gray-300 transition-colors hover:text-[var(--primary)] dark:hover:text-[var(--primary)]"
             >
               Pricing
             </Link>
@@ -67,13 +76,13 @@ const Navbar = () => {
           <div className="hidden items-center gap-3 lg:flex">
             <Link
               href="/login"
-              className="navbar-btn rounded-full bg-[var(--primary)] px-6 py-3 text-[0.9375rem] font-semibold text-white transition-all hover:bg-[var(--primary-hover)]"
+              className="rounded-full border border-gray-300 dark:border-white/20 bg-transparent px-5 py-2 text-sm font-medium text-gray-700 dark:text-gray-200 transition-all hover:border-[var(--primary)] hover:text-[var(--primary)] dark:hover:border-[var(--primary)] dark:hover:text-[var(--primary)]"
             >
               Sign In
             </Link>
             <Link
               href="/register"
-              className="navbar-btn rounded-full bg-[var(--primary)] px-6 py-3 text-[0.9375rem] font-semibold text-white transition-all hover:bg-[var(--primary-hover)]"
+              className="rounded-full bg-[var(--primary)] px-6 py-2.5 text-sm font-semibold text-white transition-all hover:bg-[var(--primary-hover)] hover:shadow-lg hover:shadow-blue-500/25 hover:-translate-y-0.5"
             >
               Get Started
             </Link>
@@ -81,15 +90,15 @@ const Navbar = () => {
             {/* Theme Toggle */}
             <button
               onClick={toggleTheme}
-              className="theme-toggle ml-2"
+              className="ml-1 flex h-9 w-9 items-center justify-center rounded-full border border-gray-200 dark:border-white/15 text-gray-500 dark:text-gray-400 transition-all hover:border-[var(--primary)]/50 hover:text-[var(--primary)]"
               aria-label="Toggle theme"
             >
               {mounted && (
                 <>
                   {theme === "dark" ? (
-                    <SunIcon className="h-5 w-5" />
+                    <SunIcon className="h-4 w-4" />
                   ) : (
-                    <MoonIcon className="h-5 w-5" />
+                    <MoonIcon className="h-4 w-4" />
                   )}
                 </>
               )}
@@ -97,10 +106,10 @@ const Navbar = () => {
           </div>
 
           {/* Mobile Actions */}
-          <div className="flex items-center gap-3 lg:hidden">
+          <div className="flex items-center gap-2 lg:hidden">
             <Link
               href="/register"
-              className="rounded-lg bg-[var(--primary)] hidden px-4 py-2.5 text-sm font-semibold text-white transition-all hover:bg-[var(--primary-hover)]"
+              className="rounded-full bg-[var(--primary)] px-4 py-2 text-xs font-semibold text-white transition-all hover:bg-[var(--primary-hover)]"
             >
               Get Started
             </Link>
@@ -108,15 +117,15 @@ const Navbar = () => {
             {/* Theme Toggle Mobile */}
             <button
               onClick={toggleTheme}
-              className="flex h-10 w-10 items-center justify-center rounded-full border border-[var(--border)] text-[var(--foreground)]"
+              className="flex h-9 w-9 items-center justify-center rounded-full border border-gray-200 dark:border-white/15 text-gray-500 dark:text-gray-400"
               aria-label="Toggle theme"
             >
               {mounted && (
                 <>
                   {theme === "dark" ? (
-                    <SunIcon className="h-5 w-5" />
+                    <SunIcon className="h-4 w-4" />
                   ) : (
-                    <MoonIcon className="h-5 w-5" />
+                    <MoonIcon className="h-4 w-4" />
                   )}
                 </>
               )}
@@ -125,21 +134,21 @@ const Navbar = () => {
             {/* Mobile Menu Button */}
             <button
               onClick={() => setMobileMenuOpen(!mobileMenuOpen)}
-              className="flex h-10 w-10 flex-col items-center justify-center gap-1.5"
+              className="flex h-9 w-9 flex-col items-center justify-center gap-1.5"
               aria-label="Toggle menu"
             >
               <span
-                className={`h-0.5 w-6 bg-[var(--foreground)] transition-all ${
+                className={`h-0.5 w-5 bg-gray-600 dark:bg-gray-300 transition-all duration-300 ${
                   mobileMenuOpen ? "translate-y-2 rotate-45" : ""
                 }`}
               />
               <span
-                className={`h-0.5 w-6 bg-[var(--foreground)] transition-all ${
+                className={`h-0.5 w-5 bg-gray-600 dark:bg-gray-300 transition-all duration-300 ${
                   mobileMenuOpen ? "opacity-0" : ""
                 }`}
               />
               <span
-                className={`h-0.5 w-6 bg-[var(--foreground)] transition-all ${
+                className={`h-0.5 w-5 bg-gray-600 dark:bg-gray-300 transition-all duration-300 ${
                   mobileMenuOpen ? "-translate-y-2 -rotate-45" : ""
                 }`}
               />
@@ -148,41 +157,47 @@ const Navbar = () => {
         </div>
       </div>
 
-      {/* Mobile Menu */}
-      {mobileMenuOpen && (
-        <div className="absolute left-0 right-0 top-full bg-[var(--background)] px-4 py-6 shadow-lg lg:hidden border-b border-[var(--border)]">
-          <div className="flex flex-col gap-4">
+      {/* Mobile Menu - Animated slide */}
+      <div
+        className={`absolute left-0 right-0 top-full overflow-hidden transition-all duration-300 lg:hidden ${
+          mobileMenuOpen ? "max-h-80 opacity-100" : "max-h-0 opacity-0"
+        }`}
+      >
+        <div className="bg-white/95 dark:bg-[#0f1f3a]/95 backdrop-blur-xl px-4 py-5 shadow-xl border-b border-gray-200/50 dark:border-white/[0.06]">
+          <div className="flex flex-col gap-1">
             <Link
               href="#features"
-              className="text-base font-medium text-[var(--foreground)]"
+              className="rounded-lg px-3 py-2.5 text-sm font-medium text-gray-700 dark:text-gray-200 transition-colors hover:bg-blue-50 dark:hover:bg-white/5"
               onClick={() => setMobileMenuOpen(false)}
             >
               Features
             </Link>
             <Link
               href="#how-it-works"
-              className="text-base font-medium text-[var(--foreground)]"
+              className="rounded-lg px-3 py-2.5 text-sm font-medium text-gray-700 dark:text-gray-200 transition-colors hover:bg-blue-50 dark:hover:bg-white/5"
               onClick={() => setMobileMenuOpen(false)}
             >
               How it works
             </Link>
             <Link
               href="#pricing"
-              className="text-base font-medium text-[var(--foreground)]"
+              className="rounded-lg px-3 py-2.5 text-sm font-medium text-gray-700 dark:text-gray-200 transition-colors hover:bg-blue-50 dark:hover:bg-white/5"
               onClick={() => setMobileMenuOpen(false)}
             >
               Pricing
             </Link>
-            <Link
-              href="/login"
-              className="mt-2 text-base font-medium text-[var(--foreground)]"
-              onClick={() => setMobileMenuOpen(false)}
-            >
-              Sign In
-            </Link>
+            <div className="mt-2 border-t border-gray-200 dark:border-white/10 pt-3">
+              <Link
+                href="/login"
+                className="block rounded-lg px-3 py-2.5 text-sm font-medium text-gray-700 dark:text-gray-200 transition-colors hover:bg-blue-50 dark:hover:bg-white/5"
+                onClick={() => setMobileMenuOpen(false)}
+              >
+                Sign In
+              </Link>
+            </div>
           </div>
         </div>
-      )}
+      </div>
     </nav>
   );
 };

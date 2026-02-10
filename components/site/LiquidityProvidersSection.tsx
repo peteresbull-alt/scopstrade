@@ -280,14 +280,14 @@ const LiquidityProvidersSection = () => {
           </h5>
           <div className="flex flex-col sm:flex-row gap-4 justify-center items-center">
             <a
-              href="http://app.aucopier.com/register"
-              className="px-8 py-3 bg-gradient-to-r from-[#a0762f] to-[#dec481] text-white rounded-lg font-semibold hover:shadow-xl transition-all duration-300 hover:scale-105"
+              href="/register"
+              className="px-8 py-3 bg-linear-to-r from-blue-500 to-blue-600 text-white rounded-full font-semibold hover:shadow-xl hover:shadow-blue-500/25 transition-all duration-300 hover:-translate-y-0.5 text-sm"
             >
               Get Started
             </a>
             <a
-              href="http://app.aucopier.com/login"
-              className="px-8 py-3 border-2 border-[#dec481] text-[#dec481] rounded-lg font-semibold hover:bg-[#dec481] hover:text-[#0a1a2f] transition-all duration-300"
+              href="/login"
+              className="px-8 py-3 border border-white/20 text-white rounded-full font-semibold hover:bg-white/10 hover:border-white/40 transition-all duration-300 text-sm"
             >
               Trade Now
             </a>

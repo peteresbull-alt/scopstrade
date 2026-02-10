@@ -1,5 +1,6 @@
 "use client";
 
+import React from "react";
 
 const HowItWorks = () => {
   const steps = [
@@ -32,32 +33,41 @@ const HowItWorks = () => {
   return (
     <section
       id="how-it-works"
-      className="relative bg-[var(--background)] py-16 lg:py-24"
+      className="relative py-16 lg:py-24"
     >
       <div className="mx-auto max-w-7xl px-4 sm:px-6 lg:px-8">
         {/* Section Header */}
         <div className="text-center">
-          <h2 className="text-4xl font-bold tracking-tight text-[var(--foreground)] lg:text-5xl">
+          <p className="text-sm font-semibold uppercase tracking-wider text-[var(--primary)] mb-3">
+            Simple Process
+          </p>
+          <h2 className="text-3xl font-bold tracking-tight lg:text-4xl">
             How it works
           </h2>
-          <p className="mx-auto mt-4 max-w-3xl text-base leading-relaxed text-[var(--foreground-muted)] lg:mt-6 lg:text-lg">
+          <p className="mx-auto mt-4 max-w-2xl text-sm leading-relaxed text-gray-500 dark:text-gray-400 lg:text-base">
             Getting started with copy trading is simple. Follow these four easy
             steps to begin your investment journey today.
           </p>
         </div>
 
-        {/* Steps Grid */}
-        <div className="mt-12 grid grid-cols-1 gap-2 sm:grid-cols-2 lg:mt-16 lg:grid-cols-4">
-          {steps.map((step, index) => (
-            <StepCard key={index} {...step} />
-          ))}
+        {/* Steps Grid with connecting line */}
+        <div className="relative mt-12 lg:mt-16">
+          {/* Connecting line - desktop only */}
+          <div className="absolute top-12 left-0 right-0 hidden lg:block">
+            <div className="mx-auto max-w-3xl h-px bg-linear-to-r from-transparent via-blue-300 dark:via-blue-500/30 to-transparent" />
+          </div>
+
+          <div className="grid grid-cols-1 gap-6 sm:grid-cols-2 lg:grid-cols-4 lg:gap-4">
+            {steps.map((step, index) => (
+              <StepCard key={index} {...step} />
+            ))}
+          </div>
         </div>
       </div>
     </section>
   );
 };
 
-// Step Card Component
 interface StepCardProps {
   number: string;
   title: string;
@@ -65,20 +75,21 @@ interface StepCardProps {
 }
 
 const StepCard = ({ number, title, description }: StepCardProps) => (
-  <div className="step-card group rounded-2xl p-6 lg:p-8">
-    <div className="mb-4 text-5xl font-bold text-[var(--primary)] opacity-40 transition-opacity group-hover:opacity-100 lg:text-6xl">
+  <div className="group relative rounded-2xl border border-gray-200/80 dark:border-white/[0.08] bg-white/60 dark:bg-white/[0.03] backdrop-blur-sm p-6 lg:p-8 transition-all duration-300 hover:-translate-y-1 hover:shadow-xl hover:shadow-blue-500/[0.06] hover:border-[var(--primary)]/30">
+    {/* Step number badge */}
+    <div className="mb-5 flex h-10 w-10 items-center justify-center rounded-xl bg-linear-to-br from-blue-500 to-blue-600 text-sm font-bold text-white shadow-lg shadow-blue-500/25 transition-transform duration-300 group-hover:scale-110">
       {number}
     </div>
-    <h3 className="text-xl font-bold text-[var(--foreground)] lg:text-2xl">
+    <h3 className="text-base font-bold lg:text-lg mb-2">
       {title}
     </h3>
-    <p className="mt-3 text-sm leading-relaxed text-[var(--foreground-muted)] lg:text-base">
+    <p className="text-sm leading-relaxed text-gray-500 dark:text-gray-400">
       {description}
     </p>
   </div>
 );
 
-// Trader Card Component
+// Trader Card Component (kept for compatibility)
 interface TraderCardProps {
   name: string;
   role: string;
@@ -88,22 +99,13 @@ interface TraderCardProps {
 
 const TraderCard = ({ name, role, avatar, status }: TraderCardProps) => (
   <div className="relative flex items-center gap-3 rounded-xl border border-[var(--border)] bg-[var(--background)] p-4 transition-all hover:border-[var(--primary)] dark:border-[rgba(96,165,250,0.2)]">
-    {/* Avatar */}
-    <div className="flex h-10 w-10 flex-shrink-0 items-center justify-center rounded-full bg-gradient-to-br from-[var(--primary)] to-[var(--primary-hover)] text-sm font-bold text-white">
+    <div className="flex h-10 w-10 shrink-0 items-center justify-center rounded-full bg-linear-to-br from-[var(--primary)] to-[var(--primary-hover)] text-sm font-bold text-white">
       {avatar}
     </div>
-
-    {/* Info */}
     <div className="flex-1 min-w-0">
-      <div className="text-sm font-semibold text-[var(--foreground)] truncate">
-        {name}
-      </div>
-      <div className="text-xs text-[var(--foreground-muted)] truncate">
-        {role}
-      </div>
+      <div className="text-sm font-semibold truncate">{name}</div>
+      <div className="text-xs text-[var(--foreground-muted)] truncate">{role}</div>
     </div>
-
-    {/* Status Indicator */}
     {status === "online" && (
       <div className="absolute -right-1 -top-1 flex h-5 w-5 items-center justify-center rounded-full bg-[var(--background)]">
         <div className="h-3 w-3 rounded-full bg-[var(--primary)]">

@@ -1,16 +1,51 @@
 "use client";
 
-import React from "react";
+import React, { useEffect, useState, useRef } from "react";
+
+// Animated counter hook
+const useCountUp = (end: number, duration: number = 2000) => {
+  const [count, setCount] = useState(0);
+  const [started, setStarted] = useState(false);
+  const ref = useRef<HTMLDivElement>(null);
+
+  useEffect(() => {
+    const observer = new IntersectionObserver(
+      ([entry]) => {
+        if (entry.isIntersecting && !started) {
+          setStarted(true);
+        }
+      },
+      { threshold: 0.3 }
+    );
+    if (ref.current) observer.observe(ref.current);
+    return () => observer.disconnect();
+  }, [started]);
+
+  useEffect(() => {
+    if (!started) return;
+    let startTime: number;
+    const animate = (timestamp: number) => {
+      if (!startTime) startTime = timestamp;
+      const progress = Math.min((timestamp - startTime) / duration, 1);
+      const eased = 1 - Math.pow(1 - progress, 3);
+      setCount(Math.floor(eased * end));
+      if (progress < 1) requestAnimationFrame(animate);
+    };
+    requestAnimationFrame(animate);
+  }, [started, end, duration]);
+
+  return { count, ref };
+};
 
 const StatsSection = () => {
   return (
-    <section className="relative bg-white py-16 dark:bg-[var(--background)] lg:py-20">
+    <section className="relative py-16 lg:py-20">
       <div className="mx-auto max-w-7xl px-4 sm:px-6 lg:px-8">
         {/* Globally Regulated Badge */}
-        <div className="mb-12 flex items-center justify-center gap-3 lg:mb-16 lg:gap-4">
-          <div className="flex h-10 w-10 sm:h-12 sm:w-12 items-center justify-center rounded-full bg-[#dbeafe] dark:bg-[#1e3a8a] lg:h-14 lg:w-14">
+        <div className="mb-12 flex items-center justify-center gap-3 lg:mb-16">
+          <div className="flex h-10 w-10 sm:h-12 sm:w-12 items-center justify-center rounded-full bg-blue-100 dark:bg-blue-500/10 lg:h-14 lg:w-14">
             <svg
-              className="h-4 w-4 sm:h-6 sm:w-6 text-[#1e40af] dark:text-[#60a5fa] lg:h-7 lg:w-7"
+              className="h-5 w-5 sm:h-6 sm:w-6 text-blue-600 dark:text-blue-400 lg:h-7 lg:w-7"
               fill="none"
               viewBox="0 0 24 24"
               stroke="currentColor"
@@ -23,50 +58,47 @@ const StatsSection = () => {
               />
             </svg>
           </div>
-          <span className="text-xl lg:text-3xl font-bold tracking-tight  xl:text-4xl">
+          <span className="text-xl font-bold tracking-tight lg:text-3xl xl:text-4xl">
             Globally Regulated
           </span>
         </div>
 
-        {/* Stats Grid with borders */}
-        <div className="mx-auto grid max-w-5xl grid-cols-1 sm:grid-cols-3">
-          <StatCard value="118+" label="Active Traders" position="first" />
-          <StatCard value="10M+" label="Total Volume" position="middle" />
-          <StatCard value="1M+" label="Users" position="last" />
+        {/* Stats Grid */}
+        <div className="mx-auto grid max-w-4xl grid-cols-1 gap-6 sm:grid-cols-3 sm:gap-0">
+          <StatCard value={118} suffix="+" label="Active Traders" />
+          <StatCard value={10} suffix="M+" label="Total Volume" hasBorders />
+          <StatCard value={1} suffix="M+" label="Users" />
         </div>
       </div>
     </section>
   );
 };
 
-// Stat Card Component
 const StatCard = ({
   value,
+  suffix,
   label,
-  position,
+  hasBorders,
 }: {
-  value: string;
+  value: number;
+  suffix: string;
   label: string;
-  position: "first" | "middle" | "last";
+  hasBorders?: boolean;
 }) => {
-  const getBorderClasses = () => {
-    if (position === "first") {
-      return "";
-    }
-    if (position === "middle") {
-      return "";
-    }
-    return "";
-  };
+  const { count, ref } = useCountUp(value, 2000);
 
   return (
     <div
-      className={`flex flex-col items-center justify-center bg-white dark:bg-[var(--surface-elevated)] px-8 py-12 text-center lg:py-14 ${getBorderClasses()}`}
+      ref={ref}
+      className={`flex flex-col items-center justify-center px-8 py-10 text-center lg:py-12 ${
+        hasBorders ? "sm:border-x border-gray-200 dark:border-white/10" : ""
+      }`}
     >
-      <div className="mb-3 text-5xl font-bold leading-none tracking-tight text-[#1e3a8a] dark:text-[#60a5fa] lg:text-6xl">
-        {value}
+      <div className="mb-2 text-4xl font-bold leading-none tracking-tight bg-gradient-to-r from-blue-700 to-blue-500 dark:from-blue-400 dark:to-cyan-400 bg-clip-text text-transparent lg:text-5xl">
+        {count}
+        {suffix}
       </div>
-      <div className="text-base text-[#6b7280] dark:text-[var(--foreground-muted)] lg:text-lg">
+      <div className="text-sm text-gray-500 dark:text-gray-400 lg:text-base">
         {label}
       </div>
     </div>

@@ -10,27 +10,27 @@ const TeamSection = () => {
     {
       name: "Troy Johnson",
       role: "Chief Executive Officer",
-      image: "/team/troy.jpg", // Placeholder - replace with actual image
+      image: "/team/troy.jpg",
     },
     {
       name: "Sarah Chen",
       role: "Chief Technology Officer",
-      image: "/team/sarah.jpg", // Placeholder
+      image: "/team/sarah.jpg",
     },
     {
       name: "Michael Roberts",
       role: "Chief Financial Officer",
-      image: "/team/michael.jpg", // Placeholder
+      image: "/team/michael.jpg",
     },
     {
       name: "Emily Davis",
       role: "Head of Operations",
-      image: "/team/emily.jpg", // Placeholder
+      image: "/team/emily.jpg",
     },
     {
       name: "David Kim",
       role: "Head of Security",
-      image: "/team/david.jpg", // Placeholder
+      image: "/team/david.jpg",
     },
   ];
 
@@ -47,15 +47,21 @@ const TeamSection = () => {
   const currentMember = teamMembers[currentIndex];
 
   return (
-    <section className="relative overflow-hidden bg-[#0a1628] py-16 dark:bg-[#0a1628] lg:py-24">
-      <div className="mx-auto max-w-7xl px-4 sm:px-6 lg:px-8">
+    <section className="relative overflow-hidden bg-[#0a1628] py-16 lg:py-24">
+      {/* Subtle glow */}
+      <div className="absolute top-1/2 left-1/2 -translate-x-1/2 -translate-y-1/2 w-[500px] h-[500px] bg-blue-500/10 rounded-full blur-[150px] pointer-events-none" />
+
+      <div className="relative mx-auto max-w-7xl px-4 sm:px-6 lg:px-8">
         <div className="grid grid-cols-1 items-center gap-12 lg:grid-cols-2 lg:gap-16">
           {/* Left Content */}
           <div>
-            <h2 className="mb-6 text-4xl font-bold text-[var(--primary)] lg:text-5xl">
+            <p className="text-sm font-semibold uppercase tracking-wider text-blue-400 mb-3">
+              Our People
+            </p>
+            <h2 className="mb-6 text-3xl font-bold text-white lg:text-4xl">
               Meet Our Team
             </h2>
-            <p className="text-base leading-relaxed text-gray-300 lg:text-lg">
+            <p className="text-sm leading-relaxed text-gray-400 lg:text-base">
               Our team comprises industry veterans with extensive experience in
               fintech, stock trading, financial management, and cybersecurity.
               Together, we bring unparalleled expertise and a shared commitment
@@ -68,71 +74,41 @@ const TeamSection = () => {
             {/* Navigation Buttons */}
             <button
               onClick={prevSlide}
-              className="absolute left-0 z-10 flex h-12 w-12 items-center justify-center rounded-full border-2 border-white bg-transparent text-white transition-all hover:bg-white hover:text-black"
+              className="absolute left-0 z-10 flex h-10 w-10 items-center justify-center rounded-full border border-white/20 bg-transparent text-white/70 transition-all hover:bg-white/10 hover:text-white hover:border-white/40"
               aria-label="Previous team member"
             >
-              <svg
-                className="h-6 w-6"
-                fill="none"
-                viewBox="0 0 24 24"
-                stroke="currentColor"
-                strokeWidth={2}
-              >
-                <path
-                  strokeLinecap="round"
-                  strokeLinejoin="round"
-                  d="M15 19l-7-7 7-7"
-                />
+              <svg className="h-5 w-5" fill="none" viewBox="0 0 24 24" stroke="currentColor" strokeWidth={2}>
+                <path strokeLinecap="round" strokeLinejoin="round" d="M15 19l-7-7 7-7" />
               </svg>
             </button>
 
             {/* Team Member Card */}
             <div className="flex flex-col items-center text-center">
-              {/* Profile Image with Blue Border */}
               <div className="relative mb-6">
-                <div className="h-64 w-64 overflow-hidden rounded-full border-4 border-[var(--primary)] bg-gray-200">
-                  {/* Placeholder for image - replace with actual Image component when you have images */}
-                  <div className="flex h-full w-full items-center justify-center bg-gradient-to-br from-gray-300 to-gray-400 text-6xl font-bold text-gray-600">
+                <div className="h-48 w-48 overflow-hidden rounded-full border-2 border-blue-500/30 bg-gray-800 lg:h-56 lg:w-56">
+                  <div className="flex h-full w-full items-center justify-center bg-linear-to-br from-blue-900/50 to-blue-800/50 text-5xl font-bold text-blue-300/50">
                     {currentMember.name.charAt(0)}
                   </div>
-                  {/* Uncomment when you have actual images:
-                  <Image
-                    src={currentMember.image}
-                    alt={currentMember.name}
-                    width={256}
-                    height={256}
-                    className="h-full w-full object-cover"
-                  />
-                  */}
                 </div>
+                {/* Glow ring */}
+                <div className="absolute inset-0 rounded-full border border-blue-500/20 blur-sm" />
               </div>
 
-              {/* Name and Role */}
-              <h3 className="mb-2 text-2xl font-bold text-white lg:text-3xl">
+              <h3 className="mb-1 text-xl font-bold text-white lg:text-2xl">
                 {currentMember.name}
               </h3>
-              <p className="text-lg text-[var(--primary)]">
+              <p className="text-sm text-blue-400">
                 {currentMember.role}
               </p>
             </div>
 
             <button
               onClick={nextSlide}
-              className="absolute right-0 z-10 flex h-12 w-12 items-center justify-center rounded-full border-2 border-white bg-transparent text-white transition-all hover:bg-white hover:text-black"
+              className="absolute right-0 z-10 flex h-10 w-10 items-center justify-center rounded-full border border-white/20 bg-transparent text-white/70 transition-all hover:bg-white/10 hover:text-white hover:border-white/40"
               aria-label="Next team member"
             >
-              <svg
-                className="h-6 w-6"
-                fill="none"
-                viewBox="0 0 24 24"
-                stroke="currentColor"
-                strokeWidth={2}
-              >
-                <path
-                  strokeLinecap="round"
-                  strokeLinejoin="round"
-                  d="M9 5l7 7-7 7"
-                />
+              <svg className="h-5 w-5" fill="none" viewBox="0 0 24 24" stroke="currentColor" strokeWidth={2}>
+                <path strokeLinecap="round" strokeLinejoin="round" d="M9 5l7 7-7 7" />
               </svg>
             </button>
           </div>
@@ -144,10 +120,10 @@ const TeamSection = () => {
             <button
               key={index}
               onClick={() => setCurrentIndex(index)}
-              className={`h-2 w-2 rounded-full transition-all ${
+              className={`h-1.5 rounded-full transition-all duration-300 ${
                 index === currentIndex
-                  ? "w-8 bg-[var(--primary)]"
-                  : "bg-gray-600 hover:bg-gray-500"
+                  ? "w-8 bg-blue-500"
+                  : "w-1.5 bg-white/20 hover:bg-white/30"
               }`}
               aria-label={`Go to team member ${index + 1}`}
             />

@@ -29,14 +29,13 @@ const ParticlesBackground = () => {
     const particleCount = 80;
     const connectionDistance = 150;
 
-    // Blue colors for light and dark mode
     const isDark = theme === "dark";
     const particleColor = isDark
-      ? "rgba(96, 165, 250, 0.6)" // Blue-400 for dark mode
-      : "rgba(59, 130, 246, 0.5)"; // Blue-500 for light mode
+      ? "rgba(96, 165, 250, 0.6)"
+      : "rgba(59, 130, 246, 0.5)";
     const connectionColor = isDark
-      ? "rgba(96, 165, 250," // Blue-400 for dark mode
-      : "rgba(59, 130, 246,"; // Blue-500 for light mode
+      ? "rgba(96, 165, 250,"
+      : "rgba(59, 130, 246,";
 
     class Particle {
       x: number;
@@ -130,19 +129,23 @@ const ParticlesBackground = () => {
 };
 
 const HeroSection = () => {
-  // Integration platforms - these rotate on mobile
   const integrations = {
     desktop: ["E-Trade", "WEBULL", "Think or Swim", "Schwab"],
     mobile: ["TradeStation", "Tastytrade", "Ally Invest"],
   };
 
   const [isMobile, setIsMobile] = React.useState(false);
+  const [visible, setVisible] = React.useState(false);
 
   React.useEffect(() => {
     const checkMobile = () => setIsMobile(window.innerWidth < 768);
     checkMobile();
     window.addEventListener("resize", checkMobile);
-    return () => window.removeEventListener("resize", checkMobile);
+    const timer = setTimeout(() => setVisible(true), 100);
+    return () => {
+      window.removeEventListener("resize", checkMobile);
+      clearTimeout(timer);
+    };
   }, []);
 
   const currentIntegrations = isMobile
@@ -150,26 +153,32 @@ const HeroSection = () => {
     : integrations.desktop;
 
   return (
-    <section className="relative min-h-[calc(100vh-80px)] overflow-hidden lg:min-h-[calc(100vh-96px)]">
-      {/* Particles Background */}
+    <section className="relative min-h-[calc(100vh-64px)] overflow-hidden lg:min-h-[calc(100vh-80px)]">
       <ParticlesBackground />
 
-      {/* Optional: Keep dot pattern as subtle overlay or remove it */}
-      {/* <div className="dot-pattern absolute inset-0 pointer-events-none" /> */}
+      {/* Radial gradient glow behind hero */}
+      <div className="absolute top-0 left-1/2 -translate-x-1/2 w-[800px] h-[600px] bg-blue-500/[0.07] dark:bg-blue-500/[0.12] rounded-full blur-[120px] pointer-events-none" />
 
-      <div className="relative z-10 mx-auto max-w-7xl pt-5 px-4">
+      <div
+        className={`relative z-10 mx-auto max-w-7xl pt-8 px-4 transition-all duration-1000 ${
+          visible ? "opacity-100 translate-y-0" : "opacity-0 translate-y-6"
+        }`}
+      >
         {/* Integration Badge */}
         <div className="flex justify-center">
-          <div className="integration-badge inline-flex items-center gap-2 rounded-full px-5 py-2.5 text-[10px] md:text-sm font-medium text-foreground">
-            <span className="text-[var(--foreground-muted)]">
-              Integrates with:
+          <div className="inline-flex items-center gap-2 rounded-full bg-white/60 dark:bg-white/[0.06] backdrop-blur-md border border-gray-200/60 dark:border-white/[0.08] px-4 py-2 text-[10px] md:text-xs font-medium shadow-sm">
+            <span className="flex h-1.5 w-1.5 rounded-full bg-green-500 animate-pulse" />
+            <span className="text-gray-500 dark:text-gray-400">
+              Integrates with
             </span>
             <span className="flex items-center gap-1.5">
               {currentIntegrations.map((platform, index) => (
                 <React.Fragment key={platform}>
-                  <span className="font-semibold">{platform}</span>
+                  <span className="font-semibold text-gray-800 dark:text-white">
+                    {platform}
+                  </span>
                   {index < currentIntegrations.length - 1 && (
-                    <span className="text-[var(--foreground-muted)]">•</span>
+                    <span className="text-gray-300 dark:text-gray-600">/</span>
                   )}
                 </React.Fragment>
               ))}
@@ -178,40 +187,41 @@ const HeroSection = () => {
         </div>
 
         {/* Main Headline */}
-        <div className="mx-auto mt-3 max-w-4xl text-center lg:mt-12">
-          <h1 className="text-[1.5rem] sm:text-[3rem] lg:text-[4rem] font-bold leading-[1.1] tracking-tight text-foreground  lg:leading-[1.05]">
+        <div className="mx-auto mt-6 max-w-4xl text-center lg:mt-12">
+          <h1 className="text-[1.75rem] sm:text-[2.75rem] lg:text-[3.5rem] font-bold leading-[1.1] tracking-tight text-gray-900 dark:text-white lg:leading-[1.08]">
             Copy Futures, Options & Contracts
             <br />
-            with Precision
+            <span className="bg-gradient-to-r from-blue-600 via-blue-500 to-cyan-500 bg-clip-text text-transparent">
+              with Precision
+            </span>
           </h1>
 
-          {/* Subheadline */}
-          <p className="text-[12px] sm:text-base md:text-lg lg:text-[1rem] mx-auto mt-3 max-w-2xl leading-relaxed text-[var(--foreground-muted)] lg:mt-8 ">
-            We empower you to mirror real-time stock and options trades from
-            top-performing traders. Whether you're following tickers, contracts,
-            or strategic options moves, our platform brings precision,
-            flexibility, and transparency—straight to your fingertips
+          <p className="text-[13px] sm:text-base lg:text-lg mx-auto mt-4 max-w-2xl leading-relaxed text-gray-500 dark:text-gray-400 lg:mt-6">
+            Mirror real-time stock and options trades from top-performing
+            traders. Precision, flexibility, and transparency—straight to your
+            fingertips.
           </p>
         </div>
 
         {/* CTA Buttons */}
-        <div className="mt-4 flex flex-col items-center gap-4 sm:flex-row sm:justify-center lg:mt-10">
+        <div className="mt-6 flex flex-col items-center gap-3 sm:flex-row sm:justify-center lg:mt-10">
           <Link
-            href="/login"
-            className="w-full rounded-lg bg-[var(--primary)] px-8 py-2 text-center text-[12px] sm:text-base font-semibold text-white transition-all hover:bg-[var(--primary-hover)] sm:w-auto sm:rounded-full sm:py-3.5 lg:px-10 lg:text-[0.9375rem]"
+            href="/register"
+            className="group w-full sm:w-auto relative overflow-hidden rounded-full bg-[var(--primary)] px-8 py-3 text-center text-sm font-semibold text-white transition-all hover:bg-[var(--primary-hover)] hover:shadow-xl hover:shadow-blue-500/25 hover:-translate-y-0.5 sm:px-10 sm:py-3.5"
           >
-            Start Copying Now
+            <span className="relative z-10">Start Copying Now</span>
+            <span className="absolute inset-0 bg-gradient-to-r from-blue-600 to-blue-500 opacity-0 group-hover:opacity-100 transition-opacity" />
           </Link>
           <Link
             href="/login"
-            className="w-full rounded-lg bg-[var(--primary)] px-8 py-2 text-center text-[12px] sm:text-base font-semibold text-white transition-all hover:bg-[var(--primary-hover)] sm:w-auto sm:rounded-full sm:py-3.5 lg:px-10 lg:text-[0.9375rem]"
+            className="w-full sm:w-auto rounded-full border border-gray-300 dark:border-white/20 bg-white/50 dark:bg-white/[0.04] backdrop-blur-sm px-8 py-3 text-center text-sm font-semibold text-gray-700 dark:text-gray-200 transition-all hover:border-[var(--primary)] hover:text-[var(--primary)] dark:hover:border-[var(--primary)] dark:hover:text-[var(--primary)] hover:-translate-y-0.5 sm:px-10 sm:py-3.5"
           >
-            View expert traders
+            View Expert Traders
           </Link>
         </div>
 
         {/* Network Illustration */}
-        <div className="relative mx-auto mt-4 h-[280px] w-full max-w-xl lg:mt-10 lg:h-[320px]">
+        <div className="relative mx-auto mt-8 h-[280px] w-full max-w-xl lg:mt-14 lg:h-[320px]">
           <HeroMainImage />
         </div>
       </div>
@@ -233,7 +243,6 @@ const StatItem = ({ value, label }: { value: string; label: string }) => (
 
 // Network Illustration Component
 const HeroMainImage = () => {
-  
   return (
     <div className="relative h-full w-full">
       {/* Hero Main Image -- Cluade, Leave this I will be adding an image here */}
@@ -264,14 +273,11 @@ const AvatarNode = ({
   skinTone = "light",
   bald,
 }: AvatarNodeProps) => {
-  // Skin colors
   const skinColors: Record<string, string> = {
     light: "#F5D0C5",
     medium: "#D4A574",
     dark: "#8B6914",
   };
-
-  // Hair colors
   const hairColors: Record<string, string> = {
     brown: "#4A3728",
     dark: "#1a1a1a",
@@ -282,8 +288,6 @@ const AvatarNode = ({
 
   const skin = skinColors[skinTone] || skinColors.light;
   const hair = bald ? skin : hairColors[hairColor] || hairColors.brown;
-
-  // Primary node (center) has glasses
   const showGlasses = primary || hasGlasses;
 
   return (
@@ -295,21 +299,10 @@ const AvatarNode = ({
       }`}
       style={{ width: size, height: size }}
     >
-      <svg
-        width={size * 0.7}
-        height={size * 0.7}
-        viewBox="0 0 40 40"
-        fill="none"
-      >
-        {/* Face */}
+      <svg width={size * 0.7} height={size * 0.7} viewBox="0 0 40 40" fill="none">
         <circle cx="20" cy="18" r="10" fill={skin} />
-
-        {/* Hair */}
         {!bald && gender === "male" && (
-          <path
-            d="M10 14 Q10 8, 20 8 Q30 8, 30 14 Q30 10, 20 10 Q10 10, 10 14"
-            fill={hair}
-          />
+          <path d="M10 14 Q10 8, 20 8 Q30 8, 30 14 Q30 10, 20 10 Q10 10, 10 14" fill={hair} />
         )}
         {!bald && gender === "female" && (
           <>
@@ -318,70 +311,27 @@ const AvatarNode = ({
             <ellipse cx="28" cy="16" rx="3" ry="8" fill={hair} />
           </>
         )}
-
-        {/* Eyes */}
         <circle cx="16" cy="17" r="1.5" fill="#1a1a1a" />
         <circle cx="24" cy="17" r="1.5" fill="#1a1a1a" />
-
-        {/* Glasses */}
         {showGlasses && (
           <>
-            <circle
-              cx="16"
-              cy="17"
-              r="4"
-              fill="none"
-              stroke="#1a1a1a"
-              strokeWidth="1"
-            />
-            <circle
-              cx="24"
-              cy="17"
-              r="4"
-              fill="none"
-              stroke="#1a1a1a"
-              strokeWidth="1"
-            />
-            <line
-              x1="20"
-              y1="17"
-              x2="20"
-              y2="17"
-              stroke="#1a1a1a"
-              strokeWidth="1"
-            />
+            <circle cx="16" cy="17" r="4" fill="none" stroke="#1a1a1a" strokeWidth="1" />
+            <circle cx="24" cy="17" r="4" fill="none" stroke="#1a1a1a" strokeWidth="1" />
+            <line x1="20" y1="17" x2="20" y2="17" stroke="#1a1a1a" strokeWidth="1" />
           </>
         )}
-
-        {/* Beard */}
         {hasBeard && gender === "male" && (
           <ellipse cx="20" cy="24" rx="6" ry="4" fill={hair} opacity="0.7" />
         )}
-
-        {/* Body/Shirt - Using blue for primary, secondary blue for others */}
-        <path
-          d="M8 38 Q8 30, 20 28 Q32 30, 32 38"
-          fill={primary ? "#3b82f6" : "#1e3a5f"}
-        />
+        <path d="M8 38 Q8 30, 20 28 Q32 30, 32 38" fill={primary ? "#3b82f6" : "#1e3a5f"} />
       </svg>
     </div>
   );
 };
 
-// Globe Icon Component
 const GlobeIcon = ({ className }: { className?: string }) => (
-  <svg
-    className={className}
-    fill="none"
-    viewBox="0 0 24 24"
-    stroke="currentColor"
-    strokeWidth={2}
-  >
-    <path
-      strokeLinecap="round"
-      strokeLinejoin="round"
-      d="M3.055 11H5a2 2 0 012 2v1a2 2 0 002 2 2 2 0 012 2v2.945M8 3.935V5.5A2.5 2.5 0 0010.5 8h.5a2 2 0 012 2 2 2 0 104 0 2 2 0 012-2h1.064M15 20.488V18a2 2 0 012-2h3.064M21 12a9 9 0 11-18 0 9 9 0 0118 0z"
-    />
+  <svg className={className} fill="none" viewBox="0 0 24 24" stroke="currentColor" strokeWidth={2}>
+    <path strokeLinecap="round" strokeLinejoin="round" d="M3.055 11H5a2 2 0 012 2v1a2 2 0 002 2 2 2 0 012 2v2.945M8 3.935V5.5A2.5 2.5 0 0010.5 8h.5a2 2 0 012 2 2 2 0 104 0 2 2 0 012-2h1.064M15 20.488V18a2 2 0 012-2h3.064M21 12a9 9 0 11-18 0 9 9 0 0118 0z" />
   </svg>
 );
 
