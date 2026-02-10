@@ -279,10 +279,10 @@ export default function NotificationsPage() {
         <div className="mb-8">
           <div className="flex flex-col sm:flex-row justify-between items-start sm:items-center gap-4 mb-4">
             <div>
-              <h1 className="text-3xl lg:text-4xl font-bold text-gray-900 dark:text-white mb-2">
+              <h1 className="text-lg sm:text-xl font-bold text-gray-900 dark:text-white mb-1">
                 Notifications
               </h1>
-              <p className="text-gray-600 dark:text-gray-400">
+              <p className="text-xs sm:text-sm text-gray-600 dark:text-gray-400">
                 Stay updated with your account activities and market alerts
               </p>
             </div>
@@ -396,7 +396,7 @@ export default function NotificationsPage() {
                       <div className="flex-1 min-w-0">
                         <div className="flex items-start justify-between gap-3 mb-2">
                           <h3
-                            className={`text-lg font-semibold ${
+                            className={`text-sm font-semibold ${
                               notification.read
                                 ? "text-gray-700 dark:text-gray-300"
                                 : "text-gray-900 dark:text-white"
@@ -503,7 +503,7 @@ export default function NotificationsPage() {
                       </div>
                       <div className="flex-1">
                         <div className="flex items-start justify-between gap-3 mb-2">
-                          <h2 className="text-2xl sm:text-3xl font-bold text-gray-900 dark:text-white pr-12">
+                          <h2 className="text-base sm:text-sm font-bold text-gray-900 dark:text-white pr-12">
                             {selectedNotification.title}
                           </h2>
                         </div>
@@ -557,7 +557,7 @@ export default function NotificationsPage() {
                           <div className="text-xs text-gray-600 dark:text-gray-400 mb-1">
                             Stock
                           </div>
-                          <div className="text-lg font-bold text-gray-900 dark:text-white">
+                          <div className="text-sm font-bold text-gray-900 dark:text-white">
                             {selectedNotification.metadata.stock}
                           </div>
                         </div>
@@ -567,7 +567,7 @@ export default function NotificationsPage() {
                           <div className="text-xs text-gray-600 dark:text-gray-400 mb-1">
                             Amount
                           </div>
-                          <div className="text-lg font-bold text-gray-900 dark:text-white">
+                          <div className="text-sm font-bold text-gray-900 dark:text-white">
                             {selectedNotification.metadata.amount}
                           </div>
                         </div>
@@ -577,7 +577,7 @@ export default function NotificationsPage() {
                           <div className="text-xs text-gray-600 dark:text-gray-400 mb-1">
                             Status
                           </div>
-                          <div className="text-lg font-bold text-gray-900 dark:text-white">
+                          <div className="text-sm font-bold text-gray-900 dark:text-white">
                             {selectedNotification.metadata.status}
                           </div>
                         </div>
@@ -587,7 +587,7 @@ export default function NotificationsPage() {
 
                   {/* Full Details */}
                   <div className="mb-6">
-                    <h3 className="text-lg font-semibold text-gray-900 dark:text-white mb-3">
+                    <h3 className="text-sm font-semibold text-gray-900 dark:text-white mb-3">
                       Details
                     </h3>
                     <div className="text-gray-700 dark:text-gray-300 leading-relaxed space-y-4">

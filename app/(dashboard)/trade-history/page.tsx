@@ -91,7 +91,7 @@ export default function TradeHistoryPage() {
         {/* Header */}
         <div className="flex flex-col sm:flex-row items-start sm:items-center justify-between gap-4 mb-6">
           <div>
-            <h1 className="text-2xl sm:text-3xl font-bold text-gray-900 dark:text-white">
+            <h1 className="text-lg sm:text-xl font-bold text-gray-900 dark:text-white">
               Trade History
             </h1>
             <p className="text-sm text-gray-500 dark:text-gray-400 mt-1">
@@ -185,7 +185,7 @@ export default function TradeHistoryPage() {
             <div className="w-16 h-16 rounded-full bg-gray-100 dark:bg-white/5 flex items-center justify-center mb-4">
               <TrendingUp className="w-8 h-8 text-gray-400 dark:text-gray-500" />
             </div>
-            <h3 className="text-lg font-semibold text-gray-900 dark:text-white mb-2">
+            <h3 className="text-sm font-semibold text-gray-900 dark:text-white mb-2">
               No trades yet
             </h3>
             <p className="text-sm text-gray-500 dark:text-gray-400 text-center max-w-md mb-6">

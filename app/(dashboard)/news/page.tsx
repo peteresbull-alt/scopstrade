@@ -97,7 +97,7 @@ export default function NewsPage() {
       <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-8">
         {/* Header */}
         <div className="mb-8">
-          <h1 className="text-3xl lg:text-4xl font-bold text-gray-900 dark:text-white mb-2">
+          <h1 className="text-lg sm:text-xl font-bold text-gray-900 dark:text-white mb-2">
             Market News
           </h1>
           <p className="text-gray-600 dark:text-gray-400">
@@ -202,7 +202,7 @@ export default function NewsPage() {
 
                 {/* Content */}
                 <div className="p-5">
-                  <h3 className="text-lg font-semibold text-gray-900 dark:text-white mb-2 line-clamp-2">
+                  <h3 className="text-sm font-semibold text-gray-900 dark:text-white mb-2 line-clamp-2">
                     {news.title}
                   </h3>
                   <p className="text-gray-600 dark:text-gray-400 text-sm mb-4 line-clamp-3">
@@ -278,7 +278,7 @@ export default function NewsPage() {
 
                   {/* Modal Content */}
                   <div className="p-6 sm:p-8">
-                    <h2 className="text-2xl sm:text-3xl font-bold text-gray-900 dark:text-white mb-4">
+                    <h2 className="text-base sm:text-lg font-bold text-gray-900 dark:text-white mb-4">
                       {selectedNews.title}
                     </h2>
 

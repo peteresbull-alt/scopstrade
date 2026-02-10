@@ -409,7 +409,7 @@ export default function SettingsPage() {
         {/* Header */}
         <div className="mb-8 flex flex-col sm:flex-row items-start sm:items-center justify-between gap-4">
           <div>
-            <h1 className="text-3xl font-bold text-gray-900 dark:text-white mb-2">
+            <h1 className="text-lg sm:text-xl font-bold text-gray-900 dark:text-white mb-2">
               Account Settings
             </h1>
             <p className="text-gray-600 dark:text-gray-400">
@@ -495,7 +495,7 @@ export default function SettingsPage() {
             animate={{ opacity: 1, y: 0 }}
             exit={{ opacity: 0, y: -20 }}
           >
-            <h2 className="text-2xl font-bold text-gray-900 dark:text-white mb-4">
+            <h2 className="text-sm sm:text-base font-bold text-gray-900 dark:text-white mb-4">
               Account Information
             </h2>
 
@@ -507,7 +507,7 @@ export default function SettingsPage() {
                     <div className="text-sm text-gray-600 dark:text-gray-400 mb-1">
                       Full Name
                     </div>
-                    <div className="text-lg font-semibold text-gray-900 dark:text-white">
+                    <div className="text-sm font-semibold text-gray-900 dark:text-white">
                       {userSettings.profile.first_name}{" "}
                       {userSettings.profile.last_name || ""}
                     </div>
@@ -528,7 +528,7 @@ export default function SettingsPage() {
                     <div className="text-sm text-gray-600 dark:text-gray-400 mb-1">
                       Email
                     </div>
-                    <div className="text-lg font-semibold text-gray-900 dark:text-white truncate">
+                    <div className="text-sm font-semibold text-gray-900 dark:text-white truncate">
                       {userSettings.profile.email}
                     </div>
                   </div>
@@ -542,7 +542,7 @@ export default function SettingsPage() {
                     <div className="text-sm text-gray-600 dark:text-gray-400 mb-1">
                       Phone
                     </div>
-                    <div className="text-lg font-semibold text-gray-900 dark:text-white">
+                    <div className="text-sm font-semibold text-gray-900 dark:text-white">
                       {userSettings.profile.phone || "Not provided"}
                     </div>
                   </div>
@@ -562,7 +562,7 @@ export default function SettingsPage() {
                     <div className="text-sm text-gray-600 dark:text-gray-400 mb-1">
                       Country
                     </div>
-                    <div className="text-lg font-semibold text-gray-900 dark:text-white">
+                    <div className="text-sm font-semibold text-gray-900 dark:text-white">
                       {userSettings.profile.country || "Not provided"}
                     </div>
                   </div>
@@ -602,7 +602,7 @@ export default function SettingsPage() {
                     <div className="text-sm text-gray-600 dark:text-gray-400 mb-1">
                       Trading ID
                     </div>
-                    <div className="text-lg font-semibold text-gray-900 dark:text-white font-mono truncate">
+                    <div className="text-sm font-semibold text-gray-900 dark:text-white font-mono truncate">
                       {userSettings.profile.account_id || "Not assigned"}
                     </div>
                   </div>
@@ -619,7 +619,7 @@ export default function SettingsPage() {
             animate={{ opacity: 1, y: 0 }}
             exit={{ opacity: 0, y: -20 }}
           >
-            <h2 className="text-2xl font-bold text-gray-900 dark:text-white mb-2">
+            <h2 className="text-sm sm:text-base font-bold text-gray-900 dark:text-white mb-2">
               Security Settings
             </h2>
             <p className="text-sm text-gray-600 dark:text-gray-400 mb-4">
@@ -634,7 +634,7 @@ export default function SettingsPage() {
                     <div className="text-sm text-gray-600 dark:text-gray-400 mb-1">
                       Login Email
                     </div>
-                    <div className="text-lg font-semibold text-gray-900 dark:text-white truncate">
+                    <div className="text-sm font-semibold text-gray-900 dark:text-white truncate">
                       {userSettings.profile.email}
                     </div>
                   </div>
@@ -648,7 +648,7 @@ export default function SettingsPage() {
                     <div className="text-sm text-gray-600 dark:text-gray-400 mb-1">
                       Password
                     </div>
-                    <div className="text-lg font-semibold text-gray-900 dark:text-white">
+                    <div className="text-sm font-semibold text-gray-900 dark:text-white">
                       ••••••••
                     </div>
                   </div>
@@ -669,7 +669,7 @@ export default function SettingsPage() {
                       <Shield className="w-5 h-5 text-blue-500" />
                     </div>
                     <div className="flex-1">
-                      <div className="text-lg font-semibold text-gray-900 dark:text-white mb-1">
+                      <div className="text-sm font-semibold text-gray-900 dark:text-white mb-1">
                         Two-Factor Authentication (2FA)
                       </div>
                       <div className="text-sm text-gray-600 dark:text-gray-400">
@@ -745,7 +745,7 @@ export default function SettingsPage() {
             animate={{ opacity: 1, y: 0 }}
             exit={{ opacity: 0, y: -20 }}
           >
-            <h2 className="text-2xl font-bold text-gray-900 dark:text-white mb-2">
+            <h2 className="text-sm sm:text-base font-bold text-gray-900 dark:text-white mb-2">
               Withdrawal Addresses
             </h2>
             <p className="text-sm text-gray-600 dark:text-gray-400 mb-4">
@@ -760,7 +760,7 @@ export default function SettingsPage() {
                     <div className="text-sm text-gray-600 dark:text-gray-400 mb-1">
                       Bitcoin Address (BTC)
                     </div>
-                    <div className="text-base font-semibold text-gray-900 dark:text-white break-all">
+                    <div className="text-sm font-semibold text-gray-900 dark:text-white break-all">
                       {userSettings.payment_methods.btc.address ||
                         "No address added"}
                     </div>
@@ -784,7 +784,7 @@ export default function SettingsPage() {
                     <div className="text-sm text-gray-600 dark:text-gray-400 mb-1">
                       Ethereum Address (ETH)
                     </div>
-                    <div className="text-base font-semibold text-gray-900 dark:text-white break-all">
+                    <div className="text-sm font-semibold text-gray-900 dark:text-white break-all">
                       {userSettings.payment_methods.eth.address ||
                         "No address added"}
                     </div>
@@ -813,7 +813,7 @@ export default function SettingsPage() {
                     <div className="text-sm text-gray-600 dark:text-gray-400 mb-1">
                       USDT Address
                     </div>
-                    <div className="text-base font-semibold text-gray-900 dark:text-white break-all">
+                    <div className="text-sm font-semibold text-gray-900 dark:text-white break-all">
                       {userSettings.payment_methods.usdt.address ||
                         "No address added"}
                     </div>
@@ -897,7 +897,7 @@ export default function SettingsPage() {
               {/* Disable 2FA Modal */}
               {editModal.type === "disable2fa" && (
                 <>
-                  <h3 className="text-lg font-bold text-gray-900 dark:text-white mb-4">
+                  <h3 className="text-base font-bold text-gray-900 dark:text-white mb-4">
                     Disable Two-Factor Authentication
                   </h3>
                   <div className="mb-4 p-3 bg-amber-500/10 border border-amber-500/20 rounded-lg">
@@ -952,7 +952,7 @@ export default function SettingsPage() {
               {/* Name Edit Modal */}
               {editModal.type === "name" && (
                 <>
-                  <h3 className="text-lg font-bold text-gray-900 dark:text-white mb-4">
+                  <h3 className="text-base font-bold text-gray-900 dark:text-white mb-4">
                     Edit Name
                   </h3>
                   <div className="space-y-3">
@@ -1018,7 +1018,7 @@ export default function SettingsPage() {
               {/* Phone Edit Modal */}
               {editModal.type === "phone" && (
                 <>
-                  <h3 className="text-lg font-bold text-gray-900 dark:text-white mb-4">
+                  <h3 className="text-base font-bold text-gray-900 dark:text-white mb-4">
                     Edit Phone Number
                   </h3>
                   <div>
@@ -1063,7 +1063,7 @@ export default function SettingsPage() {
               {/* Country Edit Modal */}
               {editModal.type === "country" && (
                 <>
-                  <h3 className="text-lg font-bold text-gray-900 dark:text-white mb-4">
+                  <h3 className="text-base font-bold text-gray-900 dark:text-white mb-4">
                     Edit Country
                   </h3>
                   <div>
@@ -1108,7 +1108,7 @@ export default function SettingsPage() {
               {/* Password Edit Modal */}
               {editModal.type === "password" && (
                 <>
-                  <h3 className="text-lg font-bold text-gray-900 dark:text-white mb-4">
+                  <h3 className="text-base font-bold text-gray-900 dark:text-white mb-4">
                     Change Password
                   </h3>
                   <div className="space-y-3">
@@ -1190,7 +1190,7 @@ export default function SettingsPage() {
               {/* Crypto Address Edit Modals (BTC & ETH) */}
               {(editModal.type === "btc" || editModal.type === "eth") && (
                 <>
-                  <h3 className="text-lg font-bold text-gray-900 dark:text-white mb-4">
+                  <h3 className="text-base font-bold text-gray-900 dark:text-white mb-4">
                     {editModal.type === "btc" &&
                       `${
                         userSettings?.payment_methods.btc.has_method
@@ -1251,7 +1251,7 @@ export default function SettingsPage() {
               {/* USDT Address Edit Modal with Network Selection */}
               {editModal.type === "usdt" && (
                 <>
-                  <h3 className="text-lg font-bold text-gray-900 dark:text-white mb-4">
+                  <h3 className="text-base font-bold text-gray-900 dark:text-white mb-4">
                     {userSettings?.payment_methods.usdt.has_method
                       ? "Edit"
                       : "Add"}{" "}

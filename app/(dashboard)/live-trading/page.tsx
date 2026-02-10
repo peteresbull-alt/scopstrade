@@ -76,7 +76,7 @@ export default function LiveTradingPage() {
       <div className="max-w-[1600px] mx-auto px-4 sm:px-6 lg:px-8 py-8">
         {/* Header */}
         <div className="mb-8">
-          <h1 className="text-3xl lg:text-4xl font-bold text-gray-900 dark:text-white mb-2">
+          <h1 className="text-lg sm:text-xl font-bold text-gray-900 dark:text-white mb-2">
             Live Trading Session
           </h1>
           <div className="flex flex-col sm:flex-row sm:items-center gap-2 sm:gap-4">
@@ -110,7 +110,7 @@ export default function LiveTradingPage() {
         <div className="mb-8 flex justify-center">
           <motion.button
             onClick={() => setShowModal(true)}
-            className="px-8 py-4 bg-gradient-to-r from-blue-500 to-blue-600 hover:from-blue-600 hover:to-blue-700 text-white text-lg font-bold rounded-xl shadow-lg hover:shadow-xl transition-all duration-300 flex items-center gap-3"
+            className="px-8 py-4 bg-gradient-to-r from-blue-500 to-blue-600 hover:from-blue-600 hover:to-blue-700 text-white text-sm font-bold rounded-xl shadow-lg hover:shadow-xl transition-all duration-300 flex items-center gap-3"
             animate={{
               y: [0, -10, 0],
             }}
@@ -175,7 +175,7 @@ export default function LiveTradingPage() {
                       <Shield className="w-6 h-6 text-blue-500" />
                     </div>
                     <div>
-                      <h2 className="text-2xl font-bold text-gray-900 dark:text-white">
+                      <h2 className="text-base sm:text-lg font-bold text-gray-900 dark:text-white">
                         Live Trading Requirements
                       </h2>
                       <p className="text-sm text-gray-500 dark:text-gray-400 mt-1">
@@ -199,7 +199,7 @@ export default function LiveTradingPage() {
 
                   {/* Requirements */}
                   <div className="space-y-4">
-                    <h3 className="text-lg font-semibold text-gray-900 dark:text-white flex items-center gap-2">
+                    <h3 className="text-sm font-semibold text-gray-900 dark:text-white flex items-center gap-2">
                       <DollarSign className="w-5 h-5 text-blue-500" />
                       Minimum Account Requirements
                     </h3>
@@ -261,7 +261,7 @@ export default function LiveTradingPage() {
 
                   {/* Why These Requirements */}
                   <div className="space-y-3">
-                    <h3 className="text-lg font-semibold text-gray-900 dark:text-white">
+                    <h3 className="text-sm font-semibold text-gray-900 dark:text-white">
                       Why These Requirements?
                     </h3>
                     <div className="text-sm text-gray-600 dark:text-gray-400 space-y-2">
@@ -292,7 +292,7 @@ export default function LiveTradingPage() {
 
                   {/* Next Steps */}
                   <div className="bg-gradient-to-r from-blue-50 to-blue-100 dark:from-blue-500/10 dark:to-blue-600/10 rounded-xl p-4 border border-blue-200 dark:border-blue-500/20">
-                    <h3 className="text-lg font-semibold text-gray-900 dark:text-white mb-2">
+                    <h3 className="text-sm font-semibold text-gray-900 dark:text-white mb-2">
                       Ready to Get Started?
                     </h3>
                     <p className="text-sm text-gray-700 dark:text-gray-300 mb-4">

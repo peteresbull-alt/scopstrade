@@ -338,7 +338,7 @@ export default function ExploreTraders() {
                       {/* Gain */}
                       <div className="text-left">
                         <div
-                          className={`text-sm md:text-lg font-bold mb-1 ${
+                          className={`text-xs sm:text-sm font-bold mb-1 ${
                             parseFloat(trader.gain) >= 0
                               ? "text-emerald-500 dark:text-emerald-400"
                               : "text-red-500 dark:text-red-400"
@@ -401,7 +401,7 @@ export default function ExploreTraders() {
                   }
                   className="w-full flex items-center justify-between p-6 text-left hover:bg-gray-50 dark:hover:bg-[#1e3a5f]/50 transition-all"
                 >
-                  <span className="text-lg font-semibold text-gray-900 dark:text-white pr-4">
+                  <span className="text-sm font-semibold text-gray-900 dark:text-white pr-4">
                     {faq.question}
                   </span>
                   {openFaqIndex === index ? (

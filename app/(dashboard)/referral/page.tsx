@@ -243,7 +243,7 @@ export default function ReferralPage() {
             <div className="p-3 bg-white/20 rounded-full">
               <Gift className="w-6 h-6 sm:w-8 sm:h-8" />
             </div>
-            <h1 className="text-2xl sm:text-3xl font-bold">Reward Center</h1>
+            <h1 className="text-sm sm:text-base font-bold">Reward Center</h1>
           </div>
 
           <p className="text-blue-50 dark:text-blue-100 text-sm sm:text-base mb-6">
@@ -261,7 +261,7 @@ export default function ReferralPage() {
                 <Users className="w-5 h-5 text-blue-200" />
                 <p className="text-sm text-blue-100">Total Referrals</p>
               </div>
-              <p className="text-3xl font-bold">
+              <p className="text-xl sm:text-2xl font-bold">
                 {referralData?.total_referrals || 0}
               </p>
             </div>
@@ -272,7 +272,7 @@ export default function ReferralPage() {
                 <DollarSign className="w-5 h-5 text-blue-200" />
                 <p className="text-sm text-blue-100">Total Earned</p>
               </div>
-              <p className="text-3xl font-bold">
+              <p className="text-xl sm:text-2xl font-bold">
                 $
                 {parseFloat(referralData?.total_earnings || "0").toLocaleString(
                   undefined,
@@ -295,7 +295,7 @@ export default function ReferralPage() {
         >
           <div className="flex items-center gap-3 mb-6">
             <Share2 className="w-6 h-6 text-blue-500" />
-            <h2 className="text-xl sm:text-2xl font-bold text-gray-900 dark:text-white">
+            <h2 className="text-sm sm:text-base font-bold text-gray-900 dark:text-white">
               Your Referral Link
             </h2>
           </div>
@@ -333,7 +333,7 @@ export default function ReferralPage() {
                     Your Referral Code
                   </p>
                   {referralData?.referral_code ? (
-                    <p className="text-2xl font-bold text-blue-600 dark:text-blue-400 font-mono break-all">
+                    <p className="text-sm font-bold text-blue-600 dark:text-blue-400 font-mono break-all">
                       {referralData.referral_code}
                     </p>
                   ) : (
@@ -390,7 +390,7 @@ export default function ReferralPage() {
           transition={{ duration: 0.5, delay: 0.2 }}
           className="bg-white dark:bg-[#1a2744] border border-gray-200 dark:border-white/10 rounded-xl sm:rounded-2xl p-5 sm:p-8"
         >
-          <h2 className="text-xl sm:text-2xl font-bold text-gray-900 dark:text-white mb-6">
+          <h2 className="text-sm sm:text-base font-bold text-gray-900 dark:text-white mb-6">
             Complete tasks & earn!!!
           </h2>
 
@@ -407,7 +407,7 @@ export default function ReferralPage() {
                   <Users className="w-6 h-6 text-blue-600 dark:text-blue-400" />
                 </div>
                 <div className="flex-1">
-                  <h3 className="text-lg sm:text-xl font-bold text-yellow-600 dark:text-yellow-500 mb-2">
+                  <h3 className="text-sm sm:text-base font-bold text-yellow-600 dark:text-yellow-500 mb-2">
                     Refer a Friend
                   </h3>
                   <p className="text-sm sm:text-base text-gray-600 dark:text-gray-400 mb-4">
@@ -433,7 +433,7 @@ export default function ReferralPage() {
                   <DollarSign className="w-6 h-6 text-blue-600 dark:text-blue-400" />
                 </div>
                 <div className="flex-1">
-                  <h3 className="text-lg sm:text-xl font-bold text-yellow-600 dark:text-yellow-500 mb-2">
+                  <h3 className="text-sm sm:text-base font-bold text-yellow-600 dark:text-yellow-500 mb-2">
                     +10%
                   </h3>
                   <p className="text-sm sm:text-base text-gray-600 dark:text-gray-400">
@@ -461,7 +461,7 @@ export default function ReferralPage() {
           transition={{ duration: 0.5, delay: 0.3 }}
           className="bg-white dark:bg-[#1a2744] border border-gray-200 dark:border-white/10 rounded-xl sm:rounded-2xl p-5 sm:p-8"
         >
-          <h2 className="text-xl sm:text-2xl font-bold text-gray-900 dark:text-white mb-6">
+          <h2 className="text-sm sm:text-base font-bold text-gray-900 dark:text-white mb-6">
             Your Referrals ({referrals.length})
           </h2>
 
@@ -578,7 +578,7 @@ export default function ReferralPage() {
                         <p className="text-xs text-gray-500 dark:text-gray-400">
                           Earned
                         </p>
-                        <p className="text-lg font-bold text-blue-600 dark:text-blue-400">
+                        <p className="text-sm font-bold text-blue-600 dark:text-blue-400">
                           $
                           {parseFloat(referral.bonus_earned).toLocaleString(
                             undefined,
@@ -623,7 +623,7 @@ export default function ReferralPage() {
             {/* Modal Content */}
             <div className="space-y-6">
               <div>
-                <h2 className="text-2xl sm:text-3xl font-bold text-gray-900 dark:text-white mb-3">
+                <h2 className="text-base sm:text-lg font-bold text-gray-900 dark:text-white mb-3">
                   Invite Friends & Earn Rewards
                 </h2>
                 <p className="text-gray-600 dark:text-gray-400 text-sm sm:text-base">

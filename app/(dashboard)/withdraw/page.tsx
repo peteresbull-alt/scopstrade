@@ -149,7 +149,7 @@ export default function WithdrawPage() {
         animate={{ opacity: 1, y: 0 }}
         transition={{ duration: 0.4 }}
       >
-        <h1 className="text-2xl font-bold text-gray-900 dark:text-white mb-1">Withdrawal</h1>
+        <h1 className="text-lg sm:text-xl font-bold text-gray-900 dark:text-white mb-1">Withdrawal</h1>
         <p className="text-sm text-gray-500 dark:text-gray-400">Withdraw funds from your account</p>
       </motion.div>
 
@@ -185,7 +185,7 @@ export default function WithdrawPage() {
             {/* Balance Display */}
             <div>
               <p className="text-xs text-gray-500 dark:text-gray-400 mb-1">Available Balance</p>
-              <p className="text-3xl font-bold text-gray-900 dark:text-white">
+              <p className="text-xl sm:text-2xl font-bold text-gray-900 dark:text-white">
                 {profile ? profile.formatted_balance : "$0.00"}
               </p>
             </div>

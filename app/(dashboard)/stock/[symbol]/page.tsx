@@ -260,7 +260,7 @@ export default function StockDetailPage() {
                 )}
               </div>
               <div>
-                <h1 className="text-2xl md:text-3xl font-bold text-gray-900 dark:text-white">
+                <h1 className="text-lg sm:text-xl font-bold text-gray-900 dark:text-white">
                   {stock.symbol}
                 </h1>
                 <p className="text-gray-600 dark:text-gray-400">{stock.name}</p>
@@ -271,7 +271,7 @@ export default function StockDetailPage() {
             </div>
 
             <div className="text-left md:text-right">
-              <div className="text-3xl md:text-4xl font-bold text-gray-900 dark:text-white mb-2">
+              <div className="text-xl sm:text-2xl font-bold text-gray-900 dark:text-white mb-2">
                 $
                 {parseFloat(stock.price).toLocaleString(undefined, {
                   minimumFractionDigits: 2,
@@ -347,7 +347,7 @@ export default function StockDetailPage() {
                 <p className="text-sm text-gray-600 dark:text-gray-400 mb-1">
                   Total Invested
                 </p>
-                <p className="text-lg font-semibold text-gray-900 dark:text-white">
+                <p className="text-sm font-semibold text-gray-900 dark:text-white">
                   $
                   {parseFloat(userPosition.total_invested).toLocaleString(undefined, {
                     minimumFractionDigits: 2,
@@ -359,7 +359,7 @@ export default function StockDetailPage() {
                 <p className="text-sm text-gray-600 dark:text-gray-400 mb-1">
                   Current Value
                 </p>
-                <p className="text-lg font-semibold text-gray-900 dark:text-white">
+                <p className="text-sm font-semibold text-gray-900 dark:text-white">
                   $
                   {parseFloat(userPosition.current_value).toLocaleString(undefined, {
                     minimumFractionDigits: 2,
@@ -371,7 +371,7 @@ export default function StockDetailPage() {
                 <p className="text-sm text-gray-600 dark:text-gray-400 mb-1">
                   Avg. Buy Price
                 </p>
-                <p className="text-lg font-semibold text-gray-900 dark:text-white">
+                <p className="text-sm font-semibold text-gray-900 dark:text-white">
                   $
                   {parseFloat(userPosition.average_buy_price).toLocaleString(
                     undefined,
@@ -447,7 +447,7 @@ export default function StockDetailPage() {
                 onClick={(e) => e.stopPropagation()}
               >
                 <div className="flex items-center justify-between mb-6">
-                  <h2 className="text-2xl font-bold text-gray-900 dark:text-white">
+                  <h2 className="text-sm sm:text-base font-bold text-gray-900 dark:text-white">
                     Buy {stock.symbol}
                   </h2>
                   <button
@@ -567,7 +567,7 @@ export default function StockDetailPage() {
                 onClick={(e) => e.stopPropagation()}
               >
                 <div className="flex items-center justify-between mb-6">
-                  <h2 className="text-2xl font-bold text-gray-900 dark:text-white">
+                  <h2 className="text-sm sm:text-base font-bold text-gray-900 dark:text-white">
                     Sell {stock.symbol}
                   </h2>
                   <button

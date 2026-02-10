@@ -78,7 +78,7 @@ export default function StockListPage() {
       <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-8">
         {/* Header */}
         <div className="mb-8">
-          <h1 className="text-3xl lg:text-4xl font-bold text-gray-900 dark:text-white mb-2">
+          <h1 className="text-lg sm:text-xl font-bold text-gray-900 dark:text-white mb-2">
             Stock Market
           </h1>
           <p className="text-gray-600 dark:text-gray-400">
@@ -159,7 +159,7 @@ export default function StockListPage() {
                     )}
                   </div>
                   <div className="flex-1 min-w-0">
-                    <h3 className="text-lg font-bold text-gray-900 dark:text-white truncate">
+                    <h3 className="text-sm font-bold text-gray-900 dark:text-white truncate">
                       {stock.symbol}
                     </h3>
                     <p className="text-sm text-gray-600 dark:text-gray-400 truncate">
@@ -177,7 +177,7 @@ export default function StockListPage() {
 
                 {/* Stock Price */}
                 <div className="mb-3">
-                  <div className="text-2xl font-bold text-gray-900 dark:text-white">
+                  <div className="text-sm font-bold text-gray-900 dark:text-white">
                     $
                     {parseFloat(stock.price).toLocaleString(undefined, {
                       minimumFractionDigits: 2,

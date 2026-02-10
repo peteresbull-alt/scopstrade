@@ -87,7 +87,7 @@ export default function ProfilePage() {
         {/* Header */}
         <div className="mb-8 flex flex-col sm:flex-row items-start sm:items-center justify-between gap-4">
           <div>
-            <h1 className="text-3xl lg:text-4xl font-bold text-gray-900 dark:text-white mb-2">
+            <h1 className="text-lg sm:text-xl font-bold text-gray-900 dark:text-white mb-2">
               My Profile
             </h1>
             <p className="text-gray-600 dark:text-gray-400">
@@ -116,7 +116,7 @@ export default function ProfilePage() {
                 Account Balance
               </span>
             </div>
-            <p className="text-3xl font-bold">{profile.formatted_balance}</p>
+            <p className="text-xl sm:text-2xl font-bold">{profile.formatted_balance}</p>
           </motion.div>
 
           <motion.div
@@ -129,7 +129,7 @@ export default function ProfilePage() {
               <TrendingUp className="w-5 h-5" />
               <span className="text-sm font-medium opacity-90">Total Profit</span>
             </div>
-            <p className="text-3xl font-bold">
+            <p className="text-xl sm:text-2xl font-bold">
               ${parseFloat(profile.profit).toLocaleString(undefined, {
                 minimumFractionDigits: 2,
                 maximumFractionDigits: 2,
@@ -153,7 +153,7 @@ export default function ProfilePage() {
                 Account Status
               </span>
             </div>
-            <p className="text-3xl font-bold">
+            <p className="text-xl sm:text-2xl font-bold">
               {profile.is_verified ? "Verified" : "Pending"}
             </p>
           </motion.div>

@@ -158,7 +158,7 @@ export default function SignalsPage() {
         <div className="mb-8">
           <div className="flex flex-col lg:flex-row justify-between items-start lg:items-center gap-4 mb-6">
             <div>
-              <h1 className="text-3xl lg:text-4xl font-bold text-gray-900 dark:text-white mb-2">
+              <h1 className="text-lg sm:text-xl font-bold text-gray-900 dark:text-white mb-1">
                 Trading Signals
               </h1>
               <p className="text-gray-600 dark:text-gray-400">
@@ -171,7 +171,7 @@ export default function SignalsPage() {
               <div className="text-xs md:text-sm text-blue-500 dark:text-blue-400 mb-1">
                 Wallet Balance
               </div>
-              <div className="text-xl md:text-2xl font-bold text-gray-900 dark:text-white">
+              <div className="text-base sm:text-sm font-bold text-gray-900 dark:text-white">
                 ${parseFloat(userBalance).toLocaleString(undefined, {
                   minimumFractionDigits: 2,
                   maximumFractionDigits: 2,
@@ -246,7 +246,7 @@ export default function SignalsPage() {
                         </span>
                       </div>
                       <div className="text-right">
-                        <div className="text-2xl font-bold text-gray-900 dark:text-white">
+                        <div className="text-sm sm:text-base font-bold text-gray-900 dark:text-white">
                           ${parseFloat(signal.price).toFixed(2)}
                         </div>
                         <div className="text-xs text-gray-500 dark:text-gray-400">
@@ -261,7 +261,7 @@ export default function SignalsPage() {
                         <div className="text-xs text-gray-500 dark:text-gray-400 mb-1">
                           Strength
                         </div>
-                        <div className="text-lg font-bold text-blue-500">
+                        <div className="text-sm font-bold text-blue-500">
                           {parseFloat(signal.signal_strength).toFixed(0)}%
                         </div>
                       </div>
@@ -269,7 +269,7 @@ export default function SignalsPage() {
                         <div className="text-xs text-gray-500 dark:text-gray-400 mb-1">
                           Action
                         </div>
-                        <div className={`text-lg font-bold ${getActionColor(signal.action)}`}>
+                        <div className={`text-sm font-bold ${getActionColor(signal.action)}`}>
                           {signal.action}
                         </div>
                       </div>
@@ -339,7 +339,7 @@ export default function SignalsPage() {
                           </p>
                         </div>
                         <div className="text-right">
-                          <div className="text-lg font-bold text-gray-900 dark:text-white">
+                          <div className="text-sm font-bold text-gray-900 dark:text-white">
                             ${parseFloat(purchase.amount_paid).toFixed(2)}
                           </div>
                           <div className="text-xs text-gray-500 dark:text-gray-400">
@@ -415,7 +415,7 @@ export default function SignalsPage() {
                   <X className="w-5 h-5" />
                 </button>
 
-                <h2 className="text-2xl font-bold text-gray-900 dark:text-white mb-6">
+                <h2 className="text-sm sm:text-base font-bold text-gray-900 dark:text-white mb-6">
                   Purchase Signal
                 </h2>
 
@@ -504,7 +504,7 @@ export default function SignalsPage() {
                 <div className="w-16 h-16 bg-green-500/10 rounded-full flex items-center justify-center mx-auto mb-4">
                   <CheckCircle className="w-10 h-10 text-green-500" />
                 </div>
-                <h2 className="text-2xl font-bold text-gray-900 dark:text-white mb-2">
+                <h2 className="text-sm sm:text-base font-bold text-gray-900 dark:text-white mb-2">
                   Purchase Successful!
                 </h2>
                 <p className="text-gray-600 dark:text-gray-400 mb-6">

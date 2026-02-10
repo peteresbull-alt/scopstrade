@@ -157,10 +157,10 @@ const HeroSection = () => {
       {/* Optional: Keep dot pattern as subtle overlay or remove it */}
       {/* <div className="dot-pattern absolute inset-0 pointer-events-none" /> */}
 
-      <div className="relative z-10 mx-auto max-w-7xl pt-10 px-4">
+      <div className="relative z-10 mx-auto max-w-7xl pt-5 px-4">
         {/* Integration Badge */}
         <div className="flex justify-center">
-          <div className="integration-badge inline-flex items-center gap-2 rounded-full px-5 py-2.5 text-[10px] md:text-sm font-medium text-[var(--foreground)]">
+          <div className="integration-badge inline-flex items-center gap-2 rounded-full px-5 py-2.5 text-[10px] md:text-sm font-medium text-foreground">
             <span className="text-[var(--foreground-muted)]">
               Integrates with:
             </span>
@@ -178,17 +178,15 @@ const HeroSection = () => {
         </div>
 
         {/* Main Headline */}
-        <div className="mx-auto mt-8 max-w-4xl text-center lg:mt-12">
-          <h1 className="text-[2rem] sm:text-[3rem] lg:text-[4rem] font-bold leading-[1.1] tracking-tight text-[var(--foreground)]  lg:leading-[1.05]">
-            Copy Futures,
-           
-            Options & Contracts
+        <div className="mx-auto mt-3 max-w-4xl text-center lg:mt-12">
+          <h1 className="text-[1.5rem] sm:text-[3rem] lg:text-[4rem] font-bold leading-[1.1] tracking-tight text-foreground  lg:leading-[1.05]">
+            Copy Futures, Options & Contracts
             <br />
             with Precision
           </h1>
 
           {/* Subheadline */}
-          <p className="text-[14px] sm:text-base md:text-lg lg:text-[1rem] mx-auto mt-6 max-w-2xl leading-relaxed text-[var(--foreground-muted)] lg:mt-8 ">
+          <p className="text-[12px] sm:text-base md:text-lg lg:text-[1rem] mx-auto mt-3 max-w-2xl leading-relaxed text-[var(--foreground-muted)] lg:mt-8 ">
             We empower you to mirror real-time stock and options trades from
             top-performing traders. Whether you're following tickers, contracts,
             or strategic options moves, our platform brings precision,
@@ -197,24 +195,24 @@ const HeroSection = () => {
         </div>
 
         {/* CTA Buttons */}
-        <div className="mt-8 flex flex-col items-center gap-4 sm:flex-row sm:justify-center lg:mt-10">
+        <div className="mt-4 flex flex-col items-center gap-4 sm:flex-row sm:justify-center lg:mt-10">
           <Link
             href="#"
-            className="w-full rounded-lg bg-[var(--primary)] px-8 py-4 text-center text-base font-semibold text-white transition-all hover:bg-[var(--primary-hover)] sm:w-auto sm:rounded-full sm:py-3.5 lg:px-10 lg:text-[0.9375rem]"
+            className="w-full rounded-lg bg-[var(--primary)] px-8 py-2 text-center text-[12px] sm:text-base font-semibold text-white transition-all hover:bg-[var(--primary-hover)] sm:w-auto sm:rounded-full sm:py-3.5 lg:px-10 lg:text-[0.9375rem]"
           >
             Start Copying Now
           </Link>
           <Link
             href="#"
-            className="w-full rounded-lg bg-[var(--primary)] px-8 py-4 text-center text-base font-semibold text-white transition-all hover:bg-[var(--primary-hover)] sm:w-auto sm:rounded-full sm:py-3.5 lg:px-10 lg:text-[0.9375rem]"
+            className="w-full rounded-lg bg-[var(--primary)] px-8 py-2 text-center text-[12px] sm:text-base font-semibold text-white transition-all hover:bg-[var(--primary-hover)] sm:w-auto sm:rounded-full sm:py-3.5 lg:px-10 lg:text-[0.9375rem]"
           >
             View expert traders
           </Link>
         </div>
 
         {/* Network Illustration */}
-        <div className="relative mx-auto mt-12 h-[280px] w-full max-w-xl lg:mt-16 lg:h-[320px]">
-          <NetworkIllustration />
+        <div className="relative mx-auto mt-4 h-[280px] w-full max-w-xl lg:mt-10 lg:h-[320px]">
+          <HeroMainImage />
         </div>
       </div>
     </section>
@@ -224,7 +222,7 @@ const HeroSection = () => {
 // Stat Item Component
 const StatItem = ({ value, label }: { value: string; label: string }) => (
   <div className="text-center">
-    <div className="text-3xl font-bold text-[var(--foreground)] lg:text-4xl">
+    <div className="text-3xl font-bold text-foreground lg:text-4xl">
       {value}
     </div>
     <div className="mt-1 text-sm text-[var(--foreground-muted)] lg:text-base">
@@ -234,88 +232,12 @@ const StatItem = ({ value, label }: { value: string; label: string }) => (
 );
 
 // Network Illustration Component
-const NetworkIllustration = () => {
-  // Avatar positions for the network - arranged in a hexagonal/connected pattern
-  const avatars = [
-    { x: "50%", y: "50%", size: 64, primary: true }, // Center
-    { x: "25%", y: "30%", size: 48, gender: "male", hasBeard: true },
-    { x: "75%", y: "30%", size: 48, gender: "female", hairColor: "dark" },
-    { x: "15%", y: "55%", size: 44, gender: "male", skinTone: "dark" },
-    { x: "85%", y: "55%", size: 44, gender: "female", hairColor: "blonde" },
-    { x: "30%", y: "75%", size: 48, gender: "male", hasGlasses: true },
-    { x: "70%", y: "75%", size: 48, gender: "female", hairColor: "red" },
-    { x: "50%", y: "15%", size: 44, gender: "male", bald: true },
-    { x: "10%", y: "35%", size: 40, gender: "female" },
-    { x: "90%", y: "35%", size: 40, gender: "male", hasBeard: true },
-    { x: "20%", y: "85%", size: 36, gender: "female", skinTone: "dark" },
-    { x: "80%", y: "85%", size: 36, gender: "male" },
-    { x: "40%", y: "20%", size: 40, gender: "female", hasGlasses: true },
-    { x: "60%", y: "20%", size: 40, gender: "male", hairColor: "gray" },
-  ];
-
-  // Connection lines between nodes
-  const connections = [
-    { from: 0, to: 1 },
-    { from: 0, to: 2 },
-    { from: 0, to: 3 },
-    { from: 0, to: 4 },
-    { from: 0, to: 5 },
-    { from: 0, to: 6 },
-    { from: 1, to: 7 },
-    { from: 1, to: 8 },
-    { from: 2, to: 7 },
-    { from: 2, to: 9 },
-    { from: 3, to: 8 },
-    { from: 3, to: 10 },
-    { from: 4, to: 9 },
-    { from: 4, to: 11 },
-    { from: 5, to: 10 },
-    { from: 6, to: 11 },
-    { from: 1, to: 12 },
-    { from: 2, to: 13 },
-  ];
-
+const HeroMainImage = () => {
+  
   return (
     <div className="relative h-full w-full">
-      {/* Connection Lines */}
-      <svg className="absolute inset-0 h-full w-full" style={{ zIndex: 0 }}>
-        {connections.map((conn, i) => (
-          <line
-            key={i}
-            x1={avatars[conn.from].x}
-            y1={avatars[conn.from].y}
-            x2={avatars[conn.to].x}
-            y2={avatars[conn.to].y}
-            stroke="var(--border)"
-            strokeWidth="1"
-            className="dark:stroke-[rgba(96,165,250,0.2)]"
-          />
-        ))}
-      </svg>
-
-      {/* Avatar Nodes */}
-      {avatars.map((avatar, i) => (
-        <div
-          key={i}
-          className="absolute -translate-x-1/2 -translate-y-1/2"
-          style={{
-            left: avatar.x,
-            top: avatar.y,
-            zIndex: avatar.primary ? 10 : 5,
-          }}
-        >
-          <AvatarNode
-            size={avatar.size}
-            primary={avatar.primary}
-            gender={avatar.gender}
-            hasBeard={avatar.hasBeard}
-            hasGlasses={avatar.hasGlasses}
-            hairColor={avatar.hairColor}
-            skinTone={avatar.skinTone}
-            bald={avatar.bald}
-          />
-        </div>
-      ))}
+      {/* Hero Main Image -- Cluade, Leave this I will be adding an image here */}
+      <div className=""></div>
     </div>
   );
 };

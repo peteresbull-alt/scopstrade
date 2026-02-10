@@ -340,7 +340,7 @@ export default function TraderProfilePage() {
               unoptimized
             />
             <div className="min-w-0 flex-1">
-              <h1 className="text-xl sm:text-2xl font-bold truncate text-gray-900 dark:text-white">
+              <h1 className="text-base sm:text-lg font-bold truncate text-gray-900 dark:text-white">
                 {trader.name}
               </h1>
               <p className="text-gray-500 dark:text-gray-400 text-xs sm:text-sm truncate">
@@ -428,7 +428,7 @@ export default function TraderProfilePage() {
             {/* Key Metrics */}
             <div className="lg:col-span-3 grid grid-cols-2 sm:grid-cols-4 gap-4 sm:gap-6">
               <div className="bg-white dark:bg-[#1a2744] border border-gray-200 dark:border-white/10 rounded-xl p-4 sm:p-6 flex flex-col items-center justify-center">
-                <div className="text-xl sm:text-2xl font-bold mb-2 text-gray-900 dark:text-white">
+                <div className="text-base sm:text-lg font-bold mb-2 text-gray-900 dark:text-white">
                   $
                   {parseFloat(trader.min_account_threshold).toLocaleString(
                     undefined,
@@ -445,7 +445,7 @@ export default function TraderProfilePage() {
 
               <div className="bg-white dark:bg-[#1a2744] border border-gray-200 dark:border-white/10 rounded-xl p-4 sm:p-6 flex flex-col items-center justify-center">
                 <div
-                  className={`text-xl sm:text-2xl font-bold mb-2 ${
+                  className={`text-base sm:text-lg font-bold mb-2 ${
                     parseFloat(trader.gain) >= 0
                       ? "text-emerald-500 dark:text-emerald-400"
                       : "text-red-500 dark:text-red-400"
@@ -479,7 +479,7 @@ export default function TraderProfilePage() {
               </div>
 
               <div className="bg-white dark:bg-[#1a2744] border border-gray-200 dark:border-white/10 rounded-xl p-4 sm:p-6 flex flex-col items-center justify-center">
-                <div className="text-xl sm:text-2xl font-bold mb-2 text-gray-900 dark:text-white">
+                <div className="text-base sm:text-lg font-bold mb-2 text-gray-900 dark:text-white">
                   {trader.copiers.toLocaleString()}
                 </div>
                 <div className="text-gray-500 dark:text-gray-400 text-xs sm:text-sm font-medium">
@@ -491,7 +491,7 @@ export default function TraderProfilePage() {
             {/* Wins vs Losses Pie Chart */}
             <div className="bg-white dark:bg-[#1a2744] border border-gray-200 dark:border-white/10 rounded-xl p-4 sm:p-6 col-span-1 lg:col-span-2">
               <div className="flex flex-col sm:flex-row items-start sm:items-center justify-between gap-3 mb-4">
-                <h2 className="text-lg sm:text-xl font-bold text-gray-900 dark:text-white">Wins vs Losses</h2>
+                <h2 className="text-sm sm:text-base font-bold text-gray-900 dark:text-white">Wins vs Losses</h2>
               </div>
 
               {trader.total_wins + trader.total_losses > 0 ? (
@@ -545,7 +545,7 @@ export default function TraderProfilePage() {
               {/* Win/Loss Summary */}
               <div className="grid grid-cols-2 gap-4 mt-6">
                 <div className="text-center p-3 bg-green-500/10 rounded-lg">
-                  <div className="text-2xl font-bold text-green-500">
+                  <div className="text-base font-bold text-green-500">
                     {trader.total_wins}
                   </div>
                   <div className="text-xs text-gray-500 dark:text-gray-400">
@@ -553,7 +553,7 @@ export default function TraderProfilePage() {
                   </div>
                 </div>
                 <div className="text-center p-3 bg-red-500/10 rounded-lg">
-                  <div className="text-2xl font-bold text-red-500">
+                  <div className="text-base font-bold text-red-500">
                     {trader.total_losses}
                   </div>
                   <div className="text-xs text-gray-500 dark:text-gray-400">
@@ -565,12 +565,12 @@ export default function TraderProfilePage() {
 
             {/* About Section */}
             <div className="bg-white dark:bg-[#1a2744] flex justify-center items-center flex-col gap-6 border border-gray-200 dark:border-white/10 rounded-xl p-4 sm:p-6">
-              <h2 className="text-lg sm:text-xl font-bold mb-4 sm:mb-6 text-center text-gray-900 dark:text-white">
+              <h2 className="text-sm sm:text-base font-bold mb-4 sm:mb-6 text-center text-gray-900 dark:text-white">
                 About {trader.name}
               </h2>
               <div className="grid grid-cols-1 sm:grid-cols-2 gap-4 sm:gap-8 sm:gap-y-10">
                 <div className="text-center">
-                  <div className="text-lg sm:text-xl font-bold mb-1 text-gray-900 dark:text-white">
+                  <div className="text-sm sm:text-base font-bold mb-1 text-gray-900 dark:text-white">
                     {trader.subscribers}
                   </div>
                   <div className="text-gray-500 dark:text-gray-400 text-xs sm:text-sm">
@@ -578,7 +578,7 @@ export default function TraderProfilePage() {
                   </div>
                 </div>
                 <div className="text-center">
-                  <div className="text-lg sm:text-xl font-bold mb-1 text-gray-900 dark:text-white">
+                  <div className="text-sm sm:text-base font-bold mb-1 text-gray-900 dark:text-white">
                     {trader.current_positions}
                   </div>
                   <div className="text-gray-500 dark:text-gray-400 text-xs sm:text-sm">
@@ -586,7 +586,7 @@ export default function TraderProfilePage() {
                   </div>
                 </div>
                 <div className="text-center">
-                  <div className="text-lg sm:text-xl font-bold mb-1 text-gray-900 dark:text-white">
+                  <div className="text-sm sm:text-base font-bold mb-1 text-gray-900 dark:text-white">
                     {trader.trades}
                   </div>
                   <div className="text-gray-500 dark:text-gray-400 text-xs sm:text-sm">
@@ -642,7 +642,7 @@ export default function TraderProfilePage() {
                     {s.title}
                   </h3>
                   <div
-                    className={`text-xl sm:text-2xl font-bold mb-1 ${
+                    className={`text-base sm:text-lg font-bold mb-1 ${
                       s.highlight ? s.highlight : "text-gray-900 dark:text-white"
                     }`}
                   >
@@ -661,12 +661,12 @@ export default function TraderProfilePage() {
           <div className="space-y-4 sm:space-y-6">
             {/* Trading Stats */}
             <div className="bg-white dark:bg-[#1a2744] border border-gray-200 dark:border-white/10 rounded-xl p-4 sm:p-6">
-              <h2 className="text-lg sm:text-xl font-bold mb-4 text-gray-900 dark:text-white">Trading</h2>
+              <h2 className="text-sm sm:text-base font-bold mb-4 text-gray-900 dark:text-white">Trading</h2>
               <div className="space-y-4 sm:space-y-6">
                 <div>
                   <div className="flex flex-col gap-3 mb-2">
                     <div>
-                      <span className="text-xl sm:text-2xl font-bold text-gray-900 dark:text-white">
+                      <span className="text-base sm:text-lg font-bold text-gray-900 dark:text-white">
                         {trader.total_trades_12m}
                       </span>
                       <p className="text-gray-500 dark:text-gray-400 text-xs sm:text-sm mt-1">
