@@ -18,6 +18,7 @@ import { useTheme } from "next-themes";
 import Link from "next/link";
 import { PulseLoader } from "react-spinners";
 import { BACKEND_URL } from "@/lib/constants";
+import { apiFetch } from "@/lib/api";
 import { useRouter, useSearchParams } from "next/navigation";
 import { Checkbox } from "@/components/ui/checkbox";
 
@@ -127,8 +128,8 @@ function RegisterPageContent() {
     }
 
     try {
-      const response = await fetch(
-        `${BACKEND_URL}/referral/validate/?code=${code}`,
+      const response = await apiFetch(
+        `/referral/validate/?code=${code}`,
       );
       const data = await response.json();
 
@@ -192,9 +193,8 @@ function RegisterPageContent() {
         country_calling_code: countryCallingCode,
       };
 
-      const res = await fetch(`${BACKEND_URL}/register/`, {
+      const res = await apiFetch("/register/", {
         method: "POST",
-        headers: { "Content-Type": "application/json" },
         body: JSON.stringify(payload),
       });
 
@@ -214,12 +214,10 @@ function RegisterPageContent() {
         throw new Error(errorMessage);
       }
 
-      // ✅ Registration successful - NO email verification needed
-      setMessage("✅ Registration successful! Redirecting...");
+      // Registration successful - cookie is set by backend
+      setMessage("Registration successful! Redirecting...");
 
-      // Save token and user data
       if (typeof window !== "undefined") {
-        localStorage.setItem("authToken", result.token);
         if (result.user?.country_calling_code) {
           localStorage.setItem(
             "country_calling_code",
@@ -229,7 +227,7 @@ function RegisterPageContent() {
         localStorage.removeItem("referral_code");
       }
 
-      // ✅ Redirect directly to onboarding (skip email verification entirely)
+      // Redirect directly to onboarding
       setTimeout(() => router.push("/onboarding"), 1500);
     } catch (error: unknown) {
       let errorMessage = "Something went wrong. Please try again.";
@@ -237,7 +235,7 @@ function RegisterPageContent() {
         errorMessage = error.message;
       }
 
-      setMessage(`❌ ${errorMessage}`);
+      setMessage(`Error: ${errorMessage}`);
     } finally {
       setLoading(false);
     }
@@ -258,7 +256,7 @@ function RegisterPageContent() {
   };
 
   return (
-    <div className="min-h-screen flex flex-col md:flex-row gap-10 bg-white dark:bg-gradient-to-br dark:from-[#0a1628] dark:via-[#0d1b2a] dark:to-[#1b263b] text-black dark:text-white transition-colors duration-300">
+    <div className="min-h-screen flex flex-col lg:flex-row gap-10 bg-white dark:bg-gradient-to-br dark:from-[#0a1628] dark:via-[#0d1b2a] dark:to-[#1b263b] text-black dark:text-white transition-colors duration-300">
       {/* Left side: Register Form */}
       <div className="flex-1 flex items-center justify-center px-8 py-8 md:py-16 bg-white dark:bg-transparent">
         <motion.div
@@ -616,7 +614,7 @@ function RegisterPageContent() {
             {message && (
               <p
                 className={`text-center text-sm ${
-                  message.startsWith("✅") ? "text-green-500" : "text-red-500"
+                  message.startsWith("Registration") ? "text-green-500" : "text-red-500"
                 }`}
               >
                 {message}

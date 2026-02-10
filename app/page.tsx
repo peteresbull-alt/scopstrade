@@ -4,6 +4,7 @@ import FeaturesSection from "@/components/site/FeaturesSection";
 import Footer from "@/components/site/Footer";
 import HeroSection from "@/components/site/HeroSection";
 import HowItWorks from "@/components/site/HowItWorks";
+import LiquidityProvidersSection from "@/components/site/LiquidityProvidersSection";
 import Navbar from "@/components/site/Navbar";
 import StatsSection from "@/components/site/StatsSection";
 import TeamSection from "@/components/site/TeamSection";
@@ -29,6 +30,7 @@ export default function Home() {
         <TeamSection />
         <TrustSection />
         <CTASection />
+        <LiquidityProvidersSection /> 
         <Footer />
       </main>
     </>

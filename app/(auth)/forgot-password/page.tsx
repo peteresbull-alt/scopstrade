@@ -9,7 +9,7 @@ import { motion } from "framer-motion";
 import { ArrowLeft, Mail } from "lucide-react";
 import { Button } from "@/components/ui/button";
 import Link from "next/link";
-import { BACKEND_URL } from "@/lib/constants";
+import { apiFetch } from "@/lib/api";
 import { toast } from "sonner";
 import { PulseLoader } from "react-spinners";
 
@@ -38,9 +38,8 @@ export default function ForgotPasswordPage() {
     setLoading(true);
 
     try {
-      const response = await fetch(`${BACKEND_URL}/password-reset/request/`, {
+      const response = await apiFetch("/password-reset/request/", {
         method: "POST",
-        headers: { "Content-Type": "application/json" },
         body: JSON.stringify({ email: data.email }),
       });
 

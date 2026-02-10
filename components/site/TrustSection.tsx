@@ -30,39 +30,6 @@ const TrustSection = () => {
   return (
     <section className="relative py-16 lg:py-24">
       <div className="mx-auto max-w-7xl px-4 sm:px-6 lg:px-8">
-        {/* Section Header */}
-        <div className="mb-12 text-center lg:mb-16">
-          <h2 className="text-4xl font-bold tracking-tight lg:text-5xl">
-            Your funds are held in top-tier institutions
-          </h2>
-        </div>
-
-        {/* Logos with subtle container */}
-        <div className="mb-12 overflow-hidden rounded-2xl border border-[var(--border)] bg-[var(--surface)] p-8 shadow-sm lg:mb-16 lg:p-12">
-          <div className="flex flex-wrap items-center justify-center gap-8 lg:gap-16">
-            <div className="transform text-2xl font-serif font-semibold transition-all hover:scale-105 lg:text-3xl">
-              J.P.Morgan
-            </div>
-            <div className="flex h-12 w-12 transform items-center justify-center rounded-lg bg-[#1a6847] text-white shadow-sm transition-all hover:scale-105 hover:shadow-md lg:h-16 lg:w-16">
-              <span className="text-xl font-bold lg:text-2xl">UBS</span>
-            </div>
-            <div className="transform text-2xl font-bold transition-all hover:scale-105 lg:text-3xl">
-              <div className="flex items-center gap-2">
-                <div className="h-10 w-10 border-4 border-[#0018a8] lg:h-12 lg:w-12" />
-                <span className="text-[#0018a8] dark:text-blue-400">
-                  Deutsche Bank
-                </span>
-              </div>
-            </div>
-            <div className="transform text-2xl font-serif italic transition-all hover:scale-105 lg:text-3xl">
-              Coutts
-            </div>
-            <div className="transform text-xl font-semibold transition-all hover:scale-105 lg:text-2xl">
-              J. SAFRA SARASIN
-            </div>
-          </div>
-        </div>
-
         {/* Trust Badges Grid */}
         <div className="grid grid-cols-1 gap-6 sm:grid-cols-2 lg:grid-cols-4 lg:gap-8">
           {trustBadges.map((badge, index) => (

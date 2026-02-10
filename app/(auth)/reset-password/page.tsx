@@ -10,7 +10,7 @@ import { Eye, EyeOff, CheckCircle } from "lucide-react";
 import { Button } from "@/components/ui/button";
 import Link from "next/link";
 import { useRouter, useSearchParams } from "next/navigation";
-import { BACKEND_URL } from "@/lib/constants";
+import { apiFetch } from "@/lib/api";
 import { toast } from "sonner";
 import { PulseLoader } from "react-spinners";
 
@@ -65,14 +65,10 @@ function ResetPasswordContent() {
       }
 
       try {
-        const response = await fetch(
-          `${BACKEND_URL}/password-reset/validate/`,
-          {
-            method: "POST",
-            headers: { "Content-Type": "application/json" },
-            body: JSON.stringify({ uid, token }),
-          },
-        );
+        const response = await apiFetch("/password-reset/validate/", {
+          method: "POST",
+          body: JSON.stringify({ uid, token }),
+        });
 
         const result = await response.json();
 
@@ -104,9 +100,8 @@ function ResetPasswordContent() {
     setLoading(true);
 
     try {
-      const response = await fetch(`${BACKEND_URL}/password-reset/confirm/`, {
+      const response = await apiFetch("/password-reset/confirm/", {
         method: "POST",
-        headers: { "Content-Type": "application/json" },
         body: JSON.stringify({
           uid,
           token,
@@ -238,26 +233,18 @@ function ResetPasswordContent() {
         className="w-full max-w-md space-y-6"
       >
         {/* Logo */}
-        <Link
-          href="/"
-          className="hidden dark:flex text-2xl md:text-4xl font-extrabold justify-center"
-        >
+        <Link href="/" className="flex items-center gap-0">
           <Image
-            alt="logo"
-            src={"/logo_light.png"}
-            className="h-50"
+            src={"/logo_dark.png"}
+            className="block dark:hidden w-50"
+            alt=""
             width={1000}
             height={250}
           />
-        </Link>
-        <Link
-          href="/"
-          className="flex dark:hidden text-2xl md:text-4xl font-extrabold justify-center"
-        >
           <Image
-            alt="logo"
-            src={"/logo_dark.png"}
-            className="h-50"
+            src={"/logo_light.png"}
+            className="hidden dark:block w-50"
+            alt=""
             width={1000}
             height={250}
           />

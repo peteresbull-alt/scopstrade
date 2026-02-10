@@ -10,7 +10,7 @@ import { Eye, EyeOff, Sun, Moon, ArrowLeft } from "lucide-react";
 import { Button } from "@/components/ui/button";
 import { useTheme } from "next-themes";
 import Link from "next/link";
-import { BACKEND_URL } from "@/lib/constants";
+import { apiFetch } from "@/lib/api";
 import { toast } from "sonner";
 import { useRouter } from "next/navigation";
 import { PulseLoader } from "react-spinners";
@@ -50,22 +50,29 @@ export default function LoginPage() {
     try {
       setLoading(true);
 
-      const response = await fetch(`${BACKEND_URL}/login/`, {
+      const response = await apiFetch("/login/", {
         method: "POST",
-        headers: { "Content-Type": "application/json" },
         body: JSON.stringify(newData),
       });
 
       const result = await response.json();
 
       if (!response.ok) {
+        // Handle email verification required
+        if (result?.requires_verification) {
+          toast.info("Please verify your email first");
+          setTimeout(() => {
+            router.push(`/verify-email?email=${encodeURIComponent(data.email)}`);
+          }, 1000);
+          return;
+        }
         const backendError =
           result?.error || "Something went wrong. Please try again.";
         toast.error(backendError);
         return;
       }
 
-      // ✅ Check ONLY for 2FA (no email verification)
+      // Check for 2FA
       if (result?.requires_2fa) {
         toast.info("2FA code sent to your email");
         setTimeout(() => {
@@ -74,10 +81,15 @@ export default function LoginPage() {
         return;
       }
 
-      // ✅ Normal login - redirect to portfolio
-      localStorage.setItem("authToken", result.token);
-      toast.success("✅ Login successful");
-      router.push("/portfolio");
+      // Normal login - cookie is set by backend
+      toast.success("Login successful");
+
+      // Redirect based on KYC status
+      if (result?.user?.has_submitted_kyc) {
+        router.push("/portfolio");
+      } else {
+        router.push("/kyc");
+      }
     } catch (error) {
       console.error(error);
       toast.error("Network error. Please try again.");
@@ -89,7 +101,7 @@ export default function LoginPage() {
   useEffect(() => setMounted(true), []);
 
   return (
-    <div className="min-h-screen flex flex-col md:flex-row gap-10 bg-white dark:bg-gradient-to-br dark:from-[#0a1628] dark:via-[#0d1b2a] dark:to-[#1b263b] text-black dark:text-white transition-colors duration-300">
+    <div className="min-h-screen flex flex-col lg:flex-row gap-10 bg-white dark:bg-gradient-to-br dark:from-[#0a1628] dark:via-[#0d1b2a] dark:to-[#1b263b] text-black dark:text-white transition-colors duration-300">
       {/* Left side: Login Form */}
       <div className="flex-1 flex items-center justify-center px-8 py-6 bg-white dark:bg-transparent">
         <motion.div

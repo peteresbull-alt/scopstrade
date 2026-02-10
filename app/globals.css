@@ -5,8 +5,8 @@
 @custom-variant dark (&:is(.dark *));
 
 /* 
-  BLUE THEME - NO GREEN COLORS ANYWHERE
-  All accent colors are explicitly blue (#3b82f6 and variants)
+  BLUE THEME - EXACT Sidebar Colors
+  Using from-[#1e3a5f] to-[#0f1f3a] gradient
 */
 
 :root {
@@ -15,11 +15,11 @@
   --foreground-muted: #6b7280;
 
   /* Brand colors - PURE BLUE THEME */
-  --primary: #3b82f6;           /* Blue-500 - Main blue */
-  --primary-hover: #2563eb;     /* Blue-600 - Darker blue */
-  --primary-dark: #1e3a8a;      /* Blue-900 - Very dark blue */
-  --secondary: #1e3a8a;         /* Blue-900 */
-  --secondary-hover: #1e40af;   /* Blue-800 */
+  --primary: #3b82f6;
+  --primary-hover: #2563eb;
+  --primary-dark: #1e3a8a;
+  --secondary: #1e3a8a;
+  --secondary-hover: #1e40af;
 
   /* Surface colors */
   --surface: #ffffff;
@@ -54,7 +54,7 @@
   --ring: oklch(0.708 0 0);
   --chart-1: oklch(0.646 0.222 41.116);
   --chart-2: oklch(0.6 0.118 184.704);
-  --chart-3: oklch(0.398 0.07 227.392);
+  --chart-3: oklch(0.398 0 0.07 227.392);
   --chart-4: oklch(0.828 0.189 84.429);
   --chart-5: oklch(0.769 0.188 70.08);
   --sidebar: oklch(0.985 0 0);
@@ -68,23 +68,23 @@
 }
 
 .dark {
-  /* Dark mode colors */
-  --background: #0a1628;
-  --background-rgb: 10, 22, 40;
+  /* Dark mode colors - EXACT SIDEBAR GRADIENT */
+  --background: #1e3a5f;
+  --background-rgb: 30, 58, 95;
   --foreground: #ffffff;
   --foreground-muted: #9ca3af;
 
   /* Brand colors - PURE BLUE for dark */
-  --primary: #3b82f6;           /* Blue-500 */
-  --primary-hover: #60a5fa;     /* Blue-400 - Lighter */
-  --primary-dark: #1e3a8a;      /* Blue-900 */
+  --primary: #3b82f6;
+  --primary-hover: #60a5fa;
+  --primary-dark: #1e3a8a;
   --secondary: #1e3a8a;
   --secondary-hover: #1e40af;
 
-  /* Surface colors */
-  --surface: #0f1f3a;
-  --surface-elevated: #1a2f4a;
-  --border: #1f3f5f;
+  /* Surface colors - EXACT sidebar colors */
+  --surface: #1e3a5f;
+  --surface-elevated: #2a4a7a;
+  --border: rgba(255, 255, 255, 0.1);
 
   /* Dot pattern - BLUE */
   --dot-color: rgba(96, 165, 250, 0.15);
@@ -97,7 +97,6 @@
   --stats-text: #60a5fa;
   
   /* shadcn/ui dark mode variables */
-  --background: oklch(0.145 0 0);
   --foreground: oklch(0.985 0 0);
   --card: oklch(0.205 0 0);
   --card-foreground: oklch(0.985 0 0);
@@ -111,7 +110,6 @@
   --accent: oklch(0.269 0 0);
   --accent-foreground: oklch(0.985 0 0);
   --destructive: oklch(0.704 0.191 22.216);
-  --border: oklch(1 0 0 / 10%);
   --input: oklch(1 0 0 / 15%);
   --ring: oklch(0.556 0 0);
   --chart-1: oklch(0.488 0.243 264.376);
@@ -186,7 +184,8 @@ body {
 }
 
 .dark body {
-  background: linear-gradient(135deg, #0a1628 0%, #0d1b2a 50%, #1b263b 100%);
+  /* EXACT SIDEBAR GRADIENT: from-[#1e3a5f] to-[#0f1f3a] */
+  background: linear-gradient(180deg, #1e3a5f 0%, #0f1f3a 100%);
   background-attachment: fixed;
 }
 
@@ -229,7 +228,7 @@ body {
 }
 
 .dark .integration-badge {
-  background: rgba(10, 40, 60, 0.8);
+  background: rgba(30, 58, 95, 0.8);
   border: 1px solid rgba(59, 130, 246, 0.2);
 }
 
