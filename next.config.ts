@@ -4,14 +4,14 @@ const BACKEND_ORIGIN =
   process.env.BACKEND_ORIGIN || "http://localhost:8000";
 
 const nextConfig: NextConfig = {
-  async rewrites() {
-    return [
-      {
-        source: "/api/auth/:path*",
-        destination: `${BACKEND_ORIGIN}/api/auth/:path*`,
-      },
-    ];
-  },
+  // async rewrites() {
+  //   return [
+  //     {
+  //       source: "/api/auth/:path*",
+  //       destination: `${BACKEND_ORIGIN}/api/auth/:path*`,
+  //     },
+  //   ];
+  // },
 };
 
 export default nextConfig;
