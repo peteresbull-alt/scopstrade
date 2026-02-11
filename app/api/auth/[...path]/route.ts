@@ -31,7 +31,8 @@ export async function PATCH(request: NextRequest, ctx: RouteContext) {
 
 async function proxyRequest(request: NextRequest, path: string[]) {
   const pathname = path.join("/");
-  const url = `${BACKEND_URL}/api/auth/${pathname}`;
+  // Django requires trailing slash — Next.js strips it, so always add it
+  const url = `${BACKEND_URL}/api/auth/${pathname}${pathname.endsWith("/") ? "" : "/"}`;
 
   // Forward cookies from the browser to Django
   const cookieHeader = request.headers.get("cookie") || "";
