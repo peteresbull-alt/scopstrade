@@ -5,6 +5,6 @@
 
 export const BACKEND_URL =
   process.env.NODE_ENV === "production"
-    ? "https://scoptrade-backend.vercel.app/api/auth"
+    ? "/api/auth"
     : "http://localhost:8000/api/auth";
 
