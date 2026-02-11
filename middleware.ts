@@ -7,8 +7,18 @@ const protectedPaths = ["/portfolio", "/onboarding", "/kyc"];
 // Routes that should redirect to dashboard if already authenticated
 const authPaths = ["/login", "/register"];
 
-export function proxy(request: NextRequest) {
+export function middleware(request: NextRequest) {
   const { pathname } = request.nextUrl;
+
+  // Skip middleware for API routes, static files, etc.
+  if (
+    pathname.startsWith("/api/") ||
+    pathname.startsWith("/_next/") ||
+    pathname.startsWith("/static/")
+  ) {
+    return NextResponse.next();
+  }
+
   const hasToken = request.cookies.has("access_token");
 
   // Protected routes: redirect to /login if no cookie
@@ -35,11 +45,15 @@ export function proxy(request: NextRequest) {
 }
 
 export const config = {
+  // Use a simpler matcher that explicitly excludes API routes
   matcher: [
-    "/portfolio/:path*",
-    "/onboarding/:path*",
-    "/kyc/:path*",
-    "/login",
-    "/register",
+    /*
+     * Match all request paths except for the ones starting with:
+     * - api (API routes)
+     * - _next/static (static files)
+     * - _next/image (image optimization files)
+     * - favicon.ico (favicon file)
+     */
+    "/((?!api|_next/static|_next/image|favicon.ico).*)",
   ],
 };
