@@ -15,7 +15,7 @@ const useCountUp = (end: number, duration: number = 2000) => {
           setStarted(true);
         }
       },
-      { threshold: 0.3 }
+      { threshold: 0.3 },
     );
     if (ref.current) observer.observe(ref.current);
     return () => observer.disconnect();
@@ -39,10 +39,10 @@ const useCountUp = (end: number, duration: number = 2000) => {
 
 const StatsSection = () => {
   return (
-    <section className="relative py-16 lg:py-20">
+    <section className="relative py-6 lg:py-20">
       <div className="mx-auto max-w-7xl px-4 sm:px-6 lg:px-8">
         {/* Globally Regulated Badge */}
-        <div className="mb-12 flex items-center justify-center gap-3 lg:mb-16">
+        <div className="mb-6 flex items-center justify-center gap-3 lg:mb-16">
           <div className="flex h-10 w-10 sm:h-12 sm:w-12 items-center justify-center rounded-full bg-blue-100 dark:bg-blue-500/10 lg:h-14 lg:w-14">
             <svg
               className="h-5 w-5 sm:h-6 sm:w-6 text-blue-600 dark:text-blue-400 lg:h-7 lg:w-7"

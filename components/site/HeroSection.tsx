@@ -234,7 +234,7 @@ const HeroSection = () => {
         </div>
 
         {/* Network Illustration */}
-        <div className="relative mx-auto mt-8 h-[280px] w-full max-w-xl lg:mt-14 lg:h-[320px]">
+        <div className="relative mx-auto mt-8 w-full max-w-xl lg:mt-14">
           <HeroMainImage />
         </div>
       </div>
@@ -257,7 +257,7 @@ const StatItem = ({ value, label }: { value: string; label: string }) => (
 // Network Illustration Component
 const HeroMainImage = () => {
   return (
-    <div className="relative h-full w-full">
+    <div className="relative">
       {/* Hero Main Image -- Cluade, Leave this I will be adding an image here */}
       <div className="max-w-2xl">
         <video
