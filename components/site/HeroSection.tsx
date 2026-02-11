@@ -129,28 +129,31 @@ const ParticlesBackground = () => {
 };
 
 const HeroSection = () => {
-  const integrations = {
-    desktop: ["E-Trade", "WEBULL", "Think or Swim", "Schwab"],
-    mobile: ["TradeStation", "Tastytrade", "Ally Invest"],
-  };
+  const integrationGroups = [
+    ["TradeStation", "Tastytrade", "Ally Invest"],
+    ["E-Trade", "WEBULL", "Think or Swim", "Schwab"],
+    ["TD Ameritrade", "Interactive Brokers"],
+  ];
 
-  const [isMobile, setIsMobile] = React.useState(false);
+  const [activeIndex, setActiveIndex] = React.useState(0);
+  const [animating, setAnimating] = React.useState(false);
   const [visible, setVisible] = React.useState(false);
 
   React.useEffect(() => {
-    const checkMobile = () => setIsMobile(window.innerWidth < 768);
-    checkMobile();
-    window.addEventListener("resize", checkMobile);
     const timer = setTimeout(() => setVisible(true), 100);
-    return () => {
-      window.removeEventListener("resize", checkMobile);
-      clearTimeout(timer);
-    };
+    return () => clearTimeout(timer);
   }, []);
 
-  const currentIntegrations = isMobile
-    ? integrations.mobile
-    : integrations.desktop;
+  React.useEffect(() => {
+    const interval = setInterval(() => {
+      setAnimating(true);
+      setTimeout(() => {
+        setActiveIndex((prev) => (prev + 1) % integrationGroups.length);
+        setAnimating(false);
+      }, 400);
+    }, 3000);
+    return () => clearInterval(interval);
+  }, [integrationGroups.length]);
 
   return (
     <section className="relative min-h-[calc(100vh-64px)] overflow-hidden lg:min-h-[calc(100vh-80px)]">
@@ -166,29 +169,39 @@ const HeroSection = () => {
       >
         {/* Integration Badge */}
         <div className="flex justify-center">
-          <div className="inline-flex items-center gap-2 rounded-full bg-white/60 dark:bg-white/[0.06] backdrop-blur-md border border-gray-200/60 dark:border-white/[0.08] px-4 py-2 text-[10px] md:text-xs font-medium shadow-sm">
-            <span className="flex h-1.5 w-1.5 rounded-full bg-green-500 animate-pulse" />
-            <span className="text-gray-500 dark:text-gray-400">
+          <div className="inline-flex items-center gap-1.5 sm:gap-2 rounded-full bg-white/60 dark:bg-white/[0.06] backdrop-blur-md border border-gray-200/60 dark:border-white/[0.08] px-3 sm:px-4 py-1.5 sm:py-2 text-[9px] sm:text-[10px] md:text-xs font-medium shadow-sm">
+            <span className="flex h-1.5 w-1.5 shrink-0 rounded-full bg-green-500 animate-pulse" />
+            <span className="text-gray-500 dark:text-gray-400 whitespace-nowrap">
               Integrates with
             </span>
-            <span className="flex items-center gap-1.5">
-              {currentIntegrations.map((platform, index) => (
-                <React.Fragment key={platform}>
-                  <span className="font-semibold text-gray-800 dark:text-white">
-                    {platform}
-                  </span>
-                  {index < currentIntegrations.length - 1 && (
-                    <span className="text-gray-300 dark:text-gray-600">/</span>
-                  )}
-                </React.Fragment>
-              ))}
+            <span
+              className={`flex items-center gap-1 sm:gap-1.5 transition-all duration-400 ${
+                animating
+                  ? "opacity-0 translate-y-2"
+                  : "opacity-100 translate-y-0"
+              }`}
+            >
+              {integrationGroups[activeIndex].map(
+                (platform: string, index: number) => (
+                  <React.Fragment key={platform}>
+                    <span className="font-semibold text-gray-800 dark:text-white whitespace-nowrap">
+                      {platform}
+                    </span>
+                    {index < integrationGroups[activeIndex].length - 1 && (
+                      <span className="text-gray-300 dark:text-gray-600">
+                        /
+                      </span>
+                    )}
+                  </React.Fragment>
+                ),
+              )}
             </span>
           </div>
         </div>
 
         {/* Main Headline */}
         <div className="mx-auto mt-6 max-w-4xl text-center lg:mt-12">
-          <h1 className="text-[1.75rem] sm:text-[2.75rem] lg:text-[3.5rem] font-bold leading-[1.1] tracking-tight text-gray-900 dark:text-white lg:leading-[1.08]">
+          <h1 className="text-[1.5rem] sm:text-[2.25rem] lg:text-[3.1rem] font-bold leading-[1.1] tracking-tight text-gray-900 dark:text-white lg:leading-[1.08]">
             Copy Futures, Options & Contracts
             <br />
             <span className="bg-gradient-to-r from-blue-600 via-blue-500 to-cyan-500 bg-clip-text text-transparent">
@@ -246,7 +259,22 @@ const HeroMainImage = () => {
   return (
     <div className="relative h-full w-full">
       {/* Hero Main Image -- Cluade, Leave this I will be adding an image here */}
-      <div className=""></div>
+      <div className="max-w-2xl">
+        <video
+          src="/videos/banner-video-dark.mp4"
+          muted
+          autoPlay
+          loop
+          className="w-full dark:block hidden"
+        ></video>
+        <video
+          src="/videos/banner-video-light.mp4"
+          muted
+          autoPlay
+          loop
+          className="w-full block dark:hidden"
+        ></video>
+      </div>
     </div>
   );
 };
@@ -299,10 +327,18 @@ const AvatarNode = ({
       }`}
       style={{ width: size, height: size }}
     >
-      <svg width={size * 0.7} height={size * 0.7} viewBox="0 0 40 40" fill="none">
+      <svg
+        width={size * 0.7}
+        height={size * 0.7}
+        viewBox="0 0 40 40"
+        fill="none"
+      >
         <circle cx="20" cy="18" r="10" fill={skin} />
         {!bald && gender === "male" && (
-          <path d="M10 14 Q10 8, 20 8 Q30 8, 30 14 Q30 10, 20 10 Q10 10, 10 14" fill={hair} />
+          <path
+            d="M10 14 Q10 8, 20 8 Q30 8, 30 14 Q30 10, 20 10 Q10 10, 10 14"
+            fill={hair}
+          />
         )}
         {!bald && gender === "female" && (
           <>
@@ -315,23 +351,57 @@ const AvatarNode = ({
         <circle cx="24" cy="17" r="1.5" fill="#1a1a1a" />
         {showGlasses && (
           <>
-            <circle cx="16" cy="17" r="4" fill="none" stroke="#1a1a1a" strokeWidth="1" />
-            <circle cx="24" cy="17" r="4" fill="none" stroke="#1a1a1a" strokeWidth="1" />
-            <line x1="20" y1="17" x2="20" y2="17" stroke="#1a1a1a" strokeWidth="1" />
+            <circle
+              cx="16"
+              cy="17"
+              r="4"
+              fill="none"
+              stroke="#1a1a1a"
+              strokeWidth="1"
+            />
+            <circle
+              cx="24"
+              cy="17"
+              r="4"
+              fill="none"
+              stroke="#1a1a1a"
+              strokeWidth="1"
+            />
+            <line
+              x1="20"
+              y1="17"
+              x2="20"
+              y2="17"
+              stroke="#1a1a1a"
+              strokeWidth="1"
+            />
           </>
         )}
         {hasBeard && gender === "male" && (
           <ellipse cx="20" cy="24" rx="6" ry="4" fill={hair} opacity="0.7" />
         )}
-        <path d="M8 38 Q8 30, 20 28 Q32 30, 32 38" fill={primary ? "#3b82f6" : "#1e3a5f"} />
+        <path
+          d="M8 38 Q8 30, 20 28 Q32 30, 32 38"
+          fill={primary ? "#3b82f6" : "#1e3a5f"}
+        />
       </svg>
     </div>
   );
 };
 
 const GlobeIcon = ({ className }: { className?: string }) => (
-  <svg className={className} fill="none" viewBox="0 0 24 24" stroke="currentColor" strokeWidth={2}>
-    <path strokeLinecap="round" strokeLinejoin="round" d="M3.055 11H5a2 2 0 012 2v1a2 2 0 002 2 2 2 0 012 2v2.945M8 3.935V5.5A2.5 2.5 0 0010.5 8h.5a2 2 0 012 2 2 2 0 104 0 2 2 0 012-2h1.064M15 20.488V18a2 2 0 012-2h3.064M21 12a9 9 0 11-18 0 9 9 0 0118 0z" />
+  <svg
+    className={className}
+    fill="none"
+    viewBox="0 0 24 24"
+    stroke="currentColor"
+    strokeWidth={2}
+  >
+    <path
+      strokeLinecap="round"
+      strokeLinejoin="round"
+      d="M3.055 11H5a2 2 0 012 2v1a2 2 0 002 2 2 2 0 012 2v2.945M8 3.935V5.5A2.5 2.5 0 0010.5 8h.5a2 2 0 012 2 2 2 0 104 0 2 2 0 012-2h1.064M15 20.488V18a2 2 0 012-2h3.064M21 12a9 9 0 11-18 0 9 9 0 0118 0z"
+    />
   </svg>
 );
 
