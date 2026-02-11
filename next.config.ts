@@ -2,12 +2,12 @@ import type { NextConfig } from "next";
 
 const nextConfig: NextConfig = {
   async rewrites() {
-    const backendUrl = process.env.BACKEND_PROXY_URL;
-    if (!backendUrl) return [];
+    // Only proxy in production — local dev calls backend directly
+    if (process.env.NODE_ENV !== "production") return [];
     return [
       {
         source: "/api/:path*",
-        destination: `${backendUrl}/api/:path*`,
+        destination: "https://scoptrade-backend.vercel.app/api/:path*",
       },
     ];
   },
