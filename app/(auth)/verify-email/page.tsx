@@ -61,7 +61,7 @@ function VerifyEmailContent() {
       }
 
       toast.success("Email verified successfully!");
-      setTimeout(() => router.push("/onboarding"), 1000);
+      setTimeout(() => router.push("/portfolio"), 1000);
     } catch {
       toast.error("Network error. Please try again.");
     } finally {
