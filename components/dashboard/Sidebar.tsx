@@ -28,9 +28,7 @@ const overviewSection = [
 ];
 
 const walletSection = [
-  { name: "Deposit", href: "/deposit", icon: ArrowDownToLine },
-  { name: "Withdraw", href: "/withdraw", icon: ArrowUpFromLine },
-  { name: "Assets", href: "/connect-wallet", icon: Wallet },
+  { name: "Connect Wallet", href: "/connect-wallet", icon: Wallet },
 ];
 
 const tradingSection = [
@@ -129,7 +127,7 @@ export default function Sidebar({ isOpen, onClose }: SidebarProps) {
         <div className="flex flex-col h-full">
           {/* Header */}
           <div className="flex items-center justify-between p-5 border-b border-gray-200 dark:border-white/10">
-            <Link href="/" className="flex items-center gap-0">
+            <Link href="/portfolio" className="flex items-center gap-0">
               <Image
                 src={"/logo_dark.png"}
                 className="block dark:hidden w-40"
