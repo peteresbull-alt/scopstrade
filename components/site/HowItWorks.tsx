@@ -33,7 +33,7 @@ const HowItWorks = () => {
   return (
     <section
       id="how-it-works"
-      className="relative py-16 lg:py-24"
+      className="relative py-8 lg:py-14"
     >
       <div className="mx-auto max-w-7xl px-4 sm:px-6 lg:px-8">
         {/* Section Header */}
@@ -51,7 +51,7 @@ const HowItWorks = () => {
         </div>
 
         {/* Steps Grid with connecting line */}
-        <div className="relative mt-12 lg:mt-16">
+        <div className="relative mt-6 lg:mt-10">
           {/* Connecting line - desktop only */}
           <div className="absolute top-12 left-0 right-0 hidden lg:block">
             <div className="mx-auto max-w-3xl h-px bg-linear-to-r from-transparent via-blue-300 dark:via-blue-500/30 to-transparent" />

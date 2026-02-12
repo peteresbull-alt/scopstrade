@@ -36,14 +36,14 @@ const Navbar = () => {
           <Link href="/" className="flex items-center gap-0">
             <Image
               src={"/logo_dark.png"}
-              className="block dark:hidden w-25 sm:w-40 lg:w-44"
+              className="block dark:hidden w-32 sm:w-40 lg:w-44"
               alt="ScopTrade"
               width={1000}
               height={250}
             />
             <Image
               src={"/logo_light.png"}
-              className="hidden dark:block w-25 sm:w-40 lg:w-44"
+              className="hidden dark:block w-32 sm:w-40 lg:w-44"
               alt="ScopTrade"
               width={1000}
               height={250}
@@ -106,10 +106,10 @@ const Navbar = () => {
           </div>
 
           {/* Mobile Actions */}
-          <div className="flex items-center gap-1.5 sm:gap-2 lg:hidden">
+          <div className="flex items-center gap-2 sm:gap-2 lg:hidden">
             <Link
               href="/register"
-              className="rounded-full bg-[var(--primary)] px-3 sm:px-4 py-1.5 sm:py-2 text-[9px] sm:text-[10px] font-semibold text-white transition-all hover:bg-[var(--primary-hover)] whitespace-nowrap"
+              className="rounded-full bg-[var(--primary)] px-4 sm:px-4 py-2 sm:py-2 text-[11px] sm:text-[10px] font-semibold text-white transition-all hover:bg-[var(--primary-hover)] whitespace-nowrap"
             >
               Get Started
             </Link>
@@ -117,15 +117,15 @@ const Navbar = () => {
             {/* Theme Toggle Mobile */}
             <button
               onClick={toggleTheme}
-              className="flex h-7 w-7 sm:h-9 sm:w-9 items-center justify-center rounded-full border border-gray-200 dark:border-white/15 text-gray-500 dark:text-gray-400 shrink-0"
+              className="flex h-8 w-8 sm:h-9 sm:w-9 items-center justify-center rounded-full border border-gray-200 dark:border-white/15 text-gray-500 dark:text-gray-400 shrink-0"
               aria-label="Toggle theme"
             >
               {mounted && (
                 <>
                   {theme === "dark" ? (
-                    <SunIcon className="h-3 w-3 sm:h-4 sm:w-4" />
+                    <SunIcon className="h-3.5 w-3.5 sm:h-4 sm:w-4" />
                   ) : (
-                    <MoonIcon className="h-3 w-3 sm:h-4 sm:w-4" />
+                    <MoonIcon className="h-3.5 w-3.5 sm:h-4 sm:w-4" />
                   )}
                 </>
               )}
@@ -134,21 +134,21 @@ const Navbar = () => {
             {/* Mobile Menu Button */}
             <button
               onClick={() => setMobileMenuOpen(!mobileMenuOpen)}
-              className="flex h-7 w-7 sm:h-9 sm:w-9 flex-col items-center justify-center gap-1 sm:gap-1.5 shrink-0"
+              className="flex h-8 w-8 sm:h-9 sm:w-9 flex-col items-center justify-center gap-1 sm:gap-1.5 shrink-0"
               aria-label="Toggle menu"
             >
               <span
-                className={`h-0.5 w-4 sm:w-5 bg-gray-600 dark:bg-gray-300 transition-all duration-300 ${
+                className={`h-0.5 w-4.5 sm:w-5 bg-gray-600 dark:bg-gray-300 transition-all duration-300 ${
                   mobileMenuOpen ? "translate-y-1.5 sm:translate-y-2 rotate-45" : ""
                 }`}
               />
               <span
-                className={`h-0.5 w-4 sm:w-5 bg-gray-600 dark:bg-gray-300 transition-all duration-300 ${
+                className={`h-0.5 w-4.5 sm:w-5 bg-gray-600 dark:bg-gray-300 transition-all duration-300 ${
                   mobileMenuOpen ? "opacity-0" : ""
                 }`}
               />
               <span
-                className={`h-0.5 w-4 sm:w-5 bg-gray-600 dark:bg-gray-300 transition-all duration-300 ${
+                className={`h-0.5 w-4.5 sm:w-5 bg-gray-600 dark:bg-gray-300 transition-all duration-300 ${
                   mobileMenuOpen ? "-translate-y-1.5 sm:-translate-y-2 -rotate-45" : ""
                 }`}
               />

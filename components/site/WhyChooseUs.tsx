@@ -5,7 +5,7 @@ import Link from "next/link";
 
 const WhyChooseUs = () => {
   return (
-    <section className="relative py-16 lg:py-24">
+    <section className="relative py-8 lg:py-14">
       <div className="mx-auto max-w-7xl px-4 sm:px-6 lg:px-8">
         {/* Section Header */}
         <div className="mb-12 text-center lg:mb-16">

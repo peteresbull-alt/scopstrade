@@ -214,14 +214,14 @@ const LiquidityProvidersSection = () => {
   return (
     <section
       id="liquidity-providers"
-      className="py-14 md:py-[71px] relative"
+      className="py-8 md:py-14 relative"
       style={{
         background:
           "linear-gradient(135deg, #0a1a2f 0%, #1a3a4f 50%, #2a4a3f 100%)",
       }}
     >
       <div className="container mx-auto px-4">
-        <div className="text-center mb-10 md:mb-12">
+        <div className="text-center mb-6 md:mb-8">
           <h2 className="text-3xl md:text-5xl lg:text-[52px] font-medium mb-4 bg-gradient-to-r from-[#a0762f] via-[#dec481] to-[#a0762f] bg-clip-text text-transparent inline-block">
             LIQUIDITY PROVIDERS
           </h2>
@@ -270,7 +270,7 @@ const LiquidityProvidersSection = () => {
       </div>
 
       {/* CTA Section */}
-      <div className="container mx-auto px-4 mt-16 md:mt-24">
+      <div className="container mx-auto px-4 mt-8 md:mt-12">
         <div className="text-center">
           <h2 className="text-2xl md:text-4xl font-bold text-white mb-3">
             Instant account opening &amp; funding

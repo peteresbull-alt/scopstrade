@@ -61,7 +61,7 @@ const FeaturesSection = () => {
   ];
 
   return (
-    <section id="features" className="relative py-16 lg:py-24">
+    <section id="features" className="relative py-8 lg:py-14">
       <div className="mx-auto max-w-7xl px-4 sm:px-6 lg:px-8">
         {/* Section Header */}
         <div className="text-center">
@@ -78,7 +78,7 @@ const FeaturesSection = () => {
         </div>
 
         {/* Features Grid */}
-        <div className="mt-12 grid grid-cols-1 gap-5 sm:grid-cols-2 lg:mt-16 lg:grid-cols-3 lg:gap-6">
+        <div className="mt-6 grid grid-cols-1 gap-5 sm:grid-cols-2 lg:mt-10 lg:grid-cols-3 lg:gap-6">
           {features.map((feature, index) => (
             <FeatureCard key={index} {...feature} />
           ))}

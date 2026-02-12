@@ -25,7 +25,7 @@ const CTASection = () => {
   ];
 
   return (
-    <section className="relative py-16 lg:py-24">
+    <section className="relative py-8 lg:py-14">
       {/* Subtle background glow */}
       <div className="absolute inset-0 overflow-hidden pointer-events-none">
         <div className="absolute top-1/2 left-1/2 -translate-x-1/2 -translate-y-1/2 w-[600px] h-[400px] bg-blue-500/5 dark:bg-blue-500/10 rounded-full blur-[100px]" />
@@ -43,7 +43,7 @@ const CTASection = () => {
         </div>
 
         {/* Steps Grid */}
-        <div className="mb-12 grid grid-cols-1 gap-6 sm:grid-cols-2 lg:grid-cols-3 lg:gap-8">
+        <div className="mb-6 grid grid-cols-1 gap-6 sm:grid-cols-2 lg:grid-cols-3 lg:gap-8">
           {steps.map((step, index) => (
             <StepCard key={index} {...step} index={index} />
           ))}

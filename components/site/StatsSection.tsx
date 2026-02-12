@@ -1,6 +1,6 @@
 "use client";
 
-import React, { useEffect, useState, useRef } from "react";
+import { useEffect, useState, useRef } from "react";
 
 // Animated counter hook
 const useCountUp = (end: number, duration: number = 2000) => {
@@ -39,7 +39,7 @@ const useCountUp = (end: number, duration: number = 2000) => {
 
 const StatsSection = () => {
   return (
-    <section className="relative py-6 lg:py-20">
+    <section className="relative py-4 lg:py-12">
       <div className="mx-auto max-w-7xl px-4 sm:px-6 lg:px-8">
         {/* Globally Regulated Badge */}
         <div className="mb-6 flex items-center justify-center gap-3 lg:mb-16">
@@ -63,8 +63,8 @@ const StatsSection = () => {
           </span>
         </div>
 
-        {/* Stats Grid */}
-        <div className="mx-auto grid max-w-4xl grid-cols-1 gap-6 sm:grid-cols-3 sm:gap-0">
+        {/* Stats Grid - Always Horizontal */}
+        <div className="mx-auto grid max-w-4xl grid-cols-3 gap-0 overflow-hidden rounded-lg border border-gray-200 bg-white dark:border-white/10 dark:bg-gray-900/50">
           <StatCard value={118} suffix="+" label="Active Traders" />
           <StatCard value={10} suffix="M+" label="Total Volume" hasBorders />
           <StatCard value={1} suffix="M+" label="Users" />
@@ -90,15 +90,15 @@ const StatCard = ({
   return (
     <div
       ref={ref}
-      className={`flex flex-col items-center justify-center px-8 py-10 text-center lg:py-12 ${
-        hasBorders ? "sm:border-x border-gray-200 dark:border-white/10" : ""
+      className={`flex flex-col items-center justify-center px-3 py-6 text-center sm:px-6 sm:py-8 lg:px-8 lg:py-12 ${
+        hasBorders ? "border-x border-gray-200 dark:border-white/10" : ""
       }`}
     >
-      <div className="mb-2 text-4xl font-bold leading-none tracking-tight bg-gradient-to-r from-blue-700 to-blue-500 dark:from-blue-400 dark:to-cyan-400 bg-clip-text text-transparent lg:text-5xl">
+      <div className="mb-1 text-2xl font-bold leading-none tracking-tight bg-gradient-to-r from-blue-700 to-blue-500 dark:from-blue-400 dark:to-cyan-400 bg-clip-text text-transparent sm:text-3xl sm:mb-2 lg:text-5xl">
         {count}
         {suffix}
       </div>
-      <div className="text-sm text-gray-500 dark:text-gray-400 lg:text-base">
+      <div className="text-xs text-gray-500 dark:text-gray-400 sm:text-sm lg:text-base">
         {label}
       </div>
     </div>

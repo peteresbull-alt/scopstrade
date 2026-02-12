@@ -1,44 +1,69 @@
 "use client";
 
-import React from "react";
+import { useEffect, useState } from "react";
 import Link from "next/link";
 
+interface TraderData {
+  id: number;
+  name: string;
+  username: string;
+  badge: string;
+  gain: string;
+  copiers: number;
+  risk: number;
+}
+
 const TradersSection = () => {
-  const traders = [
-    {
-      name: "martine895",
-      username: "martine895",
-      role: "Expert",
-      copiers: 2285,
-      profit: "75.05%",
-      profitPeriod: "1M",
-      totalCopiers: 1071,
-      riskLevel: "Balanced Risk",
-    },
-    {
-      name: "ansel369",
-      username: "ansel369",
-      role: "Expert",
-      copiers: 2903,
-      profit: "70.72%",
-      profitPeriod: "1M",
-      totalCopiers: 2903,
-      riskLevel: "Balanced Risk",
-    },
-    {
-      name: "katrine7913",
-      username: "katrine7913",
-      role: "Expert",
-      copiers: 1493,
-      profit: "42.58%",
-      profitPeriod: "1M",
-      totalCopiers: 1493,
-      riskLevel: "Balanced Risk",
-    },
-  ];
+  const [traders, setTraders] = useState<TraderData[]>([]);
+  const [loading, setLoading] = useState(true);
+
+  useEffect(() => {
+    const fetchTraders = async () => {
+      try {
+        const response = await fetch("http://localhost:8000/api/auth/traders/", {
+          method: "GET",
+          headers: {
+            "Content-Type": "application/json",
+          },
+        });
+
+        if (response.ok) {
+          const data = await response.json();
+          // Limit to first 3 traders
+          setTraders(data.slice(0, 3));
+        }
+      } catch (error) {
+        console.error("Error fetching traders:", error);
+      } finally {
+        setLoading(false);
+      }
+    };
+
+    fetchTraders();
+  }, []);
+
+  if (loading) {
+    return (
+      <section className="relative py-8 lg:py-14">
+        <div className="mx-auto max-w-7xl px-4 sm:px-6 lg:px-8">
+          <div className="text-center">
+            <p className="text-sm font-semibold uppercase tracking-wider text-primary mb-3">
+              Top Performers
+            </p>
+            <h2 className="text-3xl font-bold tracking-tight lg:text-4xl">
+              Copy from the best traders
+            </h2>
+            <p className="mx-auto mt-4 max-w-2xl text-sm leading-relaxed text-gray-500 dark:text-gray-400 lg:text-base">
+              Loading traders...
+            </p>
+          </div>
+        </div>
+      </section>
+    );
+  }
 
   return (
-    <section className="relative py-16 lg:py-24">
+    <section className="relative py-8 lg:py-14">
       <div className="mx-auto max-w-7xl px-4 sm:px-6 lg:px-8">
         {/* Section Header */}
         <div className="text-center">
@@ -55,14 +80,24 @@ const TradersSection = () => {
         </div>
 
         {/* Traders Grid */}
-        <div className="mt-12 grid grid-cols-1 gap-6 sm:grid-cols-2 lg:mt-16 lg:grid-cols-3 lg:gap-8">
+        <div className="mt-6 grid grid-cols-1 gap-6 sm:grid-cols-2 lg:mt-10 lg:grid-cols-3 lg:gap-8">
           {traders.map((trader, index) => (
-            <TraderCard key={index} {...trader} />
+            <TraderCard
+              key={index}
+              name={trader.name}
+              username={trader.username}
+              role={trader.badge === "gold" ? "Expert" : trader.badge === "silver" ? "Advanced" : "Trader"}
+              copiers={trader.copiers}
+              profit={`${parseFloat(trader.gain).toFixed(2)}%`}
+              profitPeriod="1M"
+              totalCopiers={trader.copiers}
+              riskLevel={trader.risk <= 3 ? "Low Risk" : trader.risk <= 6 ? "Balanced Risk" : "High Risk"}
+            />
           ))}
         </div>
 
         {/* View All Button */}
-        <div className="mt-12 flex justify-center lg:mt-16">
+        <div className="mt-6 flex justify-center lg:mt-10">
           <Link
             href="/login"
             className="inline-flex items-center gap-2 rounded-full border border-gray-300 dark:border-white/20 bg-transparent px-8 py-3 text-sm font-semibold transition-all hover:border-primary hover:text-primary hover:-translate-y-0.5"
@@ -163,9 +198,9 @@ const TraderCard = ({
       </div>
 
       {/* Copy Button */}
-      <button className="w-full rounded-xl bg-primary py-2.5 text-sm font-semibold text-white transition-all hover:bg-primary-hover hover:shadow-lg hover:shadow-blue-500/25 hover:-translate-y-0.5">
+      <Link href="/login" className="flex items-center justify-center w-full rounded-xl bg-primary py-2.5 text-sm font-semibold text-white transition-all hover:bg-primary-hover hover:shadow-lg hover:shadow-blue-500/25 hover:-translate-y-0.5">
         Copy Trader
-      </button>
+      </Link>
     </div>
   </div>
 );

@@ -4,7 +4,7 @@ import React, { useState } from "react";
 
 const Footer = () => {
   return (
-    <footer className="border-t border-[var(--border)] bg-[var(--surface)] py-12 lg:py-16">
+    <footer className="border-t border-[var(--border)] bg-[var(--surface)] py-8 lg:py-10">
       <div className="mx-auto max-w-7xl px-4 sm:px-6 lg:px-8">
         {/* Top Section with Logo and Links */}
         <div className="grid grid-cols-1 gap-8 lg:grid-cols-12">
@@ -55,7 +55,7 @@ const Footer = () => {
         </div>
 
         {/* Disclaimer */}
-        <div className="mt-12 border-t border-[var(--border)] pt-8">
+        <div className="mt-8 border-t border-[var(--border)] pt-8">
           <div className="space-y-4 text-xs leading-relaxed text-[var(--foreground-muted)]">
             <p>
               Disclaimer ScopsTrade (Europe) Ltd., a Financial Services Company

@@ -28,7 +28,7 @@ const TrustSection = () => {
   ];
 
   return (
-    <section className="relative py-16 lg:py-24">
+    <section className="relative py-8 lg:py-14">
       <div className="mx-auto max-w-7xl px-4 sm:px-6 lg:px-8">
         <div className="grid grid-cols-2 gap-4 sm:gap-6 lg:grid-cols-4">
           {trustBadges.map((badge, index) => (
