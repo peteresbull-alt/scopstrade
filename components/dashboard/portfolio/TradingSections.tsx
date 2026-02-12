@@ -71,27 +71,13 @@ export function TradeCopiedSection() {
       initial={{ opacity: 0, y: 20 }}
       animate={{ opacity: 1, y: 0 }}
       transition={{ duration: 0.5, delay: 0.3 }}
-      className="rounded-2xl bg-white/80 dark:bg-[#1e3a5f]/40 backdrop-blur-xl border border-gray-200/50 dark:border-white/10 shadow-sm h-full"
+      className="rounded-lg bg-white/80 dark:bg-[#1e3a5f]/40 backdrop-blur-xl border border-gray-200/50 dark:border-white/10 shadow-sm h-full"
     >
       <div className="px-5 py-3.5 border-b border-gray-100 dark:border-white/5">
         <h3 className="text-xs font-semibold text-gray-900 dark:text-white">
           Trade Copied
         </h3>
       </div>
-
-      {/* Table Header */}
-      {!isEmpty && (
-        <div className="px-5 py-3">
-          <div className="grid grid-cols-6 gap-2 text-[10px] text-gray-400 dark:text-gray-500 font-medium uppercase tracking-wider pb-2.5 border-b border-gray-100 dark:border-white/5">
-            <span>ASSET</span>
-            <span>TYPE</span>
-            <span>DIRECTION</span>
-            <span>PRICE</span>
-            <span>PNL</span>
-            <span>STATUS</span>
-          </div>
-        </div>
-      )}
 
       {loading ? (
         <div className="flex items-center justify-center py-10">
@@ -121,71 +107,86 @@ export function TradeCopiedSection() {
           </Link>
         </div>
       ) : (
-        <div className="px-5 py-3 max-h-[400px] overflow-y-auto">
-          <div className="space-y-2">
-            {trades.map((trade) => (
-              <div
-                key={trade.id}
-                className="grid grid-cols-6 gap-2 text-xs py-2.5 border-b border-gray-100 dark:border-white/5 last:border-0"
-              >
-                <div className="flex items-center gap-2">
-                  {trade.market_logo_url && (
-                    <Image
-                      src={trade.market_logo_url}
-                      alt={trade.market_name}
-                      width={20}
-                      height={20}
-                      className="w-5 h-5 rounded-full"
-                      unoptimized
-                    />
-                  )}
-                  <span className="font-medium text-gray-900 dark:text-white truncate">
-                    {trade.market_name}
-                  </span>
-                </div>
-                <span className="text-gray-600 dark:text-gray-400 truncate">
-                  {trade.market}
-                </span>
-                <div>
-                  <span
-                    className={`inline-flex items-center gap-1 px-2 py-0.5 rounded text-[10px] font-medium ${
-                      trade.direction === "buy"
-                        ? "bg-green-100 dark:bg-green-500/10 text-green-700 dark:text-green-400"
-                        : "bg-red-100 dark:bg-red-500/10 text-red-700 dark:text-red-400"
-                    }`}
-                  >
-                    {trade.direction === "buy" ? (
-                      <TrendingUp className="w-3 h-3" />
-                    ) : (
-                      <TrendingDown className="w-3 h-3" />
-                    )}
-                    {trade.direction.toUpperCase()}
-                  </span>
-                </div>
-                <span className="text-gray-900 dark:text-white">
-                  ${parseFloat(trade.entry_price).toFixed(2)}
-                </span>
-                <span
-                  className={`font-semibold ${
-                    trade.is_profit
-                      ? "text-green-600 dark:text-green-400"
-                      : "text-red-600 dark:text-red-400"
-                  }`}
-                >
-                  {trade.is_profit ? "+" : ""}${parseFloat(trade.user_profit_loss).toFixed(2)}
-                </span>
-                <span
-                  className={`text-[10px] font-medium ${
-                    trade.status === "open"
-                      ? "text-blue-600 dark:text-blue-400"
-                      : "text-gray-500 dark:text-gray-400"
-                  }`}
-                >
-                  {trade.status.toUpperCase()}
-                </span>
-              </div>
-            ))}
-          </div>
+        <div className="overflow-x-auto max-h-100 overflow-y-auto">
+          <table className="w-full text-xs min-w-140">
+            <thead className="sticky top-0 bg-white/95 dark:bg-[#1e3a5f]/95 backdrop-blur-sm">
+              <tr className="border-b border-gray-100 dark:border-white/5">
+                <th className="px-5 py-2.5 text-left text-[10px] text-gray-400 dark:text-gray-500 font-medium uppercase tracking-wider">Asset</th>
+                <th className="px-3 py-2.5 text-left text-[10px] text-gray-400 dark:text-gray-500 font-medium uppercase tracking-wider">Type</th>
+                <th className="px-3 py-2.5 text-left text-[10px] text-gray-400 dark:text-gray-500 font-medium uppercase tracking-wider">Direction</th>
+                <th className="px-3 py-2.5 text-left text-[10px] text-gray-400 dark:text-gray-500 font-medium uppercase tracking-wider">Price</th>
+                <th className="px-3 py-2.5 text-left text-[10px] text-gray-400 dark:text-gray-500 font-medium uppercase tracking-wider">PNL</th>
+                <th className="px-3 py-2.5 text-left text-[10px] text-gray-400 dark:text-gray-500 font-medium uppercase tracking-wider">Status</th>
+              </tr>
+            </thead>
+            <tbody className="divide-y divide-gray-50 dark:divide-white/5">
+              {trades.map((trade) => (
+                <tr key={trade.id} className="hover:bg-gray-50/50 dark:hover:bg-white/5 transition-colors">
+                  <td className="px-5 py-2.5 whitespace-nowrap">
+                    <div className="flex items-center gap-2">
+                      {trade.market_logo_url && (
+                        <Image
+                          src={trade.market_logo_url}
+                          alt={trade.market_name}
+                          width={20}
+                          height={20}
+                          className="w-5 h-5 rounded-full shrink-0"
+                          unoptimized
+                        />
+                      )}
+                      <span className="font-medium text-gray-900 dark:text-white">
+                        {trade.market_name}
+                      </span>
+                    </div>
+                  </td>
+                  <td className="px-3 py-2.5 text-gray-600 dark:text-gray-400 whitespace-nowrap">
+                    {trade.market}
+                  </td>
+                  <td className="px-3 py-2.5 whitespace-nowrap">
+                    <span
+                      className={`inline-flex items-center gap-1 px-2 py-0.5 rounded text-[10px] font-medium ${
+                        trade.direction === "buy"
+                          ? "bg-green-100 dark:bg-green-500/10 text-green-700 dark:text-green-400"
+                          : "bg-red-100 dark:bg-red-500/10 text-red-700 dark:text-red-400"
+                      }`}
+                    >
+                      {trade.direction === "buy" ? (
+                        <TrendingUp className="w-3 h-3" />
+                      ) : (
+                        <TrendingDown className="w-3 h-3" />
+                      )}
+                      {trade.direction.toUpperCase()}
+                    </span>
+                  </td>
+                  <td className="px-3 py-2.5 text-gray-900 dark:text-white whitespace-nowrap">
+                    ${parseFloat(trade.entry_price).toFixed(2)}
+                  </td>
+                  <td className="px-3 py-2.5 whitespace-nowrap">
+                    <span
+                      className={`font-semibold ${
+                        trade.is_profit
+                          ? "text-green-600 dark:text-green-400"
+                          : "text-red-600 dark:text-red-400"
+                      }`}
+                    >
+                      {trade.is_profit ? "+" : ""}${parseFloat(trade.user_profit_loss).toFixed(2)}
+                    </span>
+                  </td>
+                  <td className="px-3 py-2.5 whitespace-nowrap">
+                    <span
+                      className={`text-[10px] font-medium ${
+                        trade.status === "open"
+                          ? "text-blue-600 dark:text-blue-400"
+                          : "text-gray-500 dark:text-gray-400"
+                      }`}
+                    >
+                      {trade.status.toUpperCase()}
+                    </span>
+                  </td>
+                </tr>
+              ))}
+            </tbody>
+          </table>
         </div>
       )}
     </motion.div>
@@ -255,7 +256,7 @@ export function FollowingSection() {
       initial={{ opacity: 0, y: 20 }}
       animate={{ opacity: 1, y: 0 }}
       transition={{ duration: 0.5, delay: 0.4 }}
-      className="rounded-2xl bg-white/80 dark:bg-[#1e3a5f]/40 backdrop-blur-xl border border-gray-200/50 dark:border-white/10 shadow-sm h-full"
+      className="rounded-lg bg-white/80 dark:bg-[#1e3a5f]/40 backdrop-blur-xl border border-gray-200/50 dark:border-white/10 shadow-sm h-full"
     >
       <div className="px-5 py-3.5 border-b border-gray-100 dark:border-white/5">
         <h3 className="text-xs font-semibold text-gray-900 dark:text-white">

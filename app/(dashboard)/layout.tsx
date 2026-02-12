@@ -7,6 +7,16 @@ import TopNav from "@/components/dashboard/TopNav";
 import { apiFetch } from "@/lib/api";
 import { useRouter } from "next/navigation";
 
+export interface AuthUser {
+  email: string;
+  first_name: string;
+  last_name: string;
+  account_id: string;
+  email_verified: boolean;
+  two_factor_enabled: boolean;
+  has_submitted_kyc: boolean;
+}
+
 interface DashboardLayoutProps {
   children: React.ReactNode;
 }
@@ -16,6 +26,7 @@ const DashboardLayout = ({ children }: DashboardLayoutProps) => {
   const [authState, setAuthState] = useState<
     "loading" | "authenticated" | "redirecting"
   >("loading");
+  const [user, setUser] = useState<AuthUser | null>(null);
   const router = useRouter();
 
   useEffect(() => {
@@ -37,6 +48,7 @@ const DashboardLayout = ({ children }: DashboardLayoutProps) => {
           router.replace("/kyc");
           return;
         }
+        setUser(data.user);
         setAuthState("authenticated");
       } catch {
         if (cancelled) return;
@@ -63,7 +75,7 @@ const DashboardLayout = ({ children }: DashboardLayoutProps) => {
     <div className="min-h-screen">
       <div className="flex flex-col h-screen overflow-hidden">
         {/* Top Navigation */}
-        <TopNav onMenuClick={() => setIsSidebarOpen(true)} />
+        <TopNav onMenuClick={() => setIsSidebarOpen(true)} user={user} />
 
         {/* Sidebar Drawer */}
         <AnimatePresence>

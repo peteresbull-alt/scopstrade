@@ -1,6 +1,7 @@
 "use client";
 
 import { useState, useEffect } from "react";
+import { motion } from "framer-motion";
 import { apiFetch } from "@/lib/api";
 import BalanceCard from "@/components/dashboard/portfolio/BalanceCard";
 import {
@@ -22,6 +23,7 @@ interface DashboardData {
   totalWithdrawals: number;
   totalProfits: number;
   isVerified: boolean;
+  firstName: string;
 }
 
 export default function PortfolioPage() {
@@ -32,6 +34,7 @@ export default function PortfolioPage() {
     totalWithdrawals: 0,
     totalProfits: 0,
     isVerified: false,
+    firstName: "",
   });
 
   // Modal states
@@ -58,6 +61,13 @@ export default function PortfolioPage() {
     setShowHistory(false);
   };
 
+  const getGreeting = () => {
+    const hour = new Date().getHours();
+    if (hour < 12) return "Good morning";
+    if (hour < 17) return "Good afternoon";
+    return "Good evening";
+  };
+
   const fetchDashboardData = async () => {
     try {
       // Fetch user profile for balance info
@@ -72,6 +82,7 @@ export default function PortfolioPage() {
           availableBalance: parseFloat(user.balance) || 0,
           totalProfits: parseFloat(user.profit) || 0,
           isVerified: user.is_verified || false,
+          firstName: user.first_name || "",
         }));
       }
 
@@ -108,9 +119,23 @@ export default function PortfolioPage() {
       console.error("Error fetching dashboard data:", err);
     }
   };
- 
+
   return (
     <div className="space-y-4">
+      {/* Greeting */}
+      <motion.div
+        initial={{ opacity: 0, y: -10 }}
+        animate={{ opacity: 1, y: 0 }}
+        transition={{ duration: 0.4 }}
+      >
+        <h1 className="text-xl font-bold text-gray-900 dark:text-white">
+          {getGreeting()}, {dashboardData.firstName || "Trader"}
+        </h1>
+        <p className="text-sm text-gray-500 dark:text-gray-400 mt-0.5">
+          Here&apos;s an overview of your portfolio and trading activity
+        </p>
+      </motion.div>
+
       {/* ROW 1: Balance Card (2/3) + Right Sidebar (1/3) */}
       <div className="grid grid-cols-1 lg:grid-cols-3 gap-4">
         <div className="lg:col-span-2">
@@ -129,7 +154,12 @@ export default function PortfolioPage() {
 
         <div className="flex flex-col gap-4">
           <LiveTradingCard />
-          <AssetAllocationCard />
+          <AssetAllocationCard
+            balance={dashboardData.balance}
+            totalDeposits={dashboardData.totalDeposits}
+            totalWithdrawals={dashboardData.totalWithdrawals}
+            totalProfits={dashboardData.totalProfits}
+          />
         </div>
       </div>
 

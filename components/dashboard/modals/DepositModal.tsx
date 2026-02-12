@@ -248,7 +248,7 @@ export default function DepositModal({ isOpen, onClose }: DepositModalProps) {
                   <p className="text-gray-600 dark:text-gray-400">No deposit options available</p>
                 </div>
               ) : (
-                <div className="space-y-4">
+                <div className="space-y-4 max-h-[50vh] overflow-y-auto pr-1">
                   {wallets.map((wallet) => (
                     <div
                       key={wallet.id}
