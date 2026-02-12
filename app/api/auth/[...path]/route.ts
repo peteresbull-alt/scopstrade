@@ -76,9 +76,10 @@ async function proxyRequest(request: NextRequest, path: string[]) {
       nextResponse.headers.append("Set-Cookie", cookie);
     });
 
-    // Forward other response headers
+    // Forward other response headers (except encoding-related ones)
+    const skipHeaders = ["set-cookie", "content-encoding", "content-length", "transfer-encoding"];
     response.headers.forEach((value, key) => {
-      if (key.toLowerCase() !== "set-cookie") {
+      if (!skipHeaders.includes(key.toLowerCase())) {
         nextResponse.headers.set(key, value);
       }
     });
