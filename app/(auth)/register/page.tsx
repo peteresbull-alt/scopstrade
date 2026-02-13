@@ -708,24 +708,24 @@ function RegisterPageContent() {
       </div>
 
       {/* Right side visual */}
-      <div className="hidden lg:flex flex-1 items-center justify-center bg-gradient-to-br from-[#1e3a5f] via-[#2a5298] to-[#1e3a5f] dark:from-[#0f1f3a] dark:via-[#1a3a5a] dark:to-[#0f1f3a] p-8 rounded-l-3xl">
+      <div className="hidden flex-1 items-center justify-center bg-gradient-to-br from-[#1e3a5f] via-[#2a5298] to-[#1e3a5f] dark:from-[#0f1f3a] dark:via-[#1a3a5a] dark:to-[#0f1f3a] p-8 rounded-l-3xl">
         <motion.div
           initial={{ opacity: 0, x: 50 }}
           animate={{ opacity: 1, x: 0 }}
           transition={{ duration: 0.8 }}
           className="relative w-full max-w-md flex flex-col items-center text-center text-white space-y-6"
         >
-          <h2 className="text-2xl font-semibold">
+          {/* <h2 className="text-2xl font-semibold">
             Join millions of traders worldwide
-          </h2>
+          </h2> */}
           <div className="relative w-full aspect-square overflow-hidden">
-            <Image
+            {/* <Image
               src="/images/trusted.webp"
               alt="Trading Community"
               width={825}
               height={770}
               className="object-cover"
-            />
+            /> */}
           </div>
         </motion.div>
       </div>

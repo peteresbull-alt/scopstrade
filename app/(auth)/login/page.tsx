@@ -297,31 +297,7 @@ export default function LoginPage() {
             </p>
           </form>
 
-          <div className="text-left flex flex-col justify-center mx-auto gap-2 w-fit p-5 rounded-2xl">
-            <Image
-              src={"/trustpilot_images/logo_dark.svg"}
-              width={120}
-              height={120}
-              alt=""
-              className=" dark:hidden block"
-            />
-            <Image
-              src={"/trustpilot_images/logo.svg"}
-              width={120}
-              height={120}
-              alt=""
-              className="dark:block hidden"
-            />
-            <Image
-              src={"/trustpilot_images/star.svg"}
-              width={120}
-              height={120}
-              alt=""
-            />
-            <div className="text-[12px] text-gray-800 dark:text-white">
-              TrustScore <span className="font-bold">4.8</span>
-            </div>
-          </div>
+          
           <div className="text-center mt-1 text-sm space-y-2.5">
             <p className="text-gray-400 dark:text-white">
               Copyright &copy; {new Date().getFullYear()} ScopsTrade
@@ -340,26 +316,26 @@ export default function LoginPage() {
       </div>
 
       {/* Right side: Visual section */}
-      <div className="hidden lg:flex flex-1 items-center justify-center bg-gradient-to-br from-[#1e3a5f] via-[#2a5298] to-[#1e3a5f] dark:from-[#0f1f3a] dark:via-[#1a3a5a] dark:to-[#0f1f3a] p-8 rounded-l-3xl">
+      <div className="hidden flex-1 items-center justify-center bg-gradient-to-br from-[#1e3a5f] via-[#2a5298] to-[#1e3a5f] dark:from-[#0f1f3a] dark:via-[#1a3a5a] dark:to-[#0f1f3a] p-8 rounded-l-3xl">
         <motion.div
           initial={{ opacity: 0, x: 50 }}
           animate={{ opacity: 1, x: 0 }}
           transition={{ duration: 0.8 }}
           className="relative w-full max-w-md flex flex-col items-center text-center text-white space-y-6"
         >
-          <h2 className="text-2xl font-semibold">
+          {/* <h2 className="text-2xl font-semibold">
             Trusted by millions of traders worldwide
-          </h2>
+          </h2> */}
 
           {/* Full image */}
           <div className="relative w-full aspect-square overflow-hidden">
-            <Image
+            {/* <Image
               src="/images/trusted.webp"
               alt="Trustpilot and Awards Section"
               width={825}
               height={770}
               className="object-cover"
-            />
+            /> */}
           </div>
         </motion.div>
       </div>

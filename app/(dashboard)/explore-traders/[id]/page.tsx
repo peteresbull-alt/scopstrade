@@ -1,20 +1,32 @@
 "use client";
 
-import React, { useEffect, useState } from "react";
-import { ArrowLeft, Info, TrendingUp, TrendingDown, X } from "lucide-react";
+import React, { useEffect, useState, useMemo } from "react";
+import {
+  ArrowLeft,
+  Info,
+  TrendingUp,
+  TrendingDown,
+  X,
+  Users,
+  Calendar,
+  DollarSign,
+  UserCheck,
+  Shield,
+} from "lucide-react";
 import { toast } from "sonner";
 import {
-  PieChart,
-  Pie,
-  Cell,
+  AreaChart,
+  Area,
+  XAxis,
+  YAxis,
   ResponsiveContainer,
-  Legend,
   Tooltip,
+  CartesianGrid,
 } from "recharts";
 import Link from "next/link";
 import { useTheme } from "next-themes";
 import Image from "next/image";
-import { useParams, useRouter } from "next/navigation";
+import { useParams } from "next/navigation";
 import { PulseLoader } from "react-spinners";
 import { apiFetch } from "@/lib/api";
 
@@ -48,6 +60,23 @@ interface TraderDetail {
   performance_data: Array<{ month: string; value: number }>;
   monthly_performance: Array<{ month: string; percentage: number }>;
   frequently_traded: string[];
+  bio: string;
+  followers: number;
+  trading_days: string;
+  trend_direction: string;
+  tags: string[];
+  category: string;
+  max_drawdown: string;
+  cumulative_earnings_copiers: string;
+  cumulative_copiers: number;
+  portfolio_breakdown: Array<{ name: string; percentage: number }>;
+  top_traded: Array<{
+    name: string;
+    ticker: string;
+    avg_profit: number;
+    avg_loss: number;
+    profitable_pct: number;
+  }>;
   is_active: boolean;
   created_at: string;
   updated_at: string;
@@ -61,19 +90,104 @@ interface UserProfile {
   };
 }
 
-// Recharts-compatible data interface
-interface PieChartDataItem {
+interface SimilarTrader {
+  id: number;
   name: string;
-  value: number;
-  [key: string]: string | number;
+  username: string;
+  avatar_url: string | null;
+  gain: string;
+  copiers: number;
+  risk: number;
+  trend_direction: string;
+  category: string;
 }
+
+// Generate synthetic chart data based on trend direction
+function generateChartData(
+  direction: string,
+  period: string
+): Array<{ label: string; value: number }> {
+  const periods: Record<string, { count: number; labels: string[] }> = {
+    "1D": {
+      count: 24,
+      labels: Array.from({ length: 24 }, (_, i) => `${i}:00`),
+    },
+    "1W": {
+      count: 7,
+      labels: ["Mon", "Tue", "Wed", "Thu", "Fri", "Sat", "Sun"],
+    },
+    "1M": {
+      count: 30,
+      labels: Array.from({ length: 30 }, (_, i) => `${i + 1}`),
+    },
+    "3M": {
+      count: 12,
+      labels: [
+        "W1", "W2", "W3", "W4", "W5", "W6",
+        "W7", "W8", "W9", "W10", "W11", "W12",
+      ],
+    },
+    "1Y": {
+      count: 12,
+      labels: [
+        "Jan", "Feb", "Mar", "Apr", "May", "Jun",
+        "Jul", "Aug", "Sep", "Oct", "Nov", "Dec",
+      ],
+    },
+  };
+
+  const config = periods[period] || periods["1M"];
+  const isUp = direction === "upward";
+  const data: Array<{ label: string; value: number }> = [];
+
+  let seed = period.charCodeAt(0) * 100;
+  const pseudoRandom = () => {
+    seed = (seed * 9301 + 49297) % 233280;
+    return seed / 233280;
+  };
+
+  const baseValue = 10000;
+  let current = baseValue;
+
+  for (let i = 0; i < config.count; i++) {
+    const progress = i / (config.count - 1);
+    const noise = (pseudoRandom() - 0.5) * 800;
+
+    if (isUp) {
+      current = baseValue + progress * 5000 + noise;
+    } else {
+      current = baseValue + 5000 - progress * 5000 + noise;
+    }
+
+    data.push({
+      label: config.labels[i],
+      value: Math.max(current, 1000),
+    });
+  }
+
+  return data;
+}
+
+// Color palette for portfolio breakdown - green shades like screenshot
+const portfolioColors = [
+  "#365314", // dark green
+  "#84cc16", // lime
+  "#bef264", // light lime
+  "#3b82f6",
+  "#10b981",
+  "#f59e0b",
+  "#8b5cf6",
+  "#ec4899",
+];
 
 export default function TraderProfilePage() {
   const params = useParams();
-  const router = useRouter();
   const traderId = params.id;
 
-  const [activeTab, setActiveTab] = useState<"overview" | "stats">("overview");
+  const [activeTab, setActiveTab] = useState<
+    "overview" | "portfolio" | "history" | "copiers"
+  >("overview");
+  const [chartPeriod, setChartPeriod] = useState("1Y");
   const [trader, setTrader] = useState<TraderDetail | null>(null);
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState<string | null>(null);
@@ -81,18 +195,17 @@ export default function TraderProfilePage() {
   const [isCopying, setIsCopying] = useState(false);
   const [loadingBalance, setLoadingBalance] = useState(false);
   const [copyActionLoading, setCopyActionLoading] = useState(false);
+  const [similarTraders, setSimilarTraders] = useState<SimilarTrader[]>([]);
 
   const { theme, resolvedTheme } = useTheme();
   const [mounted, setMounted] = useState(false);
   useEffect(() => setMounted(true), []);
 
-  // Fetch user balance
   useEffect(() => {
     fetchUserBalance();
     // eslint-disable-next-line react-hooks/exhaustive-deps
   }, []);
 
-  // Fetch trader details
   useEffect(() => {
     if (traderId) {
       fetchTraderDetails();
@@ -101,23 +214,25 @@ export default function TraderProfilePage() {
     // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [traderId]);
 
+  // Fetch similar traders when trader loads
+  useEffect(() => {
+    if (trader) {
+      fetchSimilarTraders();
+    }
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, [trader]);
+
   const fetchUserBalance = async () => {
     try {
       setLoadingBalance(true);
       const response = await apiFetch("/profile/");
-
-      if (!response.ok) {
-        throw new Error("Failed to fetch balance");
-      }
-
+      if (!response.ok) throw new Error("Failed to fetch balance");
       const data: UserProfile = await response.json();
-
       if (data?.success && data?.user?.balance) {
         setUserBalance(parseFloat(data.user.balance));
       }
     } catch (err) {
       console.error("Error fetching balance:", err);
-      // Silent fail - user can still view trader
     } finally {
       setLoadingBalance(false);
     }
@@ -127,13 +242,8 @@ export default function TraderProfilePage() {
     try {
       setLoading(true);
       setError(null);
-
       const response = await apiFetch(`/traders/${traderId}/`);
-
-      if (!response.ok) {
-        throw new Error("Failed to fetch trader details");
-      }
-
+      if (!response.ok) throw new Error("Failed to fetch trader details");
       const data: TraderDetail = await response.json();
       setTrader(data);
     } catch (err) {
@@ -144,61 +254,54 @@ export default function TraderProfilePage() {
     }
   };
 
+  const fetchSimilarTraders = async () => {
+    try {
+      const response = await apiFetch("/traders/");
+      if (!response.ok) return;
+      const data: SimilarTrader[] = await response.json();
+      // Filter out current trader and limit to 4
+      const filtered = data
+        .filter((t) => t.id !== trader?.id)
+        .slice(0, 4);
+      setSimilarTraders(filtered);
+    } catch (err) {
+      console.error("Error fetching similar traders:", err);
+    }
+  };
+
   const fetchCopyStatus = async () => {
     try {
       const response = await apiFetch(`/copy-trader/status/${traderId}/`);
-
-      if (!response.ok) {
-        return; // Silent fail
-      }
-
+      if (!response.ok) return;
       const data = await response.json();
-
-      if (data.success && data.is_copying) {
-        setIsCopying(true);
-      }
+      if (data.success && data.is_copying) setIsCopying(true);
     } catch (err) {
       console.error("Error fetching copy status:", err);
-      // Silent fail - user just won't see copy status
     }
   };
 
   const handleCopyTrader = async () => {
     if (!trader) return;
-
     const minThreshold = parseFloat(trader.min_account_threshold);
-
     if (userBalance < minThreshold) {
       toast.error("Insufficient Balance", {
-        description: `You need at least $${minThreshold.toLocaleString()} to copy ${
-          trader.name
-        }. Your current balance: $${userBalance.toLocaleString()}`,
+        description: `You need at least $${minThreshold.toLocaleString()} to copy ${trader.name}. Your current balance: $${userBalance.toLocaleString()}`,
       });
       return;
     }
-
     setCopyActionLoading(true);
-
     try {
       const response = await apiFetch("/copy-trader/action/", {
         method: "POST",
-        body: JSON.stringify({
-          trader_id: trader.id,
-          action: "copy",
-        }),
+        body: JSON.stringify({ trader_id: trader.id, action: "copy" }),
       });
-
       if (!response.ok) {
         const errorData = await response.json();
         throw new Error(errorData.error || "Failed to copy trader");
       }
-
       const data = await response.json();
-
-      if (!data.success) {
+      if (!data.success)
         throw new Error(data.error || "Failed to copy trader");
-      }
-
       setIsCopying(true);
       toast.success("Copying Trader", {
         description: data.message || `You are now copying ${trader.name}`,
@@ -215,32 +318,23 @@ export default function TraderProfilePage() {
 
   const handleCancelCopy = async () => {
     if (!trader) return;
-
     setCopyActionLoading(true);
-
     try {
       const response = await apiFetch("/copy-trader/action/", {
         method: "POST",
-        body: JSON.stringify({
-          trader_id: trader.id,
-          action: "cancel",
-        }),
+        body: JSON.stringify({ trader_id: trader.id, action: "cancel" }),
       });
-
       if (!response.ok) {
         const errorData = await response.json();
         throw new Error(errorData.error || "Failed to cancel copy");
       }
-
       const data = await response.json();
-
-      if (!data.success) {
+      if (!data.success)
         throw new Error(data.error || "Failed to cancel copy");
-      }
-
       setIsCopying(false);
       toast.info("Copy Cancelled", {
-        description: data.message || `You have stopped copying ${trader.name}`,
+        description:
+          data.message || `You have stopped copying ${trader.name}`,
       });
     } catch (err) {
       console.error("Error canceling copy:", err);
@@ -259,65 +353,61 @@ export default function TraderProfilePage() {
   const getAvatarUrl = (avatarUrl: string | null, name: string): string => {
     return (
       avatarUrl ||
-      `https://ui-avatars.com/api/?name=${encodeURIComponent(
-        name
-      )}&background=random&size=128`
+      `https://ui-avatars.com/api/?name=${encodeURIComponent(name)}&background=random&size=128`
     );
   };
 
-  // Pie chart colors
-  const COLORS = {
-    wins: isLight ? "#10b981" : "#34d399",
-    losses: isLight ? "#ef4444" : "#f87171",
+  const chartData = useMemo(() => {
+    if (!trader) return [];
+    return generateChartData(trader.trend_direction || "upward", chartPeriod);
+  }, [trader, chartPeriod]);
+
+  const chartColor =
+    trader?.trend_direction === "downward" ? "#ef4444" : "#84cc16";
+
+  const earningsValue = useMemo(() => {
+    if (!chartData.length) return 0;
+    return chartData[chartData.length - 1].value;
+  }, [chartData]);
+
+  const earningsChange = useMemo(() => {
+    if (chartData.length < 2) return 0;
+    const first = chartData[0].value;
+    const last = chartData[chartData.length - 1].value;
+    return ((last - first) / first) * 100;
+  }, [chartData]);
+
+  const getRiskLabel = (risk: number) => {
+    if (risk <= 3) return "Conservative";
+    if (risk <= 6) return "Swing trader";
+    return "Aggressive";
   };
 
-  // Prepare pie chart data
-  const pieChartData: PieChartDataItem[] = trader
-    ? [
-        { name: "Wins", value: trader.total_wins },
-        { name: "Losses", value: trader.total_losses },
-      ]
-    : [];
-
-  // Custom label render function for Pie chart
-  const renderPieLabel = (props: Record<string, unknown>): string => {
-    const name = (props.name as string) || "";
-    const value = (props.value as number) || 0;
-    const percent = (props.percent as number) || 0;
-    return `${name}: ${value} (${(percent * 100).toFixed(0)}%)`;
-  };
-
-  // Loading State
   if (loading) {
     return (
-      <div className="min-h-screen">
-        <div className="flex justify-center items-center h-[calc(100vh-200px)]">
-          <PulseLoader color="#3b82f6" size={15} />
-        </div>
+      <div className="min-h-screen flex justify-center items-center">
+        <PulseLoader color="#3b82f6" size={15} />
       </div>
     );
   }
 
-  // Error State
   if (error || !trader) {
     return (
-      <div className="min-h-screen">
-        <div className="flex flex-col justify-center items-center h-[calc(100vh-200px)] gap-4">
-          <p className="text-red-500 text-lg">{error || "Trader not found"}</p>
-          <div className="flex gap-4">
-            <button
-              onClick={fetchTraderDetails}
-              className="px-6 py-2 bg-blue-500 hover:bg-blue-600 text-white rounded-lg transition-colors"
-            >
-              Retry
-            </button>
-            <Link
-              href="/explore-traders"
-              className="px-6 py-2 bg-gray-200 dark:bg-gray-700 hover:bg-gray-300 dark:hover:bg-gray-600 text-gray-900 dark:text-white rounded-lg transition-colors"
-            >
-              Back to Experts
-            </Link>
-          </div>
+      <div className="min-h-screen flex flex-col justify-center items-center gap-4">
+        <p className="text-red-500 text-lg">{error || "Trader not found"}</p>
+        <div className="flex gap-4">
+          <button
+            onClick={fetchTraderDetails}
+            className="px-6 py-2 bg-blue-500 hover:bg-blue-600 text-white rounded-lg transition-colors"
+          >
+            Retry
+          </button>
+          <Link
+            href="/explore-traders"
+            className="px-6 py-2 bg-gray-200 dark:bg-gray-700 hover:bg-gray-300 dark:hover:bg-gray-600 text-gray-900 dark:text-white rounded-lg transition-colors"
+          >
+            Back to Experts
+          </Link>
         </div>
       </div>
     );
@@ -326,234 +416,669 @@ export default function TraderProfilePage() {
   const minThreshold = parseFloat(trader.min_account_threshold);
   const hasEnoughBalance = userBalance >= minThreshold;
 
+  const totalPortfolio =
+    trader.portfolio_breakdown?.reduce(
+      (sum, item) => sum + item.percentage,
+      0
+    ) || 100;
+
   return (
     <div className="min-h-screen">
-      <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-8">
-        <div className="flex flex-col sm:flex-row items-start sm:items-center gap-4 sm:gap-5 justify-between mb-6">
-          <div className="flex items-center gap-3 sm:gap-4 w-full sm:w-auto">
-            <Image
-              src={getAvatarUrl(trader.avatar_url, trader.name)}
-              alt={trader.name}
-              width={100}
-              height={100}
-              className="w-16 h-16 sm:w-20 sm:h-20 rounded-full object-cover flex-shrink-0 border-2 border-gray-200 dark:border-gray-700"
-              unoptimized
-            />
-            <div className="min-w-0 flex-1">
-              <h1 className="text-base sm:text-lg font-bold truncate text-gray-900 dark:text-white">
-                {trader.name}
-              </h1>
-              <p className="text-gray-500 dark:text-gray-400 text-xs sm:text-sm truncate">
-                {trader.username}
-              </p>
+      <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-6">
+        {/* Back Button */}
+        <Link
+          href="/explore-traders"
+          className="inline-flex items-center gap-2 text-sm text-gray-500 dark:text-gray-400 hover:text-gray-700 dark:hover:text-gray-300 mb-6 transition-colors"
+        >
+          <ArrowLeft className="w-4 h-4" />
+          Back to Experts
+        </Link>
+
+        {/* Profile Header */}
+        <div className="bg-white dark:bg-[#1a2744] border border-gray-100 dark:border-white/5 rounded-2xl p-6 sm:p-8 mb-6">
+          <div className="flex flex-col sm:flex-row gap-6">
+            {/* Avatar */}
+            <div className="shrink-0">
+              <div className="relative">
+                <Image
+                  src={getAvatarUrl(trader.avatar_url, trader.name)}
+                  alt={trader.name}
+                  width={96}
+                  height={96}
+                  className="w-20 h-20 sm:w-24 sm:h-24 rounded-full object-cover border-4 border-emerald-100 dark:border-emerald-900/30"
+                  unoptimized
+                />
+                {trader.badge === "gold" && (
+                  <div className="absolute -bottom-1 -right-1 w-7 h-7 bg-yellow-400 rounded-full flex items-center justify-center shadow-md border-2 border-white dark:border-[#1a2744]">
+                    <span className="text-xs">&#x1F451;</span>
+                  </div>
+                )}
+              </div>
+            </div>
+
+            {/* Info */}
+            <div className="flex-1 min-w-0">
+              <div className="flex flex-col sm:flex-row sm:items-start sm:justify-between gap-4">
+                <div>
+                  <h1 className="text-xl sm:text-2xl font-bold text-gray-900 dark:text-white">
+                    {trader.name}
+                  </h1>
+                  <p className="text-gray-500 dark:text-gray-400 text-sm">
+                    @{trader.username}
+                  </p>
+                  {trader.bio && (
+                    <p className="text-gray-600 dark:text-gray-400 text-sm mt-2 max-w-xl leading-relaxed">
+                      {trader.bio}
+                    </p>
+                  )}
+                </div>
+
+                {/* Copy Button */}
+                <div className="flex gap-2 shrink-0">
+                  {!isCopying ? (
+                    <button
+                      onClick={handleCopyTrader}
+                      disabled={loadingBalance || copyActionLoading}
+                      className={`px-6 py-2.5 rounded-xl text-sm font-semibold transition-all flex items-center gap-2 ${
+                        loadingBalance || copyActionLoading
+                          ? "bg-gray-400 cursor-not-allowed text-white"
+                          : "bg-lime-500 hover:bg-lime-600 text-gray-900 shadow-lg shadow-lime-500/25 hover:shadow-lime-500/40"
+                      }`}
+                    >
+                      {loadingBalance
+                        ? "Loading..."
+                        : copyActionLoading
+                          ? "Processing..."
+                          : "Copy Trader"}
+                    </button>
+                  ) : (
+                    <>
+                      <span className="px-4 py-2.5 bg-emerald-100 dark:bg-emerald-500/10 text-emerald-700 dark:text-emerald-400 rounded-xl text-sm font-semibold flex items-center gap-1.5">
+                        <UserCheck className="w-4 h-4" />
+                        Copying
+                      </span>
+                      <button
+                        onClick={handleCancelCopy}
+                        disabled={copyActionLoading}
+                        className={`px-4 py-2.5 bg-red-500 hover:bg-red-600 text-white rounded-xl text-sm font-medium transition-all flex items-center gap-1.5 ${
+                          copyActionLoading ? "opacity-50 cursor-not-allowed" : ""
+                        }`}
+                      >
+                        <X className="w-4 h-4" />
+                        {copyActionLoading ? "..." : "Stop"}
+                      </button>
+                    </>
+                  )}
+                </div>
+              </div>
+
+              {/* Stats Row */}
+              <div className="flex flex-wrap gap-4 sm:gap-6 mt-5">
+                <div className="flex items-center gap-2">
+                  <DollarSign className="w-4 h-4 text-blue-500" />
+                  <div>
+                    <div className="text-sm font-bold text-gray-900 dark:text-white">
+                      ${parseFloat(trader.min_account_threshold).toLocaleString()}
+                    </div>
+                    <div className="text-[11px] text-gray-500 dark:text-gray-400">
+                      Min Capital
+                    </div>
+                  </div>
+                </div>
+                <div className="flex items-center gap-2">
+                  <Users className="w-4 h-4 text-purple-500" />
+                  <div>
+                    <div className="text-sm font-bold text-gray-900 dark:text-white">
+                      {trader.copiers.toLocaleString()}
+                    </div>
+                    <div className="text-[11px] text-gray-500 dark:text-gray-400">
+                      Copiers
+                    </div>
+                  </div>
+                </div>
+                <div className="flex items-center gap-2">
+                  <UserCheck className="w-4 h-4 text-emerald-500" />
+                  <div>
+                    <div className="text-sm font-bold text-gray-900 dark:text-white">
+                      {trader.followers.toLocaleString()}
+                    </div>
+                    <div className="text-[11px] text-gray-500 dark:text-gray-400">
+                      Followers
+                    </div>
+                  </div>
+                </div>
+                <div className="flex items-center gap-2">
+                  <Calendar className="w-4 h-4 text-orange-500" />
+                  <div>
+                    <div className="text-sm font-bold text-gray-900 dark:text-white">
+                      {trader.trading_days}
+                    </div>
+                    <div className="text-[11px] text-gray-500 dark:text-gray-400">
+                      Trading days
+                    </div>
+                  </div>
+                </div>
+              </div>
+
+              {/* Tags */}
+              {trader.tags && trader.tags.length > 0 && (
+                <div className="flex flex-wrap gap-2 mt-4">
+                  {trader.tags.map((tag, i) => (
+                    <span
+                      key={i}
+                      className="px-3 py-1 text-xs font-medium bg-blue-50 dark:bg-blue-500/10 text-blue-600 dark:text-blue-400 rounded-full border border-blue-100 dark:border-blue-500/20"
+                    >
+                      {tag}
+                    </span>
+                  ))}
+                </div>
+              )}
             </div>
           </div>
 
-          <div className="flex flex-row gap-2 sm:gap-3 w-full sm:w-auto">
-            {!isCopying ? (
-              <button
-                onClick={handleCopyTrader}
-                disabled={loadingBalance || copyActionLoading}
-                className={`flex-1 sm:flex-initial px-4 sm:px-6 py-2 sm:py-2.5 rounded-lg text-sm sm:text-base font-medium transition-all flex items-center justify-center gap-2 ${
-                  loadingBalance || copyActionLoading
-                    ? "bg-gray-400 cursor-not-allowed"
-                    : "bg-gradient-to-r from-blue-500 to-blue-600 hover:from-blue-600 hover:to-blue-700 text-white"
-                }`}
-              >
-                {loadingBalance
-                  ? "Loading..."
-                  : copyActionLoading
-                  ? "Processing..."
-                  : "Copy Trader"}
-              </button>
-            ) : (
-              <>
-                <button
-                  className="flex-1 sm:flex-initial px-4 sm:px-6 py-2 sm:py-2.5 bg-yellow-500 text-white rounded-lg text-sm sm:text-base font-medium transition-all flex items-center justify-center gap-2 cursor-default"
-                  disabled
-                >
-                  Copying
-                </button>
-                <button
-                  onClick={handleCancelCopy}
-                  disabled={copyActionLoading}
-                  className={`px-4 sm:px-6 py-2 sm:py-2.5 bg-red-500 hover:bg-red-600 text-white rounded-lg text-sm sm:text-base font-medium transition-all flex items-center justify-center gap-2 ${
-                    copyActionLoading ? "opacity-50 cursor-not-allowed" : ""
-                  }`}
-                >
-                  <X className="w-4 h-4" />
-                  {copyActionLoading ? "Cancelling..." : "Cancel"}
-                </button>
-              </>
-            )}
-          </div>
+          {/* Balance Warning */}
+          {!hasEnoughBalance && (
+            <div className="mt-4 p-3 bg-red-50 dark:bg-red-500/10 border border-red-200 dark:border-red-500/20 rounded-xl">
+              <p className="text-red-600 dark:text-red-400 text-sm">
+                Minimum balance required: $
+                {minThreshold.toLocaleString()} &bull; Your balance: $
+                {userBalance.toLocaleString()}
+              </p>
+            </div>
+          )}
         </div>
 
-        {/* Balance Warning */}
-        {!hasEnoughBalance && (
-          <div className="mb-6 p-4 bg-red-500/10 border border-red-500/30 rounded-lg">
-            <p className="text-red-600 dark:text-red-500 text-sm">
-              ⚠️ Minimum balance required: ${minThreshold.toLocaleString()} •
-              Your balance: ${userBalance.toLocaleString()}
-            </p>
-          </div>
-        )}
-
-        {/* Tabs */}
-        <div className="flex gap-4 sm:gap-6 border-b border-gray-200 dark:border-white/10 mb-6 overflow-x-auto scrollbar-hide">
+        {/* ========== TABS - Underline style like screenshot ========== */}
+        <div className="flex gap-6 sm:gap-8 border-b border-gray-200 dark:border-white/10 mb-6 overflow-x-auto scrollbar-hide">
           {[
             { id: "overview", label: "Overview" },
-            { id: "stats", label: "Stats" },
+            { id: "portfolio", label: "Portfolio" },
+            { id: "history", label: "Trade History" },
+            { id: "copiers", label: "Copiers" },
           ].map((t) => (
             <button
               key={t.id}
-              onClick={() => setActiveTab(t.id as "overview" | "stats")}
-              className={`pb-3 px-2 text-sm sm:text-base font-medium transition-all relative whitespace-nowrap ${
+              onClick={() =>
+                setActiveTab(
+                  t.id as "overview" | "portfolio" | "history" | "copiers"
+                )
+              }
+              className={`pb-3 text-sm font-medium whitespace-nowrap transition-all relative ${
                 activeTab === t.id
-                  ? "text-blue-600 dark:text-blue-500"
+                  ? "text-lime-600 dark:text-lime-400"
                   : "text-gray-500 dark:text-gray-400 hover:text-gray-700 dark:hover:text-gray-300"
               }`}
             >
-              <span className="flex items-center gap-2">{t.label}</span>
+              {t.label}
               {activeTab === t.id && (
-                <div className="absolute bottom-0 left-0 right-0 h-0.5 bg-blue-600 dark:bg-blue-500" />
+                <div className="absolute bottom-0 left-0 right-0 h-0.5 bg-lime-500 dark:bg-lime-400 rounded-full" />
               )}
             </button>
           ))}
         </div>
 
-        {/* Content */}
+        {/* ========== OVERVIEW TAB ========== */}
         {activeTab === "overview" && (
-          <div className="grid grid-cols-1 lg:grid-cols-3 gap-4 sm:gap-6">
-            {/* Key Metrics */}
-            <div className="lg:col-span-3 grid grid-cols-2 sm:grid-cols-4 gap-4 sm:gap-6">
-              <div className="bg-white dark:bg-[#1a2744] border border-gray-200 dark:border-white/10 rounded-xl p-4 sm:p-6 flex flex-col items-center justify-center">
-                <div className="text-base sm:text-lg font-bold mb-2 text-gray-900 dark:text-white">
-                  $
-                  {parseFloat(trader.min_account_threshold).toLocaleString(
-                    undefined,
-                    {
-                      minimumFractionDigits: 2,
-                      maximumFractionDigits: 2,
-                    }
-                  )}
+          <>
+            <div className="grid grid-cols-1 lg:grid-cols-3 gap-6">
+              {/* Earnings Chart */}
+              <div className="lg:col-span-2 bg-white dark:bg-[#1a2744] border border-gray-100 dark:border-white/5 rounded-2xl p-5 sm:p-6">
+                <div className="mb-1">
+                  <h2 className="text-sm font-medium text-gray-500 dark:text-gray-400">
+                    Earnings
+                  </h2>
+                  <p className="text-xs text-gray-400 dark:text-gray-500">
+                    {new Date().getFullYear()}-{String(new Date().getMonth() + 1).padStart(2, "0")}-{new Date().getFullYear()}
+                  </p>
                 </div>
-                <div className="text-gray-500 dark:text-gray-400 text-xs sm:text-sm font-medium">
-                  Starting Capital
-                </div>
-              </div>
 
-              <div className="bg-white dark:bg-[#1a2744] border border-gray-200 dark:border-white/10 rounded-xl p-4 sm:p-6 flex flex-col items-center justify-center">
-                <div
-                  className={`text-base sm:text-lg font-bold mb-2 ${
-                    parseFloat(trader.gain) >= 0
-                      ? "text-emerald-500 dark:text-emerald-400"
-                      : "text-red-500 dark:text-red-400"
-                  }`}
-                >
-                  {parseFloat(trader.gain) >= 0 ? "+" : ""}
-                  {trader.gain}%
+                {/* Period Selector */}
+                <div className="flex gap-1 mb-4">
+                  {["1D", "1W", "1M", "3M", "1Y"].map((p) => (
+                    <button
+                      key={p}
+                      onClick={() => setChartPeriod(p)}
+                      className={`px-4 py-2 text-xs font-medium border transition-all ${
+                        chartPeriod === p
+                          ? "border-gray-400 dark:border-gray-500 bg-gray-100 dark:bg-[#0f1d32] text-gray-900 dark:text-white"
+                          : "border-gray-200 dark:border-white/10 text-gray-500 dark:text-gray-400 hover:border-gray-300 dark:hover:border-white/20"
+                      }`}
+                    >
+                      {p}
+                    </button>
+                  ))}
                 </div>
-                <div className="text-gray-500 dark:text-gray-400 text-xs sm:text-sm font-medium">
-                  Total Gain
-                </div>
-              </div>
 
-              <div className="bg-white dark:bg-[#1a2744] border border-gray-200 dark:border-white/10 rounded-xl p-4 sm:p-6 flex flex-col items-center justify-center">
-                <div className="flex flex-col items-center gap-2 mb-2">
-                  <div
-                    className={`${
-                      trader.risk <= 2
-                        ? "bg-emerald-500 dark:bg-emerald-600"
-                        : trader.risk <= 4
-                        ? "bg-yellow-500 dark:bg-yellow-600"
-                        : "bg-red-500 dark:bg-red-600"
-                    } text-white text-sm md:text-xl w-8 h-8 sm:w-12 sm:h-12 rounded-full flex items-center justify-center font-bold shadow-lg`}
+                {/* Value */}
+                <div className="flex items-baseline gap-3 mb-6">
+                  <span className="text-2xl sm:text-3xl font-bold text-gray-900 dark:text-white">
+                    ${earningsValue.toLocaleString(undefined, { minimumFractionDigits: 2, maximumFractionDigits: 2 })}
+                  </span>
+                  <span
+                    className={`text-sm font-semibold ${
+                      earningsChange >= 0
+                        ? "text-lime-500"
+                        : "text-red-500"
+                    }`}
                   >
-                    {trader.risk}
-                  </div>
+                    {earningsChange >= 0 ? "+" : ""}
+                    {earningsChange.toFixed(1)}%
+                  </span>
                 </div>
-                <div className="text-gray-500 dark:text-gray-400 text-xs sm:text-sm font-medium">
-                  Risk Level
-                </div>
-              </div>
 
-              <div className="bg-white dark:bg-[#1a2744] border border-gray-200 dark:border-white/10 rounded-xl p-4 sm:p-6 flex flex-col items-center justify-center">
-                <div className="text-base sm:text-lg font-bold mb-2 text-gray-900 dark:text-white">
-                  {trader.copiers.toLocaleString()}
-                </div>
-                <div className="text-gray-500 dark:text-gray-400 text-xs sm:text-sm font-medium">
-                  Copiers
-                </div>
-              </div>
-            </div>
-
-            {/* Wins vs Losses Pie Chart */}
-            <div className="bg-white dark:bg-[#1a2744] border border-gray-200 dark:border-white/10 rounded-xl p-4 sm:p-6 col-span-1 lg:col-span-2">
-              <div className="flex flex-col sm:flex-row items-start sm:items-center justify-between gap-3 mb-4">
-                <h2 className="text-sm sm:text-base font-bold text-gray-900 dark:text-white">Wins vs Losses</h2>
-              </div>
-
-              {trader.total_wins + trader.total_losses > 0 ? (
-                <div className="h-64 sm:h-72 md:h-80 w-full">
+                {/* Chart */}
+                <div className="h-56 sm:h-64">
                   <ResponsiveContainer width="100%" height="100%">
-                    <PieChart>
-                      <Pie
-                        data={pieChartData}
-                        cx="50%"
-                        cy="50%"
-                        labelLine={false}
-                        label={renderPieLabel as never}
-                        outerRadius={80}
-                        fill="#8884d8"
-                        dataKey="value"
-                      >
-                        {pieChartData.map((entry, index) => (
-                          <Cell
-                            key={`cell-${index}`}
-                            fill={
-                              entry.name === "Wins"
-                                ? COLORS.wins
-                                : COLORS.losses
-                            }
+                    <AreaChart data={chartData}>
+                      <defs>
+                        <linearGradient
+                          id="chartGradient"
+                          x1="0"
+                          y1="0"
+                          x2="0"
+                          y2="1"
+                        >
+                          <stop
+                            offset="0%"
+                            stopColor={chartColor}
+                            stopOpacity={0.3}
                           />
-                        ))}
-                      </Pie>
+                          <stop
+                            offset="100%"
+                            stopColor={chartColor}
+                            stopOpacity={0}
+                          />
+                        </linearGradient>
+                      </defs>
+                      <CartesianGrid
+                        strokeDasharray="3 3"
+                        stroke={isLight ? "#f1f5f9" : "#1e293b"}
+                        vertical={false}
+                      />
+                      <XAxis
+                        dataKey="label"
+                        axisLine={false}
+                        tickLine={false}
+                        tick={{
+                          fontSize: 11,
+                          fill: isLight ? "#94a3b8" : "#64748b",
+                        }}
+                        interval="preserveStartEnd"
+                      />
+                      <YAxis
+                        axisLine={false}
+                        tickLine={false}
+                        tick={{
+                          fontSize: 11,
+                          fill: isLight ? "#94a3b8" : "#64748b",
+                        }}
+                        tickFormatter={(v) => `$${(v / 1000).toFixed(0)}K`}
+                        width={55}
+                      />
                       <Tooltip
                         contentStyle={{
                           backgroundColor: isLight ? "#ffffff" : "#1e293b",
-                          border: `1px solid ${
-                            isLight ? "#e2e8f0" : "#334155"
-                          }`,
-                          borderRadius: 8,
+                          border: `1px solid ${isLight ? "#e2e8f0" : "#334155"}`,
+                          borderRadius: 12,
                           color: isLight ? "#0f1724" : "#fff",
+                          fontSize: 13,
                         }}
+                        formatter={(value) => [
+                          `$${Number(value).toLocaleString(undefined, { maximumFractionDigits: 0 })}`,
+                          "Value",
+                        ]}
                       />
-                      <Legend />
-                    </PieChart>
+                      <Area
+                        type="monotone"
+                        dataKey="value"
+                        stroke={chartColor}
+                        strokeWidth={2}
+                        fill="url(#chartGradient)"
+                      />
+                    </AreaChart>
                   </ResponsiveContainer>
                 </div>
-              ) : (
-                <div className="h-64 flex items-center justify-center text-gray-400 dark:text-gray-500">
-                  <div className="text-center">
-                    <Info className="w-12 h-12 mx-auto mb-2 opacity-50" />
-                    <p>No trading data available</p>
+              </div>
+
+              {/* Profile Data Sidebar */}
+              <div className="bg-white dark:bg-[#1a2744] border border-gray-100 dark:border-white/5 rounded-2xl p-5 sm:p-6">
+                <h2 className="text-lg sm:text-xl font-bold text-gray-900 dark:text-white mb-6">
+                  Profile data
+                </h2>
+                <div className="space-y-0">
+                  {[
+                    {
+                      label: "Master\u2019s P/L",
+                      value: `${parseFloat(trader.gain) >= 0 ? "+" : ""}${trader.gain}`,
+                      isGain: true,
+                      showTrend: true,
+                    },
+                    {
+                      label: "Minimum Capital",
+                      value: `$${parseFloat(trader.min_account_threshold).toLocaleString(undefined, { minimumFractionDigits: 2 })}`,
+                    },
+                    {
+                      label: "Max. Drawdown",
+                      value: `${trader.max_drawdown}%`,
+                      isRed: parseFloat(trader.max_drawdown) > 0,
+                    },
+                    {
+                      label: "Risk",
+                      value: getRiskLabel(trader.risk),
+                      isBold: true,
+                    },
+                    {
+                      label: "Cum. Earnings of Copiers",
+                      value: `+${parseFloat(trader.cumulative_earnings_copiers).toLocaleString(undefined, { minimumFractionDigits: 2 })}`,
+                      isGain: true,
+                      showTrend: true,
+                    },
+                    {
+                      label: "Cum. Copiers",
+                      value: trader.cumulative_copiers.toLocaleString(),
+                      isBold: true,
+                    },
+                  ].map((item, i) => (
+                    <div
+                      key={i}
+                      className="flex items-center justify-between py-4 border-b border-gray-100 dark:border-white/5 last:border-0"
+                    >
+                      <span className="text-sm text-gray-500 dark:text-gray-400">
+                        {item.label}
+                      </span>
+                      <span
+                        className={`text-sm font-bold flex items-center gap-1 ${
+                          item.isGain
+                            ? "text-emerald-500"
+                            : item.isRed
+                              ? "text-red-500"
+                              : "text-gray-900 dark:text-white"
+                        }`}
+                      >
+                        {item.value}
+                        {item.showTrend && (
+                          <svg
+                            width="16"
+                            height="10"
+                            viewBox="0 0 16 10"
+                            fill="none"
+                          >
+                            <path
+                              d="M1,8 L4,6 L8,7 L12,3 L15,1"
+                              stroke="currentColor"
+                              strokeWidth="1.5"
+                              strokeLinecap="round"
+                            />
+                          </svg>
+                        )}
+                      </span>
+                    </div>
+                  ))}
+                </div>
+              </div>
+
+              {/* Top Traded */}
+              <div className="lg:col-span-2 bg-white dark:bg-[#1a2744] border border-gray-100 dark:border-white/5 rounded-2xl p-5 sm:p-6">
+                <h2 className="text-base font-bold text-gray-900 dark:text-white mb-4">
+                  Top traded
+                </h2>
+                {trader.top_traded && trader.top_traded.length > 0 ? (
+                  <div className="overflow-x-auto -mx-5 sm:-mx-6 px-5 sm:px-6">
+                    <table className="w-full min-w-[500px]">
+                      <thead>
+                        <tr className="border-b border-gray-100 dark:border-white/5">
+                          <th className="text-left pb-3 text-xs font-medium text-gray-500 dark:text-gray-400">
+                            Asset
+                          </th>
+                          <th className="text-left pb-3 text-xs font-medium text-gray-500 dark:text-gray-400">
+                            Avg profit
+                          </th>
+                          <th className="text-left pb-3 text-xs font-medium text-gray-500 dark:text-gray-400">
+                            Avg Loss
+                          </th>
+                          <th className="text-left pb-3 text-xs font-medium text-gray-500 dark:text-gray-400">
+                            Profitable
+                          </th>
+                        </tr>
+                      </thead>
+                      <tbody>
+                        {trader.top_traded.map((asset, i) => (
+                          <tr
+                            key={i}
+                            className="border-b border-gray-50 dark:border-white/3 last:border-0"
+                          >
+                            <td className="py-4">
+                              <div className="flex items-center gap-3">
+                                <div className="w-10 h-10 rounded-full bg-gray-900 dark:bg-gray-800 flex items-center justify-center shrink-0">
+                                  <span className="text-white text-sm font-bold">
+                                    {asset.ticker?.charAt(0) || asset.name.charAt(0)}
+                                  </span>
+                                </div>
+                                <div>
+                                  <div className="text-sm font-semibold text-gray-900 dark:text-white">
+                                    {asset.name}
+                                  </div>
+                                  <div className="text-xs text-gray-500 dark:text-gray-400">
+                                    {asset.ticker}
+                                  </div>
+                                </div>
+                              </div>
+                            </td>
+                            <td className="py-4">
+                              <span className="text-sm font-semibold text-emerald-500">
+                                {asset.avg_profit}%
+                              </span>
+                              <div className="text-[10px] text-gray-400 dark:text-gray-500">
+                                Avg profit
+                              </div>
+                            </td>
+                            <td className="py-4">
+                              <span className="text-sm font-semibold text-red-500">
+                                -{Math.abs(asset.avg_loss)}%
+                              </span>
+                              <div className="text-[10px] text-gray-400 dark:text-gray-500">
+                                Avg Loss
+                              </div>
+                            </td>
+                            <td className="py-4">
+                              <span className="text-sm font-semibold text-emerald-500">
+                                {asset.profitable_pct}%
+                              </span>
+                              <div className="text-[10px] text-gray-400 dark:text-gray-500">
+                                Profitable
+                              </div>
+                            </td>
+                          </tr>
+                        ))}
+                      </tbody>
+                    </table>
+                  </div>
+                ) : (
+                  <div className="flex flex-col items-center justify-center py-10 text-gray-400 dark:text-gray-500">
+                    <Info className="w-10 h-10 mb-2 opacity-50" />
+                    <p className="text-sm">No top traded data available</p>
+                  </div>
+                )}
+              </div>
+
+              {/* Portfolio Breakdown */}
+              <div className="bg-white dark:bg-[#1a2744] border border-gray-100 dark:border-white/5 rounded-2xl p-5 sm:p-6">
+                <h2 className="text-base font-bold text-gray-900 dark:text-white mb-5">
+                  Profile breakdown
+                </h2>
+                {trader.portfolio_breakdown &&
+                trader.portfolio_breakdown.length > 0 ? (
+                  <>
+                    {/* Stacked Bar */}
+                    <div className="flex rounded-lg overflow-hidden h-8 mb-6">
+                      {trader.portfolio_breakdown.map((item, i) => (
+                        <div
+                          key={i}
+                          style={{
+                            width: `${(item.percentage / totalPortfolio) * 100}%`,
+                            backgroundColor:
+                              portfolioColors[i % portfolioColors.length],
+                          }}
+                          className="transition-all"
+                        />
+                      ))}
+                    </div>
+
+                    {/* Legend */}
+                    <div className="space-y-3">
+                      {trader.portfolio_breakdown.map((item, i) => (
+                        <div
+                          key={i}
+                          className="flex items-center justify-between"
+                        >
+                          <div className="flex items-center gap-2.5">
+                            <div
+                              className="w-3 h-3 rounded-sm"
+                              style={{
+                                backgroundColor:
+                                  portfolioColors[i % portfolioColors.length],
+                              }}
+                            />
+                            <span className="text-sm text-gray-600 dark:text-gray-400">
+                              {item.name}
+                            </span>
+                          </div>
+                          <span className="text-sm font-bold text-gray-900 dark:text-white">
+                            {item.percentage}%
+                          </span>
+                        </div>
+                      ))}
+                    </div>
+                  </>
+                ) : (
+                  <div className="flex flex-col items-center justify-center py-10 text-gray-400 dark:text-gray-500">
+                    <Info className="w-10 h-10 mb-2 opacity-50" />
+                    <p className="text-sm">No portfolio data available</p>
+                  </div>
+                )}
+              </div>
+            </div>
+
+            {/* ========== SIMILAR TRADERS ========== */}
+            {similarTraders.length > 0 && (
+              <div className="mt-10">
+                <h2 className="text-xl sm:text-2xl font-bold text-gray-900 dark:text-white mb-1">
+                  Similar traders
+                </h2>
+                <p className="text-sm text-gray-500 dark:text-gray-400 mb-6">
+                  Investors that trade just like {trader.username}
+                </p>
+
+                <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-4">
+                  {similarTraders.map((st) => (
+                    <Link
+                      key={st.id}
+                      href={`/explore-traders/${st.id}`}
+                      className="group bg-white dark:bg-[#1a2744] border border-gray-100 dark:border-white/5 rounded-xl p-4 hover:shadow-lg transition-all"
+                    >
+                      <div className="flex items-center gap-3 mb-3">
+                        <div className="w-10 h-10 rounded-full overflow-hidden bg-lime-400 shrink-0">
+                          {st.avatar_url ? (
+                            <Image
+                              src={st.avatar_url}
+                              width={40}
+                              height={40}
+                              alt={st.name}
+                              className="w-full h-full object-cover"
+                              unoptimized
+                            />
+                          ) : (
+                            <div className="w-full h-full flex items-center justify-center text-gray-900 font-bold text-sm">
+                              {st.name.charAt(0)}
+                            </div>
+                          )}
+                        </div>
+                        <div className="min-w-0">
+                          <h3 className="text-sm font-semibold text-gray-900 dark:text-white truncate">
+                            {st.name}
+                          </h3>
+                          <p className="text-xs text-gray-500 dark:text-gray-400 truncate">
+                            {st.username}
+                          </p>
+                        </div>
+                      </div>
+                      <div className="flex justify-between text-sm">
+                        <div>
+                          <span className="font-bold text-gray-900 dark:text-white">
+                            {parseFloat(st.gain).toFixed(2)}%
+                          </span>
+                          <p className="text-[10px] text-gray-400">
+                            Profit (1M)
+                          </p>
+                        </div>
+                        <div className="text-right">
+                          <span className="font-bold text-gray-900 dark:text-white">
+                            {st.copiers.toLocaleString()}
+                          </span>
+                          <p className="text-[10px] text-gray-400">
+                            Copiers
+                          </p>
+                        </div>
+                      </div>
+                    </Link>
+                  ))}
+                </div>
+              </div>
+            )}
+          </>
+        )}
+
+        {/* ========== PORTFOLIO TAB ========== */}
+        {activeTab === "portfolio" && (
+          <div className="grid grid-cols-1 lg:grid-cols-2 gap-6">
+            {/* Win Rate */}
+            <div className="bg-white dark:bg-[#1a2744] border border-gray-100 dark:border-white/5 rounded-2xl p-6">
+              <h2 className="text-base font-bold text-gray-900 dark:text-white mb-6">
+                Win Rate
+              </h2>
+              <div className="flex items-center justify-center mb-6">
+                <div className="relative w-40 h-40">
+                  <svg
+                    className="w-full h-full -rotate-90"
+                    viewBox="0 0 100 100"
+                  >
+                    <circle
+                      cx="50"
+                      cy="50"
+                      r="40"
+                      fill="none"
+                      stroke={isLight ? "#f1f5f9" : "#1e293b"}
+                      strokeWidth="8"
+                    />
+                    <circle
+                      cx="50"
+                      cy="50"
+                      r="40"
+                      fill="none"
+                      stroke="#84cc16"
+                      strokeWidth="8"
+                      strokeDasharray={`${(trader.win_rate / 100) * 251.2} 251.2`}
+                      strokeLinecap="round"
+                    />
+                  </svg>
+                  <div className="absolute inset-0 flex items-center justify-center">
+                    <span className="text-2xl font-bold text-gray-900 dark:text-white">
+                      {trader.win_rate.toFixed(0)}%
+                    </span>
                   </div>
                 </div>
-              )}
-
-              {/* Win/Loss Summary */}
-              <div className="grid grid-cols-2 gap-4 mt-6">
-                <div className="text-center p-3 bg-green-500/10 rounded-lg">
-                  <div className="text-base font-bold text-green-500">
+              </div>
+              <div className="grid grid-cols-2 gap-4">
+                <div className="text-center p-3 bg-emerald-50 dark:bg-emerald-500/10 rounded-xl">
+                  <div className="text-lg font-bold text-emerald-500">
                     {trader.total_wins}
                   </div>
                   <div className="text-xs text-gray-500 dark:text-gray-400">
                     Total Wins
                   </div>
                 </div>
-                <div className="text-center p-3 bg-red-500/10 rounded-lg">
-                  <div className="text-base font-bold text-red-500">
+                <div className="text-center p-3 bg-red-50 dark:bg-red-500/10 rounded-xl">
+                  <div className="text-lg font-bold text-red-500">
                     {trader.total_losses}
                   </div>
                   <div className="text-xs text-gray-500 dark:text-gray-400">
@@ -563,165 +1088,214 @@ export default function TraderProfilePage() {
               </div>
             </div>
 
-            {/* About Section */}
-            <div className="bg-white dark:bg-[#1a2744] flex justify-center items-center flex-col gap-6 border border-gray-200 dark:border-white/10 rounded-xl p-4 sm:p-6">
-              <h2 className="text-sm sm:text-base font-bold mb-4 sm:mb-6 text-center text-gray-900 dark:text-white">
-                About {trader.name}
+            {/* Performance Stats */}
+            <div className="bg-white dark:bg-[#1a2744] border border-gray-100 dark:border-white/5 rounded-2xl p-6">
+              <h2 className="text-base font-bold text-gray-900 dark:text-white mb-6">
+                Performance
               </h2>
-              <div className="grid grid-cols-1 sm:grid-cols-2 gap-4 sm:gap-8 sm:gap-y-10">
-                <div className="text-center">
-                  <div className="text-sm sm:text-base font-bold mb-1 text-gray-900 dark:text-white">
-                    {trader.subscribers}
+              <div className="space-y-0">
+                {[
+                  {
+                    label: "Return YTD",
+                    value: `${trader.return_ytd}%`,
+                    color:
+                      parseFloat(trader.return_ytd) >= 0
+                        ? "text-emerald-500"
+                        : "text-red-500",
+                  },
+                  {
+                    label: "Return 2Y",
+                    value: `${trader.return_2y}%`,
+                    color:
+                      parseFloat(trader.return_2y) >= 0
+                        ? "text-emerald-500"
+                        : "text-red-500",
+                  },
+                  {
+                    label: "Avg Score (7D)",
+                    value: trader.avg_score_7d,
+                    color: "text-gray-900 dark:text-white",
+                  },
+                  {
+                    label: "Profitable Weeks",
+                    value: `${trader.profitable_weeks}%`,
+                    color: "text-emerald-500",
+                  },
+                  {
+                    label: "Total Trades (12M)",
+                    value: trader.total_trades_12m.toString(),
+                    color: "text-gray-900 dark:text-white",
+                  },
+                  {
+                    label: "Avg. Profit",
+                    value: `+${trader.avg_profit_percent}%`,
+                    color: "text-emerald-500",
+                  },
+                  {
+                    label: "Avg. Loss",
+                    value: `${trader.avg_loss_percent}%`,
+                    color: "text-red-500",
+                  },
+                ].map((item) => (
+                  <div
+                    key={item.label}
+                    className="flex justify-between items-center py-3 border-b border-gray-100 dark:border-white/5 last:border-0"
+                  >
+                    <span className="text-sm text-gray-500 dark:text-gray-400">
+                      {item.label}
+                    </span>
+                    <span className={`text-sm font-bold ${item.color}`}>
+                      {item.value}
+                    </span>
                   </div>
-                  <div className="text-gray-500 dark:text-gray-400 text-xs sm:text-sm">
-                    Total Subscribers
-                  </div>
-                </div>
-                <div className="text-center">
-                  <div className="text-sm sm:text-base font-bold mb-1 text-gray-900 dark:text-white">
-                    {trader.current_positions}
-                  </div>
-                  <div className="text-gray-500 dark:text-gray-400 text-xs sm:text-sm">
-                    Current Positions
-                  </div>
-                </div>
-                <div className="text-center">
-                  <div className="text-sm sm:text-base font-bold mb-1 text-gray-900 dark:text-white">
-                    {trader.trades}
-                  </div>
-                  <div className="text-gray-500 dark:text-gray-400 text-xs sm:text-sm">
-                    Active Days
-                  </div>
-                </div>
-                <div className="text-center">
-                  <div className="flex items-center justify-center gap-1 mb-1">
-                    {[1, 2, 3, 4, 5].map((star) => (
-                      <span key={star} className="text-lg sm:text-xl">
-                        {star <= Math.floor(parseFloat(trader.expert_rating))
-                          ? "⭐"
-                          : "☆"}
-                      </span>
-                    ))}
-                  </div>
-                  <div className="text-gray-500 dark:text-gray-400 text-xs sm:text-sm">
-                    Expert Rating ({trader.expert_rating}/5.00)
-                  </div>
-                </div>
+                ))}
               </div>
             </div>
 
-            {/* Stats Grid */}
-            <div className="lg:col-span-3 grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-4 sm:gap-6">
-              {[
-                {
-                  title: "Return YTD",
-                  value: `${trader.return_ytd}%`,
-                  desc: `This is ${trader.name}'s PnL for the calendar year`,
-                  highlight:
-                    parseFloat(trader.return_ytd) >= 0
-                      ? "text-emerald-500 dark:text-emerald-400"
-                      : "text-red-500 dark:text-red-400",
-                },
-                {
-                  title: "Average Score (Last 7D)",
-                  value: trader.avg_score_7d,
-                  desc: `Measure of ${trader.name}'s risk and portfolio volatility`,
-                },
-                {
-                  title: "Profitable Weeks",
-                  value: `${trader.profitable_weeks}%`,
-                  desc: `${trader.name}'s profitable weeks as a percentage`,
-                  highlight: "text-emerald-500 dark:text-emerald-400",
-                },
-              ].map((s) => (
-                <div
-                  key={s.title}
-                  className="bg-white dark:bg-[#1a2744] border border-gray-200 dark:border-white/10 rounded-xl p-4 sm:p-6"
-                >
-                  <h3 className="text-gray-500 dark:text-gray-400 text-xs sm:text-sm mb-2">
-                    {s.title}
-                  </h3>
-                  <div
-                    className={`text-base sm:text-lg font-bold mb-1 ${
-                      s.highlight ? s.highlight : "text-gray-900 dark:text-white"
-                    }`}
-                  >
-                    {s.value}
+            {/* About */}
+            <div className="lg:col-span-2 bg-white dark:bg-[#1a2744] border border-gray-100 dark:border-white/5 rounded-2xl p-6">
+              <h2 className="text-base font-bold text-gray-900 dark:text-white mb-4">
+                About {trader.name}
+              </h2>
+              <div className="grid grid-cols-2 sm:grid-cols-4 gap-6">
+                <div className="text-center">
+                  <div className="text-lg font-bold text-gray-900 dark:text-white">
+                    {trader.subscribers.toLocaleString()}
                   </div>
-                  <p className="text-gray-500 dark:text-gray-400 text-xs">
-                    {s.desc}
-                  </p>
+                  <div className="text-xs text-gray-500 dark:text-gray-400 mt-1">
+                    Subscribers
+                  </div>
                 </div>
-              ))}
+                <div className="text-center">
+                  <div className="text-lg font-bold text-gray-900 dark:text-white">
+                    {trader.current_positions}
+                  </div>
+                  <div className="text-xs text-gray-500 dark:text-gray-400 mt-1">
+                    Open Positions
+                  </div>
+                </div>
+                <div className="text-center">
+                  <div className="text-lg font-bold text-gray-900 dark:text-white">
+                    {trader.avg_trade_time}
+                  </div>
+                  <div className="text-xs text-gray-500 dark:text-gray-400 mt-1">
+                    Avg. Trade Time
+                  </div>
+                </div>
+                <div className="text-center">
+                  <div className="flex items-center justify-center gap-0.5">
+                    {[1, 2, 3, 4, 5].map((star) => (
+                      <span key={star} className="text-lg">
+                        {star <=
+                        Math.floor(parseFloat(trader.expert_rating))
+                          ? "\u2B50"
+                          : "\u2606"}
+                      </span>
+                    ))}
+                  </div>
+                  <div className="text-xs text-gray-500 dark:text-gray-400 mt-1">
+                    Rating ({trader.expert_rating}/5)
+                  </div>
+                </div>
+              </div>
             </div>
           </div>
         )}
 
-        {activeTab === "stats" && (
-          <div className="space-y-4 sm:space-y-6">
-            {/* Trading Stats */}
-            <div className="bg-white dark:bg-[#1a2744] border border-gray-200 dark:border-white/10 rounded-xl p-4 sm:p-6">
-              <h2 className="text-sm sm:text-base font-bold mb-4 text-gray-900 dark:text-white">Trading</h2>
-              <div className="space-y-4 sm:space-y-6">
-                <div>
-                  <div className="flex flex-col gap-3 mb-2">
-                    <div>
-                      <span className="text-base sm:text-lg font-bold text-gray-900 dark:text-white">
-                        {trader.total_trades_12m}
-                      </span>
-                      <p className="text-gray-500 dark:text-gray-400 text-xs sm:text-sm mt-1">
-                        Total Trades in past 12 months
-                      </p>
-                    </div>
-                    <div className="flex flex-col sm:flex-row items-start sm:items-center gap-2 sm:gap-4">
-                      <span className="flex items-center gap-1 text-emerald-500 dark:text-emerald-400 text-xs sm:text-sm">
-                        <TrendingUp className="w-3 h-3 sm:w-4 sm:h-4" />
-                        {trader.avg_profit_percent}% Avg. Profit
-                      </span>
-                      <span className="flex items-center gap-1 text-red-500 dark:text-red-400 text-xs sm:text-sm">
-                        <TrendingDown className="w-3 h-3 sm:w-4 sm:h-4" />
-                        {trader.avg_loss_percent}% Avg. Loss
-                      </span>
-                    </div>
-                  </div>
+        {/* ========== TRADE HISTORY TAB ========== */}
+        {activeTab === "history" && (
+          <div className="bg-white dark:bg-[#1a2744] border border-gray-100 dark:border-white/5 rounded-2xl p-6">
+            <h2 className="text-base font-bold text-gray-900 dark:text-white mb-4">
+              Trading Statistics
+            </h2>
+            <div className="space-y-6">
+              <div>
+                <div className="text-2xl font-bold text-gray-900 dark:text-white">
+                  {trader.total_trades_12m}
                 </div>
+                <p className="text-sm text-gray-500 dark:text-gray-400 mt-1">
+                  Total Trades in past 12 months
+                </p>
+              </div>
 
-                <div className="pt-4 sm:pt-6 border-t border-gray-200 dark:border-white/10">
-                  <h3 className="text-base sm:text-lg font-semibold mb-4 text-gray-900 dark:text-white">
-                    Frequently Traded
-                  </h3>
-                  {trader.frequently_traded.length === 0 ? (
-                    <div className="flex flex-col items-center justify-center py-8 sm:py-12 text-gray-400 dark:text-gray-500">
-                      <div className="w-10 h-10 sm:w-12 sm:h-12 rounded-full bg-gray-100 dark:bg-gray-800 flex items-center justify-center mb-3">
-                        <Info className="w-5 h-5 sm:w-6 sm:h-6" />
-                      </div>
-                      <p className="text-sm sm:text-base">No records found</p>
-                    </div>
-                  ) : (
-                    <div className="flex flex-wrap gap-2">
-                      {trader.frequently_traded.map((asset, index) => (
-                        <span
-                          key={index}
-                          className="px-3 py-1 bg-blue-100 dark:bg-blue-500/10 text-blue-700 dark:text-blue-400 text-sm rounded-full"
-                        >
-                          {asset}
-                        </span>
-                      ))}
-                    </div>
-                  )}
+              <div className="flex flex-wrap gap-6">
+                <div className="flex items-center gap-2">
+                  <TrendingUp className="w-4 h-4 text-emerald-500" />
+                  <span className="text-sm text-emerald-500 font-semibold">
+                    +{trader.avg_profit_percent}% Avg. Profit
+                  </span>
+                </div>
+                <div className="flex items-center gap-2">
+                  <TrendingDown className="w-4 h-4 text-red-500" />
+                  <span className="text-sm text-red-500 font-semibold">
+                    {trader.avg_loss_percent}% Avg. Loss
+                  </span>
                 </div>
               </div>
-            </div>
 
-            {/* Back Button */}
-            <div className="flex justify-center">
-              <Link
-                href="/explore-traders"
-                className="flex items-center gap-2 px-5 sm:px-6 py-2.5 sm:py-3 bg-gray-100 hover:bg-gray-200 dark:bg-gray-800 dark:hover:bg-gray-700 text-gray-900 dark:text-white rounded-full text-sm sm:text-base font-medium transition-all"
-              >
-                <ArrowLeft className="w-4 h-4" />
-                Back to Experts
-              </Link>
+              <div className="pt-6 border-t border-gray-100 dark:border-white/5">
+                <h3 className="text-base font-semibold text-gray-900 dark:text-white mb-4">
+                  Frequently Traded Assets
+                </h3>
+                {trader.frequently_traded.length === 0 ? (
+                  <div className="flex flex-col items-center justify-center py-10 text-gray-400 dark:text-gray-500">
+                    <Info className="w-10 h-10 mb-2 opacity-50" />
+                    <p className="text-sm">No records found</p>
+                  </div>
+                ) : (
+                  <div className="flex flex-wrap gap-2">
+                    {trader.frequently_traded.map((asset, index) => (
+                      <span
+                        key={index}
+                        className="px-4 py-2 bg-blue-50 dark:bg-blue-500/10 text-blue-700 dark:text-blue-400 text-sm rounded-xl font-medium border border-blue-100 dark:border-blue-500/20"
+                      >
+                        {asset}
+                      </span>
+                    ))}
+                  </div>
+                )}
+              </div>
+            </div>
+          </div>
+        )}
+
+        {/* ========== COPIERS TAB ========== */}
+        {activeTab === "copiers" && (
+          <div className="bg-white dark:bg-[#1a2744] border border-gray-100 dark:border-white/5 rounded-2xl p-6">
+            <h2 className="text-base font-bold text-gray-900 dark:text-white mb-6">
+              Copier Statistics
+            </h2>
+            <div className="grid grid-cols-1 sm:grid-cols-3 gap-4 sm:gap-6">
+              <div className="text-center p-6 bg-blue-50 dark:bg-blue-500/10 rounded-2xl">
+                <Users className="w-8 h-8 text-blue-500 mx-auto mb-3" />
+                <div className="text-2xl font-bold text-gray-900 dark:text-white">
+                  {trader.copiers.toLocaleString()}
+                </div>
+                <div className="text-sm text-gray-500 dark:text-gray-400 mt-1">
+                  Active Copiers
+                </div>
+              </div>
+              <div className="text-center p-6 bg-purple-50 dark:bg-purple-500/10 rounded-2xl">
+                <Shield className="w-8 h-8 text-purple-500 mx-auto mb-3" />
+                <div className="text-2xl font-bold text-gray-900 dark:text-white">
+                  {trader.cumulative_copiers.toLocaleString()}
+                </div>
+                <div className="text-sm text-gray-500 dark:text-gray-400 mt-1">
+                  All-time Copiers
+                </div>
+              </div>
+              <div className="text-center p-6 bg-emerald-50 dark:bg-emerald-500/10 rounded-2xl">
+                <DollarSign className="w-8 h-8 text-emerald-500 mx-auto mb-3" />
+                <div className="text-2xl font-bold text-emerald-500">
+                  $
+                  {parseFloat(
+                    trader.cumulative_earnings_copiers
+                  ).toLocaleString()}
+                </div>
+                <div className="text-sm text-gray-500 dark:text-gray-400 mt-1">
+                  Total Copier Earnings
+                </div>
+              </div>
             </div>
           </div>
         )}
