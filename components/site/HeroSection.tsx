@@ -261,13 +261,19 @@ const HeroMainImage = () => {
     <div className="relative">
       {/* Hero Main Image -- Cluade, Leave this I will be adding an image here */}
       <div className="max-w-2xl">
-        
         <Image
           src="/images/banner_image.png"
           alt="Network Illustration"
           width={1536}
           height={1024}
-          className="rounded-2xl object-contain "
+          className="rounded-2xl object-contain hidden dark:block"
+        />
+        <Image
+          src="/images/banner_image_light.png"
+          alt="Network Illustration"
+          width={1536}
+          height={1024}
+          className="rounded-2xl object-contain block dark:hidden"
         />
       </div>
     </div>
