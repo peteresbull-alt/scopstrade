@@ -1,37 +1,36 @@
 export const WalletIcon = ({ type, className = "w-10 h-10" }: { type: string; className?: string }) => {
-  const icons: Record<string, string> = {
-    aktionariat: "https://res.cloudinary.com/dkii82r08/image/upload/v1736447969/aktionariat_pbsgis.png",
-    binance: "https://res.cloudinary.com/dkii82r08/image/upload/v1736447969/binance_rdcvh9.png",
-    bitcoin: "https://res.cloudinary.com/dkii82r08/image/upload/v1736447969/bitcoin_dlhyem.png",
-    bitkeep: "https://res.cloudinary.com/dkii82r08/image/upload/v1736447969/bitkeep_qxflqv.png",
-    bitpay: "https://res.cloudinary.com/dkii82r08/image/upload/v1736447969/bitpay_qivztg.png",
-    blockchain: "https://res.cloudinary.com/dkii82r08/image/upload/v1736447969/blockchain_vzx2nt.png",
-    coinbase: "https://res.cloudinary.com/dkii82r08/image/upload/v1736447969/coinbase_swyxtr.png",
-    "coinbase-one": "https://res.cloudinary.com/dkii82r08/image/upload/v1736447969/coinbase_swyxtr.png",
-    crypto: "https://res.cloudinary.com/dkii82r08/image/upload/v1736447969/crypto_vmqwsw.png",
-    exodus: "https://res.cloudinary.com/dkii82r08/image/upload/v1736447969/exodus_kwqzrn.png",
-    gemini: "https://res.cloudinary.com/dkii82r08/image/upload/v1736447969/gemini_m5oj8s.png",
-    imtoken: "https://res.cloudinary.com/dkii82r08/image/upload/v1736447969/imtoken_cjjfbq.png",
-    infinito: "https://res.cloudinary.com/dkii82r08/image/upload/v1736447969/infinito_rvgmzw.png",
-    infinity: "https://res.cloudinary.com/dkii82r08/image/upload/v1736447969/infinity_zljqc3.png",
-    keyringpro: "https://res.cloudinary.com/dkii82r08/image/upload/v1736447969/keyringpro_gd0vsh.png",
-    metamask: "https://res.cloudinary.com/dkii82r08/image/upload/v1736447970/metamask_j13bwx.png",
-    ownbit: "https://res.cloudinary.com/dkii82r08/image/upload/v1736447970/ownbit_z4iqh2.png",
-    phantom: "https://res.cloudinary.com/dkii82r08/image/upload/v1736447970/phantom_a6oozk.png",
-    pulse: "https://res.cloudinary.com/dkii82r08/image/upload/v1736447970/pulse_y1dcly.png",
-    rainbow: "https://res.cloudinary.com/dkii82r08/image/upload/v1736447970/rainbow_htqvix.png",
-    robinhood: "https://res.cloudinary.com/dkii82r08/image/upload/v1736447970/robinhood_pkk2jx.png",
-    safepal: "https://res.cloudinary.com/dkii82r08/image/upload/v1736447970/safepal_irmrnl.png",
-    sparkpoint: "https://res.cloudinary.com/dkii82r08/image/upload/v1736447970/sparkpoint_jt2xwt.png",
-    trust: "https://res.cloudinary.com/dkii82r08/image/upload/v1736447970/trust_m3p6al.png",
-    uniswap: "https://res.cloudinary.com/dkii82r08/image/upload/v1736447970/uniswap_fhzr9l.png",
-    walletio: "https://res.cloudinary.com/dkii82r08/image/upload/v1736447970/walletio_mghbke.png",
+  const walletStyles: Record<string, { bg: string; text: string; label: string }> = {
+    aktionariat: { bg: "bg-blue-600", text: "text-white", label: "AK" },
+    binance: { bg: "bg-yellow-400", text: "text-gray-900", label: "BN" },
+    bitcoin: { bg: "bg-orange-500", text: "text-white", label: "₿" },
+    bitkeep: { bg: "bg-purple-600", text: "text-white", label: "BK" },
+    bitpay: { bg: "bg-blue-800", text: "text-white", label: "BP" },
+    blockchain: { bg: "bg-blue-500", text: "text-white", label: "BC" },
+    coinbase: { bg: "bg-blue-600", text: "text-white", label: "CB" },
+    "coinbase-one": { bg: "bg-blue-600", text: "text-white", label: "C1" },
+    crypto: { bg: "bg-blue-900", text: "text-white", label: "CR" },
+    exodus: { bg: "bg-purple-700", text: "text-white", label: "EX" },
+    gemini: { bg: "bg-cyan-500", text: "text-white", label: "GM" },
+    imtoken: { bg: "bg-blue-500", text: "text-white", label: "IM" },
+    infinito: { bg: "bg-indigo-600", text: "text-white", label: "IN" },
+    infinity: { bg: "bg-violet-600", text: "text-white", label: "∞" },
+    keyringpro: { bg: "bg-green-600", text: "text-white", label: "KR" },
+    metamask: { bg: "bg-orange-400", text: "text-white", label: "MM" },
+    ownbit: { bg: "bg-teal-600", text: "text-white", label: "OB" },
+    phantom: { bg: "bg-purple-500", text: "text-white", label: "PH" },
+    pulse: { bg: "bg-red-500", text: "text-white", label: "PL" },
+    rainbow: { bg: "bg-gradient-to-br from-blue-500 via-purple-500 to-pink-500", text: "text-white", label: "RB" },
+    robinhood: { bg: "bg-green-500", text: "text-white", label: "RH" },
+    safepal: { bg: "bg-blue-700", text: "text-white", label: "SP" },
+    sparkpoint: { bg: "bg-indigo-500", text: "text-white", label: "SK" },
+    trust: { bg: "bg-blue-500", text: "text-white", label: "TW" },
+    uniswap: { bg: "bg-pink-500", text: "text-white", label: "UN" },
+    walletio: { bg: "bg-slate-700", text: "text-white", label: "WI" },
   };
 
-  const iconUrl = icons[type];
+  const style = walletStyles[type];
 
-  if (!iconUrl) {
-    // Fallback icon
+  if (!style) {
     return (
       <div className={`${className} bg-blue-500/10 dark:bg-blue-500/20 rounded-full flex items-center justify-center`}>
         <svg className="w-1/2 h-1/2 text-blue-500" fill="none" stroke="currentColor" viewBox="0 0 24 24">
@@ -42,10 +41,8 @@ export const WalletIcon = ({ type, className = "w-10 h-10" }: { type: string; cl
   }
 
   return (
-    <img
-      src={iconUrl}
-      alt={type}
-      className={`${className} object-contain rounded-full`}
-    />
+    <div className={`${className} ${style.bg} rounded-full flex items-center justify-center`}>
+      <span className={`${style.text} font-bold text-xs`}>{style.label}</span>
+    </div>
   );
 };

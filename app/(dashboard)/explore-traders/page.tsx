@@ -1,6 +1,6 @@
 "use client";
 
-import React, { useState, useEffect, useMemo } from "react";
+import React, { useState, useEffect, useMemo, useCallback } from "react";
 import {
   Search,
   ChevronDown,
@@ -12,6 +12,8 @@ import Link from "next/link";
 import { PulseLoader } from "react-spinners";
 import Image from "next/image";
 import { apiFetch } from "@/lib/api";
+import useEmblaCarousel from "embla-carousel-react";
+import Autoplay from "embla-carousel-autoplay";
 
 interface Trader {
   id: number;
@@ -119,6 +121,36 @@ export default function ExploreTraders() {
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState<string | null>(null);
 
+  // Embla carousel for Trending Investors
+  const [emblaRef, emblaApi] = useEmblaCarousel(
+    {
+      align: "start",
+      slidesToScroll: 1,
+      containScroll: "trimSnaps",
+      loop: true,
+    },
+    [Autoplay({ delay: 3000, stopOnInteraction: false })]
+  );
+  const [canScrollPrev, setCanScrollPrev] = useState(false);
+  const [canScrollNext, setCanScrollNext] = useState(false);
+
+  const onSelect = useCallback(() => {
+    if (!emblaApi) return;
+    setCanScrollPrev(emblaApi.canScrollPrev());
+    setCanScrollNext(emblaApi.canScrollNext());
+  }, [emblaApi]);
+
+  useEffect(() => {
+    if (!emblaApi) return;
+    onSelect();
+    emblaApi.on("select", onSelect);
+    emblaApi.on("reInit", onSelect);
+    return () => {
+      emblaApi.off("select", onSelect);
+      emblaApi.off("reInit", onSelect);
+    };
+  }, [emblaApi, onSelect]);
+
   // Debounce search input
   useEffect(() => {
     const timer = setTimeout(() => {
@@ -217,19 +249,31 @@ export default function ExploreTraders() {
               {/* Stacked avatars */}
               <div className="flex -space-x-3">
                 <div className="w-12 h-12 sm:w-14 sm:h-14 rounded-full border-2 border-white bg-gray-300 overflow-hidden">
-                  <div className="w-full h-full bg-gray-400 flex items-center justify-center text-white text-sm font-bold">
-                    A
-                  </div>
+                  <Image
+                    src="/team/banner_1.jpg"
+                    width={56}
+                    height={56}
+                    alt="Trader"
+                    className="w-full h-full object-cover"
+                  />
                 </div>
                 <div className="w-12 h-12 sm:w-14 sm:h-14 rounded-full border-2 border-white bg-gray-500 overflow-hidden">
-                  <div className="w-full h-full bg-gray-600 flex items-center justify-center text-white text-sm font-bold">
-                    B
-                  </div>
+                  <Image
+                    src="/team/banner_2.jpg"
+                    width={56}
+                    height={56}
+                    alt="Trader"
+                    className="w-full h-full object-cover"
+                  />
                 </div>
                 <div className="w-12 h-12 sm:w-14 sm:h-14 rounded-full border-2 border-white bg-gray-700 overflow-hidden">
-                  <div className="w-full h-full bg-gray-800 flex items-center justify-center text-white text-sm font-bold">
-                    C
-                  </div>
+                  <Image
+                    src="/team/banner_3.jpg"
+                    width={56}
+                    height={56}
+                    alt="Trader"
+                    className="w-full h-full object-cover"
+                  />
                 </div>
               </div>
 
@@ -367,116 +411,137 @@ export default function ExploreTraders() {
 
             {!loading && !error && traders.length > 0 && (
               <>
-                {/* ========== TRENDING INVESTORS (image2) ========== */}
+                {/* ========== TRENDING INVESTORS (carousel) ========== */}
                 <section className="mb-12">
                   <div className="flex items-center justify-between mb-1">
                     <h2 className="text-xl sm:text-2xl font-bold text-gray-900 dark:text-white">
                       Trending Investors
                     </h2>
-                    <Link
-                      href="#"
-                      className="flex items-center gap-1 text-sm text-gray-500 dark:text-gray-400 hover:text-gray-700 dark:hover:text-gray-300 transition-colors"
-                    >
-                      View all
-                      <ArrowUpRight className="w-4 h-4" />
-                    </Link>
+                    <div className="flex gap-2">
+                      <button
+                        onClick={() => emblaApi?.scrollPrev()}
+                        disabled={!canScrollPrev}
+                        className="w-8 h-8 flex items-center justify-center rounded-full border border-gray-300 dark:border-white/10 text-gray-600 dark:text-gray-400 disabled:opacity-30 hover:bg-gray-100 dark:hover:bg-white/5 transition-colors"
+                        aria-label="Previous"
+                      >
+                        <svg className="w-4 h-4" fill="none" viewBox="0 0 24 24" stroke="currentColor" strokeWidth={2}>
+                          <path strokeLinecap="round" strokeLinejoin="round" d="M15 19l-7-7 7-7" />
+                        </svg>
+                      </button>
+                      <button
+                        onClick={() => emblaApi?.scrollNext()}
+                        disabled={!canScrollNext}
+                        className="w-8 h-8 flex items-center justify-center rounded-full border border-gray-300 dark:border-white/10 text-gray-600 dark:text-gray-400 disabled:opacity-30 hover:bg-gray-100 dark:hover:bg-white/5 transition-colors"
+                        aria-label="Next"
+                      >
+                        <svg className="w-4 h-4" fill="none" viewBox="0 0 24 24" stroke="currentColor" strokeWidth={2}>
+                          <path strokeLinecap="round" strokeLinejoin="round" d="M9 5l7 7-7 7" />
+                        </svg>
+                      </button>
+                    </div>
                   </div>
                   <p className="text-sm text-gray-500 dark:text-gray-400 mb-6">
                     Investors with the most popularity of copy among others
                   </p>
 
-                  <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-4">
-                    {trendingTraders.map((trader) => (
-                      <Link
-                        key={trader.id}
-                        href={`/explore-traders/${trader.id}`}
-                        className="group bg-white dark:bg-[#1a2744] rounded-xl overflow-hidden border border-gray-100 dark:border-white/5 hover:shadow-lg transition-all"
-                      >
-                        {/* Card Header - Dark top section */}
-                        <div className="bg-gray-800 dark:bg-[#0d1829] px-4 py-4">
-                          <div className="flex items-center gap-3">
-                            <div className="w-12 h-12 rounded-full overflow-hidden border-2 border-gray-600 dark:border-gray-500 bg-gray-700 shrink-0">
-                              {trader.avatar_url ? (
-                                <Image
-                                  src={getAvatarUrl(
-                                    trader.avatar_url,
-                                    trader.name
+                  <div className="overflow-hidden" ref={emblaRef}>
+                    <div className="flex gap-4">
+                      {trendingTraders.map((trader) => (
+                        <div
+                          key={trader.id}
+                          className="min-w-0 flex-[0_0_100%] sm:flex-[0_0_calc(50%-8px)] lg:flex-[0_0_calc(25%-12px)]"
+                        >
+                          <Link
+                            href={`/explore-traders/${trader.id}`}
+                            className="group block bg-white dark:bg-[#1a2744] rounded-xl overflow-hidden border border-gray-100 dark:border-white/5 hover:shadow-lg transition-all h-full"
+                          >
+                            {/* Card Header - Dark top section */}
+                            <div className="bg-gray-800 dark:bg-[#0d1829] px-4 py-4">
+                              <div className="flex items-center gap-3">
+                                <div className="w-12 h-12 rounded-full overflow-hidden border-2 border-gray-600 dark:border-gray-500 bg-gray-700 shrink-0">
+                                  {trader.avatar_url ? (
+                                    <Image
+                                      src={getAvatarUrl(
+                                        trader.avatar_url,
+                                        trader.name
+                                      )}
+                                      width={48}
+                                      height={48}
+                                      alt={trader.name}
+                                      className="w-full h-full object-cover"
+                                      unoptimized
+                                    />
+                                  ) : (
+                                    <div className="w-full h-full flex items-center justify-center text-gray-300 font-semibold text-lg">
+                                      {trader.name.charAt(0)}
+                                    </div>
                                   )}
-                                  width={48}
-                                  height={48}
-                                  alt={trader.name}
-                                  className="w-full h-full object-cover"
-                                  unoptimized
-                                />
-                              ) : (
-                                <div className="w-full h-full flex items-center justify-center text-gray-300 font-semibold text-lg">
-                                  {trader.name.charAt(0)}
                                 </div>
-                              )}
+                                <div className="min-w-0">
+                                  <h3 className="text-sm font-semibold text-white truncate">
+                                    {trader.name}
+                                  </h3>
+                                  <p className="text-xs text-gray-400">
+                                    {trader.badge === "gold"
+                                      ? "Earning trader"
+                                      : trader.risk >= 7
+                                      ? "High risk"
+                                      : "Active trader"}
+                                  </p>
+                                </div>
+                              </div>
+                              {/* Badges */}
+                              <div className="flex flex-wrap gap-2 mt-3">
+                                <span className="px-2.5 py-1 bg-lime-400/20 text-lime-400 text-[10px] font-medium rounded-full">
+                                  Trending Investors
+                                </span>
+                                {trader.badge === "gold" && (
+                                  <span className="px-2.5 py-1 bg-lime-400/20 text-lime-400 text-[10px] font-medium rounded-full">
+                                    Long track record
+                                  </span>
+                                )}
+                              </div>
                             </div>
-                            <div className="min-w-0">
-                              <h3 className="text-sm font-semibold text-white truncate">
-                                {trader.name}
-                              </h3>
-                              <p className="text-xs text-gray-400">
-                                {trader.badge === "gold"
-                                  ? "Earning trader"
-                                  : trader.risk >= 7
-                                  ? "High risk"
-                                  : "Active trader"}
-                              </p>
-                            </div>
-                          </div>
-                          {/* Badges */}
-                          <div className="flex flex-wrap gap-2 mt-3">
-                            <span className="px-2.5 py-1 bg-lime-400/20 text-lime-400 text-[10px] font-medium rounded-full">
-                              Trending Investors
-                            </span>
-                            {trader.badge === "gold" && (
-                              <span className="px-2.5 py-1 bg-lime-400/20 text-lime-400 text-[10px] font-medium rounded-full">
-                                Long track record
-                              </span>
-                            )}
-                          </div>
-                        </div>
 
-                        {/* Card Body - Stats */}
-                        <div className="px-4 py-4">
-                          <div className="flex items-start justify-between">
-                            <div>
-                              <p className="text-lg font-bold text-gray-900 dark:text-white">
-                                {formatGain(trader.gain)}%
-                              </p>
-                              <div className="flex items-center gap-1 mt-0.5">
-                                <TrendIcon
-                                  direction={
-                                    trader.trend_direction || "upward"
-                                  }
-                                />
+                            {/* Card Body - Stats */}
+                            <div className="px-4 py-4">
+                              <div className="flex items-start justify-between">
+                                <div>
+                                  <p className="text-lg font-bold text-gray-900 dark:text-white">
+                                    {formatGain(trader.gain)}%
+                                  </p>
+                                  <div className="flex items-center gap-1 mt-0.5">
+                                    <TrendIcon
+                                      direction={
+                                        trader.trend_direction || "upward"
+                                      }
+                                    />
+                                  </div>
+                                  <p className="text-[11px] text-gray-400 dark:text-gray-500 mt-1">
+                                    Profit (1M)
+                                  </p>
+                                </div>
+                                <div className="text-right">
+                                  <p className="text-lg font-bold text-gray-900 dark:text-white">
+                                    {trader.copiers.toLocaleString()}
+                                  </p>
+                                  <div className="flex items-center justify-end gap-1 mt-0.5">
+                                    <TrendIcon
+                                      direction={
+                                        trader.trend_direction || "upward"
+                                      }
+                                    />
+                                  </div>
+                                  <p className="text-[11px] text-gray-400 dark:text-gray-500 mt-1">
+                                    Copiers
+                                  </p>
+                                </div>
                               </div>
-                              <p className="text-[11px] text-gray-400 dark:text-gray-500 mt-1">
-                                Profit (1M)
-                              </p>
                             </div>
-                            <div className="text-right">
-                              <p className="text-lg font-bold text-gray-900 dark:text-white">
-                                {trader.copiers.toLocaleString()}
-                              </p>
-                              <div className="flex items-center justify-end gap-1 mt-0.5">
-                                <TrendIcon
-                                  direction={
-                                    trader.trend_direction || "upward"
-                                  }
-                                />
-                              </div>
-                              <p className="text-[11px] text-gray-400 dark:text-gray-500 mt-1">
-                                Copiers
-                              </p>
-                            </div>
-                          </div>
+                          </Link>
                         </div>
-                      </Link>
-                    ))}
+                      ))}
+                    </div>
                   </div>
                 </section>
 
@@ -486,13 +551,7 @@ export default function ExploreTraders() {
                     <h2 className="text-xl sm:text-2xl font-bold text-gray-900 dark:text-white">
                       Rising Stars
                     </h2>
-                    <Link
-                      href="#"
-                      className="flex items-center gap-1 text-sm text-gray-500 dark:text-gray-400 hover:text-gray-700 dark:hover:text-gray-300 transition-colors"
-                    >
-                      View all
-                      <ArrowUpRight className="w-4 h-4" />
-                    </Link>
+                    
                   </div>
                   <p className="text-sm text-gray-500 dark:text-gray-400 mb-6">
                     Check new traders with great potential, grasp investment
@@ -615,13 +674,7 @@ export default function ExploreTraders() {
                     <h2 className="text-xl sm:text-2xl font-bold text-gray-900 dark:text-white">
                       Most copied by categories
                     </h2>
-                    <Link
-                      href="#"
-                      className="flex items-center gap-1 text-sm text-gray-500 dark:text-gray-400 hover:text-gray-700 dark:hover:text-gray-300 transition-colors"
-                    >
-                      View all
-                      <ArrowUpRight className="w-4 h-4" />
-                    </Link>
+                    
                   </div>
                   <p className="text-sm text-gray-500 dark:text-gray-400 mb-6">
                     Explore traders that are copied the most based on our

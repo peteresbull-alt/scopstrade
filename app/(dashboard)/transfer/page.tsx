@@ -2,7 +2,7 @@
 
 import { useState, useEffect } from "react";
 import { motion } from "framer-motion";
-import { ArrowDownUp, Loader2, AlertCircle, ArrowLeft } from "lucide-react";
+import { ArrowDownUp, Loader2, ArrowLeft } from "lucide-react";
 import { toast } from "sonner";
 import { apiFetch } from "@/lib/api";
 import Link from "next/link";
@@ -62,6 +62,10 @@ export default function TransferPage() {
   };
 
   const handleConfirm = async () => {
+    if (!canTransfer) {
+      toast.error("You do not have this option yet. You have not reached the minimum threshold.");
+      return;
+    }
     if (!amount || parseFloat(amount) <= 0) {
       toast.error("Please enter a valid amount");
       return;
@@ -98,28 +102,6 @@ export default function TransferPage() {
     return (
       <div className="flex items-center justify-center min-h-[60vh]">
         <Loader2 className="w-8 h-8 animate-spin text-blue-600" />
-      </div>
-    );
-  }
-
-  if (!canTransfer) {
-    return (
-      <div className="flex flex-col items-center justify-center min-h-[60vh] gap-4 px-4">
-        <div className="w-14 h-14 rounded-full bg-red-100 dark:bg-red-500/10 flex items-center justify-center">
-          <AlertCircle className="w-7 h-7 text-red-500" />
-        </div>
-        <h2 className="text-lg font-semibold text-gray-900 dark:text-white text-center">
-          Transfers Not Available
-        </h2>
-        <p className="text-sm text-gray-500 dark:text-gray-400 text-center max-w-sm">
-          Your account is not currently enabled for transfers. Please contact support for assistance.
-        </p>
-        <Link
-          href="/portfolio"
-          className="mt-2 text-sm text-blue-600 hover:underline"
-        >
-          Back to Portfolio
-        </Link>
       </div>
     );
   }

@@ -86,9 +86,13 @@ const TeamSection = () => {
             <div className="flex flex-col items-center text-center">
               <div className="relative mb-6">
                 <div className="h-48 w-48 overflow-hidden rounded-full border-2 border-blue-500/30 bg-gray-800 lg:h-56 lg:w-56">
-                  <div className="flex h-full w-full items-center justify-center bg-linear-to-br from-blue-900/50 to-blue-800/50 text-5xl font-bold text-blue-300/50">
-                    {currentMember.name.charAt(0)}
-                  </div>
+                  <Image
+                    src={currentMember.image}
+                    alt={currentMember.name}
+                    width={224}
+                    height={224}
+                    className="h-full w-full object-cover"
+                  />
                 </div>
                 {/* Glow ring */}
                 <div className="absolute inset-0 rounded-full border border-blue-500/20 blur-sm" />
