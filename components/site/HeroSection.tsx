@@ -3,6 +3,7 @@
 import React, { useEffect, useState, useRef } from "react";
 import { useTheme } from "next-themes";
 import Link from "next/link";
+import Image from "next/image";
 
 // Particles Background Component
 const ParticlesBackground = () => {
@@ -156,7 +157,7 @@ const HeroSection = () => {
   }, [integrationGroups.length]);
 
   return (
-    <section className="relative min-h-[calc(100vh-64px)] overflow-hidden lg:min-h-[calc(100vh-80px)]">
+    <section className="relative overflow-hidden lg:min-h-[calc(100vh-80px)]">
       <ParticlesBackground />
 
       {/* Radial gradient glow behind hero */}
@@ -260,20 +261,14 @@ const HeroMainImage = () => {
     <div className="relative">
       {/* Hero Main Image -- Cluade, Leave this I will be adding an image here */}
       <div className="max-w-2xl">
-        <video
-          src="/videos/banner-video-dark.mp4"
-          muted
-          autoPlay
-          loop
-          className="w-full dark:block hidden"
-        ></video>
-        <video
-          src="/videos/banner-video-light.mp4"
-          muted
-          autoPlay
-          loop
-          className="w-full block dark:hidden"
-        ></video>
+        
+        <Image
+          src="/images/banner_image.png"
+          alt="Network Illustration"
+          width={1536}
+          height={1024}
+          className="rounded-2xl object-contain "
+        />
       </div>
     </div>
   );
