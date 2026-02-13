@@ -67,7 +67,7 @@ export default function BalanceCard({
 
           {/* Balance amount */}
           <div className="mt-12 mb-2">
-            <p className="text-3xl font-bold text-white tracking-wide font-mono">
+            <p className="text-xl sm:text-2xl md:text-3xl font-bold text-white tracking-wide font-mono">
               $
               {balance.toLocaleString("en-US", {
                 minimumFractionDigits: 2,
@@ -153,7 +153,7 @@ export default function BalanceCard({
                 Total Deposits
               </span>
             </div>
-            <p className="text-lg font-bold text-gray-900 dark:text-white">
+            <p className="text-[13px] sm:text-sm md:text-lg font-bold text-gray-900 dark:text-white">
               $
               {totalDeposits.toLocaleString("en-US", {
                 minimumFractionDigits: 2,
@@ -170,7 +170,7 @@ export default function BalanceCard({
                 Total Withdrawals
               </span>
             </div>
-            <p className="text-lg font-bold text-gray-900 dark:text-white">
+            <p className="text-[13px] sm:text-sm md:text-lg font-bold text-gray-900 dark:text-white">
               $
               {totalWithdrawals.toLocaleString("en-US", {
                 minimumFractionDigits: 2,
@@ -187,7 +187,7 @@ export default function BalanceCard({
                 Total Profits
               </span>
             </div>
-            <p className="text-lg font-bold text-gray-900 dark:text-white">
+            <p className="text-[13px] sm:text-sm md:text-lg font-bold text-gray-900 dark:text-white">
               $
               {totalProfits.toLocaleString("en-US", {
                 minimumFractionDigits: 2,
@@ -205,7 +205,7 @@ export default function BalanceCard({
               </span>
             </div>
             <p
-              className={`text-sm font-bold ${isVerified ? "text-green-600 dark:text-green-400" : "text-yellow-600 dark:text-yellow-400"}`}
+              className={`text-sm  font-bold ${isVerified ? "text-green-600 dark:text-green-400" : "text-yellow-600 dark:text-yellow-400"}`}
             >
               {isVerified ? "Your account is verified" : "Pending verification"}
             </p>

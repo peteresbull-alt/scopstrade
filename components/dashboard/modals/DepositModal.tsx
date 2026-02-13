@@ -27,7 +27,7 @@ interface DepositModalProps {
   onClose: () => void;
 }
 
-type DepositStep = "select" | "amount" | "details" | "success";
+type DepositStep = "select" | "address" | "amount" | "details" | "success";
 
 export default function DepositModal({ isOpen, onClose }: DepositModalProps) {
   const [step, setStep] = useState<DepositStep>("select");
@@ -94,7 +94,14 @@ export default function DepositModal({ isOpen, onClose }: DepositModalProps) {
 
   const handleSelectWallet = (wallet: AdminWallet) => {
     setSelectedWallet(wallet);
-    setStep("amount");
+    setCopied(false);
+    setStep("address");
+  };
+
+  const handleCopy = () => {
+    if (!selectedWallet) return;
+    navigator.clipboard.writeText(selectedWallet.wallet_address);
+    setCopied(true);
   };
 
   const handleAmountSubmit = (e: React.FormEvent) => {
@@ -107,13 +114,6 @@ export default function DepositModal({ isOpen, onClose }: DepositModalProps) {
     setError("");
     setCountdown(7200);
     setStep("details");
-  };
-
-  const handleCopy = () => {
-    if (!selectedWallet) return;
-    navigator.clipboard.writeText(selectedWallet.wallet_address);
-    setCopied(true);
-    setTimeout(() => setCopied(false), 2000);
   };
 
   const handleDragOver = useCallback((e: React.DragEvent) => {
@@ -193,6 +193,7 @@ export default function DepositModal({ isOpen, onClose }: DepositModalProps) {
     setCurrencyAmount("");
     setReceipt(null);
     setError("");
+    setCopied(false);
     setDepositReference("");
     onClose();
   };
@@ -283,12 +284,109 @@ export default function DepositModal({ isOpen, onClose }: DepositModalProps) {
             </div>
           )}
 
+          {/* ==================== STEP: COPY WALLET ADDRESS ==================== */}
+          {step === "address" && selectedWallet && (
+            <div className="p-6">
+              <div className="flex items-center justify-between mb-6">
+                <h3 className="text-xl font-bold text-gray-900 dark:text-white">
+                  Deposit {selectedWallet.currency_display}
+                </h3>
+                <button onClick={handleClose} className="text-gray-400 hover:text-gray-900 dark:hover:text-white transition-colors">
+                  <X className="w-5 h-5" />
+                </button>
+              </div>
+
+              {/* Selected Coin Info */}
+              <div className="bg-blue-500/10 border border-blue-500/30 rounded-xl p-4 mb-5">
+                <div className="flex items-center gap-3">
+                  <div className="w-11 h-11 rounded-full flex items-center justify-center bg-gray-200 dark:bg-[#0f1a2e]">
+                    {getCryptoIcon(selectedWallet.currency)}
+                  </div>
+                  <div>
+                    <p className="text-blue-600 dark:text-blue-400 font-semibold">{selectedWallet.currency_display}</p>
+                    <p className="text-xs text-gray-500 dark:text-gray-400">{getNetworkName(selectedWallet.currency)}</p>
+                  </div>
+                </div>
+              </div>
+
+              {/* Wallet Address */}
+              <div className="mb-5">
+                <label className="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-2">
+                  Send to this wallet address
+                </label>
+                <div className="flex gap-2">
+                  <input
+                    type="text"
+                    value={selectedWallet.wallet_address}
+                    readOnly
+                    className="flex-1 px-3 py-2.5 bg-gray-100 dark:bg-[#1a2744] border border-gray-200 dark:border-white/10 rounded-lg text-gray-700 dark:text-gray-300 text-xs font-mono focus:outline-none"
+                  />
+                  <button
+                    onClick={handleCopy}
+                    className={`px-4 py-2.5 rounded-lg transition-all flex items-center gap-1.5 text-sm font-medium ${
+                      copied
+                        ? "bg-green-500/10 border border-green-500/30 text-green-600 dark:text-green-400"
+                        : "bg-gray-200 dark:bg-white/5 hover:bg-gray-300 dark:hover:bg-white/10 text-gray-900 dark:text-white"
+                    }`}
+                  >
+                    {copied ? (
+                      <><Check className="w-4 h-4" /> Copied</>
+                    ) : (
+                      <><Copy className="w-4 h-4" /> Copy</>
+                    )}
+                  </button>
+                </div>
+              </div>
+
+              {/* QR Code */}
+              {selectedWallet.qr_code_url && (
+                <div className="flex justify-center mb-5">
+                  <div className="bg-white p-4 rounded-lg border border-gray-200 dark:border-white/10">
+                    <Image src={selectedWallet.qr_code_url} alt="QR Code" width={150} height={150} className="rounded" />
+                    <p className="text-center text-xs text-gray-600 dark:text-gray-400 mt-2 font-medium">Scan to Pay</p>
+                  </div>
+                </div>
+              )}
+
+              {/* Prompt to copy */}
+              {!copied && (
+                <div className="bg-amber-500/10 border border-amber-500/20 rounded-xl p-3 mb-5">
+                  <div className="flex items-start gap-2">
+                    <Info className="w-4 h-4 text-amber-500 flex-shrink-0 mt-0.5" />
+                    <p className="text-xs text-gray-700 dark:text-gray-300">
+                      Please copy the wallet address above before proceeding to the next step.
+                    </p>
+                  </div>
+                </div>
+              )}
+
+              {/* Buttons */}
+              <div className="flex gap-3 pt-2">
+                <button
+                  type="button"
+                  onClick={() => { setStep("select"); setCopied(false); }}
+                  className="flex-1 py-3 bg-gray-200 dark:bg-white/5 hover:bg-gray-300 dark:hover:bg-white/10 text-gray-900 dark:text-white rounded-lg font-semibold transition-colors text-sm"
+                >
+                  Back
+                </button>
+                <button
+                  type="button"
+                  onClick={() => setStep("amount")}
+                  disabled={!copied}
+                  className="flex-1 py-3 bg-blue-500 hover:bg-blue-600 text-white rounded-lg font-semibold transition-colors disabled:opacity-40 disabled:cursor-not-allowed text-sm"
+                >
+                  Continue
+                </button>
+              </div>
+            </div>
+          )}
+
           {/* ==================== STEP: ENTER AMOUNT ==================== */}
           {step === "amount" && selectedWallet && (
             <div className="p-6">
               <div className="flex items-center justify-between mb-6">
                 <h3 className="text-xl font-bold text-gray-900 dark:text-white">
-                  Deposit {selectedWallet.currency_display}
+                  Enter Amount
                 </h3>
                 <button onClick={handleClose} className="text-gray-400 hover:text-gray-900 dark:hover:text-white transition-colors">
                   <X className="w-5 h-5" />
@@ -357,7 +455,7 @@ export default function DepositModal({ isOpen, onClose }: DepositModalProps) {
                 <div className="flex gap-3 pt-2">
                   <button
                     type="button"
-                    onClick={() => { setStep("select"); setDollarAmount(""); setError(""); }}
+                    onClick={() => { setStep("address"); setDollarAmount(""); setError(""); }}
                     className="flex-1 py-3 bg-gray-200 dark:bg-white/5 hover:bg-gray-300 dark:hover:bg-white/10 text-gray-900 dark:text-white rounded-lg font-semibold transition-colors text-sm"
                   >
                     Back
@@ -390,7 +488,7 @@ export default function DepositModal({ isOpen, onClose }: DepositModalProps) {
                   Your deposit of <span className="text-blue-600 dark:text-blue-400 font-bold">${dollarAmount} USD</span> has been initiated.
                 </p>
                 <p className="text-xs text-gray-500 dark:text-gray-400 mt-1">
-                  Send <span className="text-blue-600 dark:text-blue-400 font-bold">{currencyAmount} {selectedWallet.currency}</span> to the address below.
+                  Send <span className="text-blue-600 dark:text-blue-400 font-bold">{currencyAmount} {selectedWallet.currency}</span> to the address you copied.
                 </p>
               </div>
 
@@ -422,19 +520,11 @@ export default function DepositModal({ isOpen, onClose }: DepositModalProps) {
 
                 {/* Step 3 */}
                 <div className="flex items-start gap-3">
-                  <div className="w-6 h-6 rounded-full bg-blue-500 flex items-center justify-center flex-shrink-0 text-white text-xs font-bold">3</div>
+                  <div className="w-6 h-6 rounded-full bg-green-500 flex items-center justify-center flex-shrink-0 text-white text-xs font-bold"><Check className="w-3.5 h-3.5" /></div>
                   <div className="flex-1">
-                    <p className="text-xs text-gray-500 dark:text-gray-400 mb-1.5">Send to this wallet address</p>
-                    <div className="flex gap-2">
-                      <input
-                        type="text"
-                        value={selectedWallet.wallet_address}
-                        readOnly
-                        className="flex-1 px-3 py-2 bg-white dark:bg-[#0f1a2e] border border-gray-200 dark:border-white/10 rounded-md text-gray-700 dark:text-gray-300 text-xs font-mono focus:outline-none"
-                      />
-                      <button onClick={handleCopy} className="px-3 py-2 bg-gray-200 dark:bg-white/5 hover:bg-gray-300 dark:hover:bg-white/10 text-gray-900 dark:text-white rounded-md transition-all">
-                        {copied ? <Check className="w-4 h-4 text-blue-500 dark:text-blue-400" /> : <Copy className="w-4 h-4" />}
-                      </button>
+                    <p className="text-xs text-gray-500 dark:text-gray-400 mb-1.5">Wallet address copied</p>
+                    <div className="bg-white dark:bg-[#0f1a2e] px-3 py-2 rounded-md">
+                      <p className="text-xs font-mono text-gray-700 dark:text-gray-300 break-all">{selectedWallet.wallet_address}</p>
                     </div>
                   </div>
                 </div>
@@ -448,16 +538,6 @@ export default function DepositModal({ isOpen, onClose }: DepositModalProps) {
                   <p className="text-2xl font-bold text-red-400 font-mono">{formatCountdown(countdown)}</p>
                 </div>
               </div>
-
-              {/* QR Code */}
-              {selectedWallet.qr_code_url && (
-                <div className="flex justify-center">
-                  <div className="bg-white p-4 rounded-lg">
-                    <Image src={selectedWallet.qr_code_url} alt="QR Code" width={180} height={180} className="rounded" />
-                    <p className="text-center text-xs text-gray-600 mt-2 font-medium">Scan to Pay</p>
-                  </div>
-                </div>
-              )}
 
               {/* Warning */}
               <div className="bg-red-500/10 border border-red-500/20 rounded-xl p-3">
