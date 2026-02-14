@@ -56,12 +56,12 @@ const Footer = () => {
                   { label: "User Guide", href: "/user-guide" },
                 ]}
               />
-              <FooterSection
+              {/* <FooterSection
                 title="ABOUT US"
                 links={[
                   { label: "Company", href: "/about" },
                 ]}
-              />
+              /> */}
               <FooterSection
                 title="PARTNERSHIPS"
                 links={[
@@ -73,8 +73,8 @@ const Footer = () => {
               <FooterSection
                 title="CONTACT"
                 links={[
-                  { label: "+1 (929) 512-0241", href: "tel:+19295120241" },
-                  { label: "support@ScopsTrade.com", href: "mailto:support@ScopsTrade.com" },
+                  { label: "+1 (929) 512-0241", href: "#" },
+                  { label: "support@scopstrade.com", href: "mailto:support@scopstrade.com" },
                 ]}
               />
             </div>
