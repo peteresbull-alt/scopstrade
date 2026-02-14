@@ -3,6 +3,7 @@ import { Poppins, JetBrains_Mono } from "next/font/google";
 import "./globals.css";
 import { ThemeProvider } from "@/components/theme-provider";
 import { Toaster } from "sonner";
+import Script from "next/script";
 
 const poppins = Poppins({
   subsets: ["latin"],
@@ -51,6 +52,7 @@ export default function RootLayout({
 }>) {
   return (
     <html lang="en" suppressHydrationWarning>
+      
       <body
         className={`${poppins.variable} ${jetbrainsMono.variable} antialiased`}
       >
@@ -63,6 +65,13 @@ export default function RootLayout({
           {children}
           <Toaster richColors position="top-right" />
         </ThemeProvider>
+
+        {/* LiveChat - Jovo */}
+
+        <Script
+          src="//code.jivosite.com/widget/jZikVtEDhl"
+          strategy="afterInteractive"
+        />
       </body>
     </html>
   );
