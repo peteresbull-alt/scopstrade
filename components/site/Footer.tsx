@@ -56,12 +56,12 @@ const Footer = () => {
                   { label: "User Guide", href: "/user-guide" },
                 ]}
               />
-              {/* <FooterSection
+              <FooterSection
                 title="ABOUT US"
                 links={[
                   { label: "Company", href: "/about" },
                 ]}
-              /> */}
+              />
               <FooterSection
                 title="PARTNERSHIPS"
                 links={[

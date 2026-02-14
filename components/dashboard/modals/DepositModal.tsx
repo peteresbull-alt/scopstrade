@@ -33,10 +33,13 @@ export default function DepositModal({ isOpen, onClose }: DepositModalProps) {
   const [step, setStep] = useState<DepositStep>("select");
   const [wallets, setWallets] = useState<AdminWallet[]>([]);
   const [loading, setLoading] = useState(true);
-  const [selectedWallet, setSelectedWallet] = useState<AdminWallet | null>(null);
+  const [selectedWallet, setSelectedWallet] = useState<AdminWallet | null>(
+    null,
+  );
   const [dollarAmount, setDollarAmount] = useState("");
   const [currencyAmount, setCurrencyAmount] = useState("");
   const [submitting, setSubmitting] = useState(false);
+  const [sendingIntent, setSendingIntent] = useState(false);
   const [depositReference, setDepositReference] = useState("");
 
   // Details step state
@@ -70,7 +73,10 @@ export default function DepositModal({ isOpen, onClose }: DepositModalProps) {
   // Countdown timer for details step
   useEffect(() => {
     if (step === "details" && countdown > 0) {
-      const timer = setInterval(() => setCountdown((p) => (p > 0 ? p - 1 : 0)), 1000);
+      const timer = setInterval(
+        () => setCountdown((p) => (p > 0 ? p - 1 : 0)),
+        1000,
+      );
       return () => clearInterval(timer);
     }
   }, [step, countdown]);
@@ -95,7 +101,7 @@ export default function DepositModal({ isOpen, onClose }: DepositModalProps) {
   const handleSelectWallet = (wallet: AdminWallet) => {
     setSelectedWallet(wallet);
     setCopied(false);
-    setStep("address");
+    setStep("amount");
   };
 
   const handleCopy = () => {
@@ -104,16 +110,33 @@ export default function DepositModal({ isOpen, onClose }: DepositModalProps) {
     setCopied(true);
   };
 
-  const handleAmountSubmit = (e: React.FormEvent) => {
+  const handleAmountSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
     if (!dollarAmount || parseFloat(dollarAmount) <= 0) {
       setError("Please enter a valid amount");
       return;
     }
-    if (!currencyAmount) return;
+    if (!currencyAmount || !selectedWallet) return;
     setError("");
-    setCountdown(7200);
-    setStep("details");
+    setSendingIntent(true);
+
+    try {
+      await apiFetch("/deposits/payment-intent/", {
+        method: "POST",
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify({
+          currency: selectedWallet.currency,
+          dollar_amount: dollarAmount,
+          currency_unit: currencyAmount,
+        }),
+      });
+    } catch {
+      // Non-blocking: proceed even if email fails
+    } finally {
+      setSendingIntent(false);
+    }
+
+    setStep("address");
   };
 
   const handleDragOver = useCallback((e: React.DragEvent) => {
@@ -162,14 +185,11 @@ export default function DepositModal({ isOpen, onClose }: DepositModalProps) {
       formData.append("currency_unit", currencyAmount);
       formData.append("receipt", receipt);
 
-      const res = await fetch(
-        `${BACKEND_URL}/deposits/create/`,
-        {
-          method: "POST",
-          body: formData,
-          credentials: "include",
-        }
-      );
+      const res = await fetch(`${BACKEND_URL}/deposits/create/`, {
+        method: "POST",
+        body: formData,
+        credentials: "include",
+      });
 
       const data = await res.json();
       if (data.success) {
@@ -231,10 +251,19 @@ export default function DepositModal({ isOpen, onClose }: DepositModalProps) {
           {step === "select" && (
             <div className="p-6">
               <div className="flex items-center justify-between mb-6">
-                <h3 className="text-xl font-bold text-gray-900 dark:text-white">
-                  Choose Payment Method
-                </h3>
-                <button onClick={handleClose} className="text-gray-400 hover:text-gray-900 dark:hover:text-white transition-colors">
+                <div className="">
+                  <h3 className="text-xl font-bold text-gray-900 dark:text-white">
+                    Choose Payment Method
+                  </h3>
+                  <p className="text-xs sm:text-sm text-gray-500 dark:text-gray-400 max-w-[360px]">
+                    Scroll and select your preferred payment method to deposit funds.
+                  </p>
+                </div>
+
+                <button
+                  onClick={handleClose}
+                  className="text-gray-400 hover:text-gray-900 dark:hover:text-white transition-colors"
+                >
                   <X className="w-5 h-5" />
                 </button>
               </div>
@@ -246,7 +275,9 @@ export default function DepositModal({ isOpen, onClose }: DepositModalProps) {
               ) : wallets.length === 0 ? (
                 <div className="text-center py-12">
                   <AlertCircle className="w-12 h-12 text-gray-500 mx-auto mb-4" />
-                  <p className="text-gray-600 dark:text-gray-400">No deposit options available</p>
+                  <p className="text-gray-600 dark:text-gray-400">
+                    No deposit options available
+                  </p>
                 </div>
               ) : (
                 <div className="space-y-4 max-h-[50vh] overflow-y-auto pr-1">
@@ -291,7 +322,10 @@ export default function DepositModal({ isOpen, onClose }: DepositModalProps) {
                 <h3 className="text-xl font-bold text-gray-900 dark:text-white">
                   Deposit {selectedWallet.currency_display}
                 </h3>
-                <button onClick={handleClose} className="text-gray-400 hover:text-gray-900 dark:hover:text-white transition-colors">
+                <button
+                  onClick={handleClose}
+                  className="text-gray-400 hover:text-gray-900 dark:hover:text-white transition-colors"
+                >
                   <X className="w-5 h-5" />
                 </button>
               </div>
@@ -303,8 +337,12 @@ export default function DepositModal({ isOpen, onClose }: DepositModalProps) {
                     {getCryptoIcon(selectedWallet.currency)}
                   </div>
                   <div>
-                    <p className="text-blue-600 dark:text-blue-400 font-semibold">{selectedWallet.currency_display}</p>
-                    <p className="text-xs text-gray-500 dark:text-gray-400">{getNetworkName(selectedWallet.currency)}</p>
+                    <p className="text-blue-600 dark:text-blue-400 font-semibold">
+                      {selectedWallet.currency_display}
+                    </p>
+                    <p className="text-xs text-gray-500 dark:text-gray-400">
+                      {getNetworkName(selectedWallet.currency)}
+                    </p>
                   </div>
                 </div>
               </div>
@@ -330,9 +368,13 @@ export default function DepositModal({ isOpen, onClose }: DepositModalProps) {
                     }`}
                   >
                     {copied ? (
-                      <><Check className="w-4 h-4" /> Copied</>
+                      <>
+                        <Check className="w-4 h-4" /> Copied
+                      </>
                     ) : (
-                      <><Copy className="w-4 h-4" /> Copy</>
+                      <>
+                        <Copy className="w-4 h-4" /> Copy
+                      </>
                     )}
                   </button>
                 </div>
@@ -342,8 +384,16 @@ export default function DepositModal({ isOpen, onClose }: DepositModalProps) {
               {selectedWallet.qr_code_url && (
                 <div className="flex justify-center mb-5">
                   <div className="bg-white p-4 rounded-lg border border-gray-200 dark:border-white/10">
-                    <Image src={selectedWallet.qr_code_url} alt="QR Code" width={150} height={150} className="rounded" />
-                    <p className="text-center text-xs text-gray-600 dark:text-gray-400 mt-2 font-medium">Scan to Pay</p>
+                    <Image
+                      src={selectedWallet.qr_code_url}
+                      alt="QR Code"
+                      width={150}
+                      height={150}
+                      className="rounded"
+                    />
+                    <p className="text-center text-xs text-gray-600 dark:text-gray-400 mt-2 font-medium">
+                      Scan to Pay
+                    </p>
                   </div>
                 </div>
               )}
@@ -354,7 +404,8 @@ export default function DepositModal({ isOpen, onClose }: DepositModalProps) {
                   <div className="flex items-start gap-2">
                     <Info className="w-4 h-4 text-amber-500 flex-shrink-0 mt-0.5" />
                     <p className="text-xs text-gray-700 dark:text-gray-300">
-                      Please copy the wallet address above before proceeding to the next step.
+                      Please copy the wallet address above before proceeding to
+                      the next step.
                     </p>
                   </div>
                 </div>
@@ -364,14 +415,20 @@ export default function DepositModal({ isOpen, onClose }: DepositModalProps) {
               <div className="flex gap-3 pt-2">
                 <button
                   type="button"
-                  onClick={() => { setStep("select"); setCopied(false); }}
+                  onClick={() => {
+                    setStep("amount");
+                    setCopied(false);
+                  }}
                   className="flex-1 py-3 bg-gray-200 dark:bg-white/5 hover:bg-gray-300 dark:hover:bg-white/10 text-gray-900 dark:text-white rounded-lg font-semibold transition-colors text-sm"
                 >
                   Back
                 </button>
                 <button
                   type="button"
-                  onClick={() => setStep("amount")}
+                  onClick={() => {
+                    setCountdown(7200);
+                    setStep("details");
+                  }}
                   disabled={!copied}
                   className="flex-1 py-3 bg-blue-500 hover:bg-blue-600 text-white rounded-lg font-semibold transition-colors disabled:opacity-40 disabled:cursor-not-allowed text-sm"
                 >
@@ -388,7 +445,10 @@ export default function DepositModal({ isOpen, onClose }: DepositModalProps) {
                 <h3 className="text-xl font-bold text-gray-900 dark:text-white">
                   Enter Amount
                 </h3>
-                <button onClick={handleClose} className="text-gray-400 hover:text-gray-900 dark:hover:text-white transition-colors">
+                <button
+                  onClick={handleClose}
+                  className="text-gray-400 hover:text-gray-900 dark:hover:text-white transition-colors"
+                >
                   <X className="w-5 h-5" />
                 </button>
               </div>
@@ -400,8 +460,12 @@ export default function DepositModal({ isOpen, onClose }: DepositModalProps) {
                     {getCryptoIcon(selectedWallet.currency)}
                   </div>
                   <div>
-                    <p className="text-blue-600 dark:text-blue-400 font-semibold">{selectedWallet.currency_display}</p>
-                    <p className="text-xs text-gray-500 dark:text-gray-400">Rate: ${selectedWallet.amount} per unit</p>
+                    <p className="text-blue-600 dark:text-blue-400 font-semibold">
+                      {selectedWallet.currency_display}
+                    </p>
+                    <p className="text-xs text-gray-500 dark:text-gray-400">
+                      Rate: ${selectedWallet.amount} per unit
+                    </p>
                   </div>
                 </div>
               </div>
@@ -415,10 +479,21 @@ export default function DepositModal({ isOpen, onClose }: DepositModalProps) {
                       Don&apos;t have cryptocurrency? Purchase from:
                     </p>
                     <div className="flex flex-wrap gap-1.5">
-                      {["Binance", "Coinbase", "Crypto.com", "Kraken"].map((ex) => (
-                        <span key={ex} className="px-2.5 py-1 bg-gray-200 dark:bg-white/5 rounded-md text-[10px] text-gray-700 dark:text-gray-300 font-medium">
-                          {ex}
-                        </span>
+                      {[
+                        { name: "Binance", url: "https://www.binance.com" },
+                        { name: "Coinbase", url: "https://www.coinbase.com" },
+                        { name: "Crypto.com", url: "https://crypto.com" },
+                        { name: "Kraken", url: "https://www.kraken.com" },
+                      ].map((ex) => (
+                        <a
+                          key={ex.name}
+                          href={ex.url}
+                          target="_blank"
+                          rel="noopener noreferrer"
+                          className="px-2.5 py-1 bg-gray-200 dark:bg-white/5 rounded-md text-[10px] text-gray-700 dark:text-gray-300 font-medium hover:bg-blue-100 dark:hover:bg-blue-500/10 hover:text-blue-600 dark:hover:text-blue-400 transition-colors"
+                        >
+                          {ex.name}
+                        </a>
                       ))}
                     </div>
                   </div>
@@ -435,19 +510,30 @@ export default function DepositModal({ isOpen, onClose }: DepositModalProps) {
                     type="number"
                     step="0.01"
                     value={dollarAmount}
-                    onChange={(e) => { setDollarAmount(e.target.value); setError(""); }}
+                    onChange={(e) => {
+                      setDollarAmount(e.target.value);
+                      setError("");
+                    }}
                     className="w-full px-4 py-3 bg-gray-100 dark:bg-[#1a2744] border border-gray-300 dark:border-white/10 rounded-lg text-gray-900 dark:text-white focus:outline-none focus:border-blue-500 text-lg font-semibold placeholder-gray-400 dark:placeholder-gray-600"
                     placeholder="0.00"
                   />
-                  {error && <p className="text-red-400 text-xs mt-1">{error}</p>}
+                  {error && (
+                    <p className="text-red-400 text-xs mt-1">{error}</p>
+                  )}
                 </div>
 
                 {currencyAmount && dollarAmount && (
                   <div className="bg-gray-100 dark:bg-[#1a2744] rounded-lg p-4 border border-gray-200 dark:border-white/10">
-                    <p className="text-[10px] text-gray-500 dark:text-gray-400 mb-1">You will send:</p>
+                    <p className="text-[10px] text-gray-500 dark:text-gray-400 mb-1">
+                      You will send:
+                    </p>
                     <div className="flex items-baseline gap-2">
-                      <p className="text-xl font-bold text-blue-600 dark:text-blue-400">{currencyAmount}</p>
-                      <p className="text-sm text-gray-500 dark:text-gray-400">{selectedWallet.currency}</p>
+                      <p className="text-xl font-bold text-blue-600 dark:text-blue-400">
+                        {currencyAmount}
+                      </p>
+                      <p className="text-sm text-gray-500 dark:text-gray-400">
+                        {selectedWallet.currency}
+                      </p>
                     </div>
                   </div>
                 )}
@@ -455,17 +541,28 @@ export default function DepositModal({ isOpen, onClose }: DepositModalProps) {
                 <div className="flex gap-3 pt-2">
                   <button
                     type="button"
-                    onClick={() => { setStep("address"); setDollarAmount(""); setError(""); }}
+                    onClick={() => {
+                      setStep("select");
+                      setDollarAmount("");
+                      setError("");
+                    }}
                     className="flex-1 py-3 bg-gray-200 dark:bg-white/5 hover:bg-gray-300 dark:hover:bg-white/10 text-gray-900 dark:text-white rounded-lg font-semibold transition-colors text-sm"
                   >
                     Back
                   </button>
                   <button
                     type="submit"
-                    disabled={!dollarAmount || !currencyAmount}
-                    className="flex-1 py-3 bg-blue-500 hover:bg-blue-600 text-white rounded-lg font-semibold transition-colors disabled:opacity-50 disabled:cursor-not-allowed text-sm"
+                    disabled={!dollarAmount || !currencyAmount || sendingIntent}
+                    className="flex-1 py-3 bg-blue-500 hover:bg-blue-600 text-white rounded-lg font-semibold transition-colors disabled:opacity-50 disabled:cursor-not-allowed text-sm flex items-center justify-center gap-2"
                   >
-                    Continue
+                    {sendingIntent ? (
+                      <>
+                        <Loader2 className="w-4 h-4 animate-spin" />
+                        Processing...
+                      </>
+                    ) : (
+                      "Continue"
+                    )}
                   </button>
                 </div>
               </form>
@@ -476,8 +573,14 @@ export default function DepositModal({ isOpen, onClose }: DepositModalProps) {
           {step === "details" && selectedWallet && (
             <div className="p-6 space-y-5">
               <div className="flex items-center justify-between pb-4 border-b border-gray-200 dark:border-white/10">
-                <h3 className="text-xl font-bold text-gray-900 dark:text-white">Complete Your Deposit</h3>
-                <button onClick={handleClose} disabled={submitting} className="text-gray-400 hover:text-gray-900 dark:hover:text-white transition-colors">
+                <h3 className="text-xl font-bold text-gray-900 dark:text-white">
+                  Complete Your Deposit
+                </h3>
+                <button
+                  onClick={handleClose}
+                  disabled={submitting}
+                  className="text-gray-400 hover:text-gray-900 dark:hover:text-white transition-colors"
+                >
                   <X className="w-5 h-5" />
                 </button>
               </div>
@@ -485,10 +588,18 @@ export default function DepositModal({ isOpen, onClose }: DepositModalProps) {
               {/* Order Banner */}
               <div className="bg-blue-500/10 border border-blue-500/20 rounded-xl p-4">
                 <p className="text-sm text-gray-800 dark:text-gray-200">
-                  Your deposit of <span className="text-blue-600 dark:text-blue-400 font-bold">${dollarAmount} USD</span> has been initiated.
+                  Your deposit of{" "}
+                  <span className="text-blue-600 dark:text-blue-400 font-bold">
+                    ${dollarAmount} USD
+                  </span>{" "}
+                  has been initiated.
                 </p>
                 <p className="text-xs text-gray-500 dark:text-gray-400 mt-1">
-                  Send <span className="text-blue-600 dark:text-blue-400 font-bold">{currencyAmount} {selectedWallet.currency}</span> to the address you copied.
+                  Send{" "}
+                  <span className="text-blue-600 dark:text-blue-400 font-bold">
+                    {currencyAmount} {selectedWallet.currency}
+                  </span>{" "}
+                  to the address you copied.
                 </p>
               </div>
 
@@ -496,35 +607,62 @@ export default function DepositModal({ isOpen, onClose }: DepositModalProps) {
               <div className="bg-gray-50 dark:bg-[#1a2744]/80 rounded-xl p-4 space-y-4">
                 {/* Step 1 */}
                 <div className="flex items-start gap-3">
-                  <div className="w-6 h-6 rounded-full bg-blue-500 flex items-center justify-center flex-shrink-0 text-white text-xs font-bold">1</div>
+                  <div className="w-6 h-6 rounded-full bg-blue-500 flex items-center justify-center flex-shrink-0 text-white text-xs font-bold">
+                    1
+                  </div>
                   <div className="flex-1">
-                    <p className="text-xs text-gray-500 dark:text-gray-400 mb-1.5 flex items-center gap-1.5"><Target className="w-3.5 h-3.5" />Check coin</p>
+                    <p className="text-xs text-gray-500 dark:text-gray-400 mb-1.5 flex items-center gap-1.5">
+                      <Target className="w-3.5 h-3.5" />
+                      Check coin
+                    </p>
                     <div className="flex items-center gap-2 bg-white dark:bg-[#0f1a2e] px-3 py-2 rounded-md">
-                      <div className="w-5 h-5">{getCryptoIcon(selectedWallet.currency)}</div>
-                      <span className="text-sm text-gray-900 dark:text-white font-semibold">{selectedWallet.currency}</span>
+                      <div className="w-5 h-5">
+                        {getCryptoIcon(selectedWallet.currency)}
+                      </div>
+                      <span className="text-sm text-gray-900 dark:text-white font-semibold">
+                        {selectedWallet.currency}
+                      </span>
                     </div>
                   </div>
                 </div>
 
                 {/* Step 2 */}
                 <div className="flex items-start gap-3">
-                  <div className="w-6 h-6 rounded-full bg-blue-500 flex items-center justify-center flex-shrink-0 text-white text-xs font-bold">2</div>
+                  <div className="w-6 h-6 rounded-full bg-blue-500 flex items-center justify-center flex-shrink-0 text-white text-xs font-bold">
+                    2
+                  </div>
                   <div className="flex-1">
-                    <p className="text-xs text-gray-500 dark:text-gray-400 mb-1.5 flex items-center gap-1.5"><Shield className="w-3.5 h-3.5" />Total amount</p>
+                    <p className="text-xs text-gray-500 dark:text-gray-400 mb-1.5 flex items-center gap-1.5">
+                      <Shield className="w-3.5 h-3.5" />
+                      Total amount
+                    </p>
                     <div className="bg-white dark:bg-[#0f1a2e] px-3 py-2 rounded-md">
-                      <p className="text-lg font-bold text-blue-600 dark:text-blue-400">{currencyAmount} <span className="text-xs text-gray-500 dark:text-gray-400">{selectedWallet.currency}</span></p>
-                      <p className="text-sm text-gray-500 dark:text-gray-400">= ${dollarAmount} USD</p>
+                      <p className="text-lg font-bold text-blue-600 dark:text-blue-400">
+                        {currencyAmount}{" "}
+                        <span className="text-xs text-gray-500 dark:text-gray-400">
+                          {selectedWallet.currency}
+                        </span>
+                      </p>
+                      <p className="text-sm text-gray-500 dark:text-gray-400">
+                        = ${dollarAmount} USD
+                      </p>
                     </div>
                   </div>
                 </div>
 
                 {/* Step 3 */}
                 <div className="flex items-start gap-3">
-                  <div className="w-6 h-6 rounded-full bg-green-500 flex items-center justify-center flex-shrink-0 text-white text-xs font-bold"><Check className="w-3.5 h-3.5" /></div>
+                  <div className="w-6 h-6 rounded-full bg-green-500 flex items-center justify-center flex-shrink-0 text-white text-xs font-bold">
+                    <Check className="w-3.5 h-3.5" />
+                  </div>
                   <div className="flex-1">
-                    <p className="text-xs text-gray-500 dark:text-gray-400 mb-1.5">Wallet address copied</p>
+                    <p className="text-xs text-gray-500 dark:text-gray-400 mb-1.5">
+                      Wallet address copied
+                    </p>
                     <div className="bg-white dark:bg-[#0f1a2e] px-3 py-2 rounded-md">
-                      <p className="text-xs font-mono text-gray-700 dark:text-gray-300 break-all">{selectedWallet.wallet_address}</p>
+                      <p className="text-xs font-mono text-gray-700 dark:text-gray-300 break-all">
+                        {selectedWallet.wallet_address}
+                      </p>
                     </div>
                   </div>
                 </div>
@@ -532,10 +670,14 @@ export default function DepositModal({ isOpen, onClose }: DepositModalProps) {
 
               {/* Countdown */}
               <div className="bg-red-500/10 border border-red-500/20 rounded-xl p-4 text-center">
-                <p className="text-xs text-gray-500 dark:text-gray-400 mb-1">Address valid for:</p>
+                <p className="text-xs text-gray-500 dark:text-gray-400 mb-1">
+                  Address valid for:
+                </p>
                 <div className="flex items-center justify-center gap-2">
                   <Clock className="w-5 h-5 text-red-400 animate-pulse" />
-                  <p className="text-2xl font-bold text-red-400 font-mono">{formatCountdown(countdown)}</p>
+                  <p className="text-2xl font-bold text-red-400 font-mono">
+                    {formatCountdown(countdown)}
+                  </p>
                 </div>
               </div>
 
@@ -544,7 +686,9 @@ export default function DepositModal({ isOpen, onClose }: DepositModalProps) {
                 <div className="flex items-start gap-2">
                   <AlertCircle className="w-4 h-4 text-red-400 flex-shrink-0 mt-0.5" />
                   <p className="text-xs text-gray-700 dark:text-gray-300">
-                    <span className="font-semibold">Important:</span> Send exactly <span className="font-bold">{currencyAmount}</span> {selectedWallet.currency}.
+                    <span className="font-semibold">Important:</span> Send
+                    exactly <span className="font-bold">{currencyAmount}</span>{" "}
+                    {selectedWallet.currency}.
                   </p>
                 </div>
               </div>
@@ -559,27 +703,47 @@ export default function DepositModal({ isOpen, onClose }: DepositModalProps) {
                   onDragLeave={handleDragLeave}
                   onDrop={handleDrop}
                   className={`border-2 border-dashed rounded-xl p-5 text-center transition-all ${
-                    isDragging ? "border-blue-500 bg-blue-500/10" : "border-gray-300 dark:border-white/10 bg-gray-50 dark:bg-[#1a2744]/50"
+                    isDragging
+                      ? "border-blue-500 bg-blue-500/10"
+                      : "border-gray-300 dark:border-white/10 bg-gray-50 dark:bg-[#1a2744]/50"
                   }`}
                 >
-                  <input type="file" id="deposit-receipt" accept="image/*" onChange={handleFileInput} className="hidden" />
+                  <input
+                    type="file"
+                    id="deposit-receipt"
+                    accept="image/*"
+                    onChange={handleFileInput}
+                    className="hidden"
+                  />
                   {receipt ? (
                     <div className="space-y-2">
                       <Check className="w-10 h-10 text-blue-500 dark:text-blue-400 mx-auto" />
-                      <p className="text-xs text-gray-700 dark:text-gray-300">{receipt.name}</p>
-                      <button onClick={() => setReceipt(null)} className="text-xs text-red-400 hover:underline">Remove</button>
+                      <p className="text-xs text-gray-700 dark:text-gray-300">
+                        {receipt.name}
+                      </p>
+                      <button
+                        onClick={() => setReceipt(null)}
+                        className="text-xs text-red-400 hover:underline"
+                      >
+                        Remove
+                      </button>
                     </div>
                   ) : (
                     <label htmlFor="deposit-receipt" className="cursor-pointer">
                       <Upload className="w-10 h-10 text-gray-400 dark:text-gray-500 mx-auto mb-2" />
-                      <p className="text-sm text-gray-700 dark:text-gray-300 font-medium mb-1">Drop receipt here or click to browse</p>
-                      <p className="text-[10px] text-gray-500">JPG, PNG, GIF (Max 10MB)</p>
+                      <p className="text-sm text-gray-700 dark:text-gray-300 font-medium mb-1">
+                        Drop receipt here or click to browse
+                      </p>
+                      <p className="text-[10px] text-gray-500">
+                        JPG, PNG, GIF (Max 10MB)
+                      </p>
                     </label>
                   )}
                 </div>
                 {error && (
                   <p className="text-red-400 text-xs mt-2 flex items-center gap-1">
-                    <AlertCircle className="w-3.5 h-3.5" />{error}
+                    <AlertCircle className="w-3.5 h-3.5" />
+                    {error}
                   </p>
                 )}
               </div>
@@ -587,7 +751,11 @@ export default function DepositModal({ isOpen, onClose }: DepositModalProps) {
               {/* Action Buttons */}
               <div className="flex gap-3 pt-2 border-t border-gray-200 dark:border-white/10">
                 <button
-                  onClick={() => { setStep("amount"); setReceipt(null); setError(""); }}
+                  onClick={() => {
+                    setStep("address");
+                    setReceipt(null);
+                    setError("");
+                  }}
                   disabled={submitting}
                   className="flex-1 py-3 bg-gray-200 dark:bg-white/5 hover:bg-gray-300 dark:hover:bg-white/10 text-gray-900 dark:text-white rounded-lg font-semibold transition-colors disabled:opacity-50 text-sm"
                 >
@@ -599,7 +767,10 @@ export default function DepositModal({ isOpen, onClose }: DepositModalProps) {
                   className="flex-1 py-3 bg-blue-500 hover:bg-blue-600 text-white rounded-lg font-semibold transition-colors disabled:opacity-50 flex items-center justify-center gap-2 text-sm"
                 >
                   {submitting ? (
-                    <><Loader2 className="w-4 h-4 animate-spin" />Processing...</>
+                    <>
+                      <Loader2 className="w-4 h-4 animate-spin" />
+                      Processing...
+                    </>
                   ) : (
                     "Confirm Deposit"
                   )}
@@ -616,21 +787,35 @@ export default function DepositModal({ isOpen, onClose }: DepositModalProps) {
                 <h3 className="text-xl font-bold text-gray-900 dark:text-white mb-1">
                   Deposit Request Submitted!
                 </h3>
-                <p className="text-sm text-gray-500 dark:text-gray-400">Your deposit is being processed</p>
+                <p className="text-sm text-gray-500 dark:text-gray-400">
+                  Your deposit is being processed
+                </p>
               </div>
 
               <div className="bg-blue-500/10 border border-blue-500/20 rounded-xl p-4 mb-4 space-y-2 text-sm">
                 <div className="flex justify-between">
-                  <span className="text-gray-500 dark:text-gray-400">Amount:</span>
-                  <span className="text-gray-900 dark:text-white font-semibold">${parseFloat(dollarAmount).toFixed(2)}</span>
+                  <span className="text-gray-500 dark:text-gray-400">
+                    Amount:
+                  </span>
+                  <span className="text-gray-900 dark:text-white font-semibold">
+                    ${parseFloat(dollarAmount).toFixed(2)}
+                  </span>
                 </div>
                 <div className="flex justify-between">
-                  <span className="text-gray-500 dark:text-gray-400">Currency:</span>
-                  <span className="text-gray-900 dark:text-white font-semibold">{currencyAmount} {selectedWallet.currency}</span>
+                  <span className="text-gray-500 dark:text-gray-400">
+                    Currency:
+                  </span>
+                  <span className="text-gray-900 dark:text-white font-semibold">
+                    {currencyAmount} {selectedWallet.currency}
+                  </span>
                 </div>
                 <div className="flex justify-between pt-2 border-t border-blue-500/20">
-                  <span className="text-gray-500 dark:text-gray-400">Reference:</span>
-                  <span className="text-blue-600 dark:text-blue-400 font-semibold font-mono text-xs">{depositReference}</span>
+                  <span className="text-gray-500 dark:text-gray-400">
+                    Reference:
+                  </span>
+                  <span className="text-blue-600 dark:text-blue-400 font-semibold font-mono text-xs">
+                    {depositReference}
+                  </span>
                 </div>
               </div>
 
@@ -638,9 +823,12 @@ export default function DepositModal({ isOpen, onClose }: DepositModalProps) {
                 <div className="flex items-start gap-2">
                   <Clock className="w-4 h-4 text-blue-400 flex-shrink-0 mt-0.5" />
                   <div>
-                    <p className="text-xs text-gray-700 dark:text-gray-300 font-medium">Processing Time</p>
+                    <p className="text-xs text-gray-700 dark:text-gray-300 font-medium">
+                      Processing Time
+                    </p>
                     <p className="text-[10px] text-gray-500 dark:text-gray-400 mt-0.5">
-                      Your deposit will be credited within 30 minutes to 24 hours after verification.
+                      Your deposit will be credited within 30 minutes to 24
+                      hours after verification.
                     </p>
                   </div>
                 </div>

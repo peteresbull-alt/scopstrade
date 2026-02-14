@@ -1,17 +1,38 @@
 import type { NextConfig } from "next";
 
-const BACKEND_ORIGIN =
-  process.env.BACKEND_ORIGIN || "http://localhost:8000";
-
 const nextConfig: NextConfig = {
-  // async rewrites() {
-  //   return [
-  //     {
-  //       source: "/api/auth/:path*",
-  //       destination: `${BACKEND_ORIGIN}/api/auth/:path*`,
-  //     },
-  //   ];
-  // },
+  /* config options here */
+  images: {
+    remotePatterns: [
+      {
+        protocol: "https",
+        hostname: "i.pravatar.cc",
+      },
+      {
+        protocol: "https",
+        hostname: "res.cloudinary.com",
+      },
+
+      {
+        protocol: "http",
+        hostname: "res.cloudinary.com",
+      },
+      {
+        protocol: "https",
+        hostname: "images.unsplash.com",
+      },
+
+      {
+        protocol: "https",
+        hostname: "logo.clearbit.com",
+        pathname: "/**",
+      },
+      {
+        protocol: "https",
+        hostname: "logo.clearbit.com",
+      },
+    ],
+  },
 };
 
 export default nextConfig;

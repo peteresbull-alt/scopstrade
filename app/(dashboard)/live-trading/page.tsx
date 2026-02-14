@@ -1,13 +1,10 @@
 "use client";
 
-import { useState, useEffect, useRef } from "react";
-import { useTheme } from "next-themes";
+import { useState, useEffect } from "react";
 import { motion, AnimatePresence } from "framer-motion";
 import { X, TrendingUp, DollarSign, Shield, AlertCircle } from "lucide-react";
 
 export default function LiveTradingPage() {
-  const containerRef = useRef<HTMLDivElement>(null);
-  const { resolvedTheme } = useTheme();
   const [mounted, setMounted] = useState(false);
   const [showModal, setShowModal] = useState(false);
 
@@ -15,55 +12,7 @@ export default function LiveTradingPage() {
     setMounted(true);
   }, []);
 
-  useEffect(() => {
-    if (!containerRef.current || !mounted || !resolvedTheme) return;
-
-    // Clear any existing content
-    containerRef.current.innerHTML = "";
-
-    // Frontend_next uses normal theme mapping
-    const tradingViewTheme = resolvedTheme === "dark" ? "dark" : "light";
-    const backgroundColor = tradingViewTheme === "dark" ? "#0F1C35" : "#FFFFFF";
-
-    // Create widget container structure
-    const widgetContainer = document.createElement("div");
-    widgetContainer.className = "tradingview-widget-container__widget";
-    containerRef.current.appendChild(widgetContainer);
-
-    // Create script element
-    const script = document.createElement("script");
-    script.src =
-      "https://s3.tradingview.com/external-embedding/embed-widget-forex-cross-rates.js";
-    script.type = "text/javascript";
-    script.async = true;
-    script.innerHTML = JSON.stringify({
-      currencies: [
-        "EUR",
-        "USD",
-        "JPY",
-        "GBP",
-        "CHF",
-        "AUD",
-        "CAD",
-        "NZD",
-        "CNY",
-      ],
-      isTransparent: false,
-      colorTheme: tradingViewTheme,
-      locale: "en",
-      backgroundColor: backgroundColor,
-    });
-
-    containerRef.current.appendChild(script);
-
-    return () => {
-      if (containerRef.current) {
-        containerRef.current.innerHTML = "";
-      }
-    };
-  }, [mounted, resolvedTheme]);
-
-  if (!mounted || !resolvedTheme) {
+  if (!mounted) {
     return (
       <div className="min-h-screen flex items-center justify-center">
         <div className="w-5 h-5 border-2 border-blue-500 border-t-transparent rounded-full animate-spin" />
@@ -96,11 +45,11 @@ export default function LiveTradingPage() {
             <AlertCircle className="w-6 h-6 text-blue-500 flex-shrink-0 mt-0.5" />
             <div>
               <h3 className="font-semibold text-blue-600 dark:text-blue-400 mb-1">
-                Real-time Currency Exchange Rates
+                Live Trading
               </h3>
               <p className="text-sm text-blue-700 dark:text-blue-300">
-                Powered by TradingView. Data updates automatically. Click on any
-                currency pair for detailed charts and analysis.
+                Access real-time trading opportunities. Click the button below
+                to view the requirements for starting a live trading session.
               </p>
             </div>
           </div>
@@ -123,17 +72,6 @@ export default function LiveTradingPage() {
             <TrendingUp className="w-6 h-6" />
             Start Live Trading
           </motion.button>
-        </div>
-
-        {/* Forex Cross Rates Widget */}
-        <div className="mb-8">
-          <div className="bg-white dark:bg-[#1a2744] rounded-2xl border border-gray-200 dark:border-white/10 overflow-hidden p-4">
-            <div
-              ref={containerRef}
-              className="tradingview-widget-container w-full h-[600px]"
-              key={`forex-cross-rates-${resolvedTheme}`}
-            />
-          </div>
         </div>
       </div>
 
@@ -301,7 +239,7 @@ export default function LiveTradingPage() {
                       status and guide you through the final steps.
                     </p>
                     <div className="flex flex-col sm:flex-row gap-3">
-                      
+
                       <button
                         onClick={() => setShowModal(false)}
                         className="px-6 py-3 bg-white dark:bg-[#0f1c35] hover:bg-gray-50 dark:hover:bg-[#1e3a5f]/50 text-gray-900 dark:text-white font-semibold rounded-lg transition-all border border-gray-200 dark:border-white/10"
