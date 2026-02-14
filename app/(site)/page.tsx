@@ -1,3 +1,4 @@
+import type { Metadata } from "next";
 import CTASection from "@/components/site/CTASection";
 import FAQSection from "@/components/site/Faqsection";
 import FeaturesSection from "@/components/site/FeaturesSection";
@@ -13,6 +14,12 @@ import TrustSection from "@/components/site/TrustSection";
 import WhatYouCanCopy from "@/components/site/WhatYouCanCopy";
 import WhyChooseUs from "@/components/site/WhyChooseUs";
 import Image from "next/image";
+
+export const metadata: Metadata = {
+  title: "Copy Futures, Options & Contracts with Precision",
+  description:
+    "Mirror real-time stock and options trades from top-performing traders. Precision, flexibility, and transparency straight to your fingertips.",
+};
 
 export default function Home() {
   return (

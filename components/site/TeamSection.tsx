@@ -83,7 +83,7 @@ const TeamSection = () => {
             </button>
 
             {/* Team Member Card */}
-            <div className="flex flex-col items-center text-center">
+            <div key={currentIndex} className="flex flex-col items-center text-center">
               <div className="relative mb-6">
                 <div className="h-48 w-48 overflow-hidden rounded-full border-2 border-blue-500/30 bg-gray-800 lg:h-56 lg:w-56">
                   <Image
