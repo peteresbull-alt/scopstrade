@@ -302,14 +302,14 @@ export default function LoginPage() {
             <p className="text-gray-400 dark:text-white">
               Copyright &copy; {new Date().getFullYear()} ScopsTrade
             </p>
-            <div className="flex items-center justify-center gap-4">
+            {/* <div className="flex items-center justify-center gap-4">
               <Link className="text-blue-500 hover:underline" href={"/"}>
                 Privacy Policy
               </Link>
               <Link className="text-blue-500 hover:underline" href={"/"}>
                 Terms of service
               </Link>
-            </div>
+            </div> */}
             {/* Google Translate will be here */}
           </div>
         </motion.div>
