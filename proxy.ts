@@ -7,7 +7,7 @@ const protectedPaths = ["/portfolio", "/onboarding", "/kyc"];
 // Routes that should redirect to dashboard if already authenticated
 const authPaths = ["/login", "/register"];
 
-export function middleware(request: NextRequest) {
+export function proxy(request: NextRequest) {
   const { pathname } = request.nextUrl;
 
   // Skip middleware for API routes, static files, etc.
